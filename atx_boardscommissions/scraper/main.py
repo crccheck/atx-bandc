@@ -6,8 +6,8 @@ from lxml.html import document_fromstring
 MEETING_DATE = 'bcic_mtgdate'
 DOCUMENT = 'bcic_doc'
 PAGES = (
-    # slug, id
-    # slug: http://www.austintexas.gov/<slug>
+    # bandc_slug, id
+    # bandc_slug: http://www.austintexas.gov/<bandc_slug>
     # id: http://www.austintexas.gov/cityclerk/boards_commissions/meetings/<year>_<id>_<page>.htm
     ('parb', '39'),
     ('musiccomm', '12'),
@@ -22,8 +22,6 @@ def process_page(html):
 
     TODO:
     * get the project name out of `text`
-    * save in a database
-    * update rows because the pages can change over time
     """
     doc = document_fromstring(html)
     date = ''
@@ -45,11 +43,15 @@ def process_page(html):
     return data
 
 
-def save_page(data, table):
+def save_page(data, table, bandc_slug):
     """
     Save page data to a `dataset` db table.
+
+    TODO
+    * delete previous bandc_slug/date rows because pages can change over time
     """
     for row in data:
+        row['banc'] = 'bandc_slug'
         table.insert(row)
 
 
@@ -57,7 +59,7 @@ def save_pages(table=None):
     """
     Save multiple pages.
     """
-    for slug, pk in PAGES:
+    for bandc_slug, pk in PAGES:
         url = (
             'http://www.austintexas.gov/cityclerk/boards_commissions/'
             'meetings/{}_{}.htm'
@@ -70,7 +72,7 @@ def save_pages(table=None):
         assert response.status_code == 200
         data = process_page(response.text)
         if table:
-            save_page(data, table)
+            save_page(data, table, bandc_slug=bandc_slug)
         # TODO pause to avoid hammering
 
 

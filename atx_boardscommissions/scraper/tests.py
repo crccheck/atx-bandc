@@ -22,8 +22,9 @@ class PageScraper(unittest.TestCase):
         html = open('samples/music.html').read()
         data = process_page(html)
 
-        save_page(data, table)
+        save_page(data, table, 'test')
         self.assertIn('date', table.columns)
+        self.assertEqual(len(table.columns), 6)
         self.assertEqual(len(table), 9)
 
 
