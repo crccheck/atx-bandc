@@ -22,6 +22,19 @@ MEETING_DATE = 'bcic_mtgdate'
 DOCUMENT = 'bcic_doc'
 
 
+class MeetingCancelled(Exception):
+    pass
+
+
+def parse_date(string):
+    """
+    Turn a date row into a datetime.date instance.
+    """
+    if 'cancel' in string.lower():
+        raise MeetingCancelled('Meeting Cancelled')
+    return parse(string).date()
+
+
 def process_page(html):
     """
     Transform the raw html into semi-structured data.
@@ -39,8 +52,11 @@ def process_page(html):
     for row in doc.xpath('//div[@id="bcic"]/h5'):
         row_class = row.attrib['class']  # assume each has only one css class
         if row_class == MEETING_DATE:
-            date = parse(row.text).date()
-        elif row_class == DOCUMENT:
+            try:
+                date = parse_date(row.text)
+            except MeetingCancelled:
+                date = None
+        elif date and row_class == DOCUMENT:
             row_type = row.xpath('./a/b/text()')[0]
             url = row.xpath('./a/@href')[0]
             text = u''.join(row.xpath('./text()')).strip()
