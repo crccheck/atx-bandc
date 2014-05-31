@@ -1,14 +1,18 @@
 import datetime
 import unittest
+import os
 
 import dataset
 
 from main import process_page, save_page
 
 
+BASE_DIR = os.path.dirname(__file__)
+
+
 class PageScraper(unittest.TestCase):
     def test_process_page_works(self):
-        html = open('samples/music.html').read()
+        html = open(os.path.join(BASE_DIR, 'samples/music.html')).read()
         data = process_page(html)
         self.assertEqual(len(data), 9)
         self.assertEqual(data[0]['date'], datetime.date(2014, 6, 2))
@@ -19,7 +23,7 @@ class PageScraper(unittest.TestCase):
         table = db['test']
 
         # bootstrap some data
-        html = open('samples/music.html').read()
+        html = open(os.path.join(BASE_DIR, 'samples/music.html')).read()
         data = process_page(html)
 
         save_page(data, table, 'test')
