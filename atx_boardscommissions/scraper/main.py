@@ -1,5 +1,6 @@
-import dataset
+import datetime
 
+import dataset
 import requests
 from dateutil.parser import parse
 from lxml.html import document_fromstring
@@ -34,6 +35,7 @@ def process_page(html):
     doc = document_fromstring(html)
     date = ''
     data = []
+    now = datetime.datetime.now()
     for row in doc.xpath('//div[@id="bcic"]/h5'):
         row_class = row.attrib['class']  # assume each has only one css class
         if row_class == MEETING_DATE:
@@ -47,6 +49,7 @@ def process_page(html):
                 'type': row_type,
                 'url': url,
                 'text': text,
+                'scraped_at': now,
             })
     return data
 
@@ -57,6 +60,7 @@ def save_page(data, table, bandc_slug):
 
     TODO
     * delete previous bandc_slug/date rows because pages can change over time
+    * only delete if something changed
     """
     print 'save_page', table, bandc_slug
     for row in data:

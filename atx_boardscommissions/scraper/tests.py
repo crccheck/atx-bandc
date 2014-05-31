@@ -24,7 +24,7 @@ class PageScraper(unittest.TestCase):
 
         save_page(data, table, 'test')
         self.assertIn('date', table.columns)
-        self.assertEqual(len(table.columns), 6)
+        self.assertEqual(len(table.columns), 7)
         self.assertEqual(len(table), 9)
 
 
