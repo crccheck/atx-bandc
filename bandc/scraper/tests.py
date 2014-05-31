@@ -38,6 +38,10 @@ class PageScraper(unittest.TestCase):
         self.assertEqual(len(table.columns), 7)
         self.assertEqual(len(table), 9)
 
+        # re-saving does not create any new rows
+        save_page(data, table, 'test')
+        self.assertEqual(len(table), 9)
+
     def test_get_number_of_pages_works(self):
         html = open(os.path.join(BASE_DIR, 'samples/music.html')).read()
         self.assertEqual(get_number_of_pages(html), 1)

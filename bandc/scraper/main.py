@@ -44,6 +44,7 @@ def process_page(html):
     TODO:
     * get the project name out of `text`
     * deal with video rows
+    TODO handle when a previously published meeting gets cancelled
     """
     doc = document_fromstring(html)
     date = ''
@@ -74,13 +75,17 @@ def save_page(data, table, bandc_slug):
     """
     Save page data to a `dataset` db table.
 
-    TODO
-    * delete previous bandc_slug/date rows because pages can change over time
-    * only delete if something changed
+    TODO only delete if something changed
     """
     print 'save_page', table, bandc_slug
+
+    # delete old data
+    dates = set([x['date'] for x in data])
+    for date in dates:
+        table.delete(bandc=bandc_slug, date=date)
+
     for row in data:
-        row['banc'] = bandc_slug
+        row['bandc'] = bandc_slug
         table.insert(row)
 
 
