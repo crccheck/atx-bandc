@@ -4,7 +4,7 @@ MEETING_DATE = 'bcic_mtgdate'
 DOCUMENT = 'bcic_doc'
 
 
-def process(html):
+def process_page(html):
     """
     Transform the raw html into semi-structured data.
 
@@ -33,5 +33,6 @@ def process(html):
             })
     return data
 
+
 if __name__ == '__main__':
-    process()
+    process_page()
