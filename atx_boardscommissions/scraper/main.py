@@ -1,10 +1,12 @@
+import dataset
+
 import requests
 from dateutil.parser import parse
 from lxml.html import document_fromstring
 
+# CONFIGURATION
 
-MEETING_DATE = 'bcic_mtgdate'
-DOCUMENT = 'bcic_doc'
+TABLE = 'bandc_items'
 PAGES = (
     # bandc_slug, id
     # bandc_slug: http://www.austintexas.gov/<bandc_slug>
@@ -12,6 +14,11 @@ PAGES = (
     ('parb', '39'),
     ('musiccomm', '12'),
 )
+
+# CONSTANTS
+
+MEETING_DATE = 'bcic_mtgdate'
+DOCUMENT = 'bcic_doc'
 
 
 def process_page(html):
@@ -22,6 +29,7 @@ def process_page(html):
 
     TODO:
     * get the project name out of `text`
+    * deal with video rows
     """
     doc = document_fromstring(html)
     date = ''
@@ -32,12 +40,12 @@ def process_page(html):
             date = parse(row.text).date()
         elif row_class == DOCUMENT:
             row_type = row.xpath('./a/b/text()')[0]
-            pdf_url = row.xpath('./a/@href')[0]
+            url = row.xpath('./a/@href')[0]
             text = u''.join(row.xpath('./text()')).strip()
             data.append({
                 'date': date,
                 'type': row_type,
-                'pdf': pdf_url,
+                'url': url,
                 'text': text,
             })
     return data
@@ -50,8 +58,9 @@ def save_page(data, table, bandc_slug):
     TODO
     * delete previous bandc_slug/date rows because pages can change over time
     """
+    print 'save_page', table, bandc_slug
     for row in data:
-        row['banc'] = 'bandc_slug'
+        row['banc'] = bandc_slug
         table.insert(row)
 
 
@@ -71,10 +80,12 @@ def save_pages(table=None):
         response = requests.get(url)
         assert response.status_code == 200
         data = process_page(response.text)
-        if table:
+        if table is not None:
             save_page(data, table, bandc_slug=bandc_slug)
         # TODO pause to avoid hammering
 
 
 if __name__ == '__main__':
-    save_pages()
+    db = dataset.connect()  # uses DATABASE_URL
+    table = db[TABLE]
+    save_pages(table=table)
