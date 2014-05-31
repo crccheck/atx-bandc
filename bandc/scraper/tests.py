@@ -4,7 +4,7 @@ import os
 
 import dataset
 
-from main import process_page, save_page
+from main import process_page, save_page, get_number_of_pages
 
 
 BASE_DIR = os.path.dirname(__file__)
@@ -31,6 +31,11 @@ class PageScraper(unittest.TestCase):
         self.assertEqual(len(table.columns), 7)
         self.assertEqual(len(table), 9)
 
+    def test_get_number_of_pages_works(self):
+        html = open(os.path.join(BASE_DIR, 'samples/music.html')).read()
+        self.assertEqual(get_number_of_pages(html), 1)
+        html = open(os.path.join(BASE_DIR, 'samples/parks.html')).read()
+        self.assertEqual(get_number_of_pages(html), 2)
 
 if __name__ == '__main__':
     unittest.main()

@@ -73,20 +73,42 @@ def save_pages(table=None):
     Save multiple pages.
     """
     for bandc_slug, pk in PAGES:
+        # process first page
         url = (
             'http://www.austintexas.gov/cityclerk/boards_commissions/'
-            'meetings/{}_{}.htm'
-            .format(
-                pk,
-                '1',  # TODO assume only 1 page for now
-            )
+            'meetings/{}_{}_{}.htm'
+            .format(2014, pk, '1')
         )
+        print url
         response = requests.get(url)
         assert response.status_code == 200
+        n_pages = get_number_of_pages(response.text)
         data = process_page(response.text)
         if table is not None:
             save_page(data, table, bandc_slug=bandc_slug)
+        # process additional pages
+        # TODO DRY
+        for page_no in range(2, n_pages + 1):
+            url = (
+                'http://www.austintexas.gov/cityclerk/boards_commissions/'
+                'meetings/{}_{}_{}.htm'
+                .format(2014, pk, page_no)
+            )
+            print url
+            response = requests.get(url)
+            assert response.status_code == 200
+            data = process_page(response.text)
+            if table is not None:
+                save_page(data, table, bandc_slug=bandc_slug)
         # TODO pause to avoid hammering
+
+
+def get_number_of_pages(html):
+    doc = document_fromstring(html)
+    last_page_link = doc.xpath('(//a[@class="bcic_nav"])[last()]/text()')
+    if not last_page_link:
+        return 1
+    return int(last_page_link[0].strip())
 
 
 if __name__ == '__main__':
