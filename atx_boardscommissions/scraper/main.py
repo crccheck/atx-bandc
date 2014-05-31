@@ -1,3 +1,4 @@
+from dateutil.parser import parse
 from lxml.html import document_fromstring
 
 MEETING_DATE = 'bcic_mtgdate'
@@ -11,8 +12,9 @@ def process_page(html):
     Pretend it's something you'd expect in a csv.
 
     TODO:
-    * convert date to computer friendly date
     * get the project name out of `text`
+    * save in a database
+    * update rows because the pages can change over time
     """
     doc = document_fromstring(html)
     date = ''
@@ -20,7 +22,7 @@ def process_page(html):
     for row in doc.xpath('//div[@id="bcic"]/h5'):
         row_class = row.attrib['class']  # assume each has only one css class
         if row_class == MEETING_DATE:
-            date = row.text
+            date = parse(row.text).date()
         elif row_class == DOCUMENT:
             row_type = row.xpath('./a/b/text()')[0]
             pdf_url = row.xpath('./a/@href')[0]
