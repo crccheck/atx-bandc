@@ -36,5 +36,13 @@ def process_page(html):
     return data
 
 
+def save_page(data, table):
+    """
+    Save page data to a `dataset` db table.
+    """
+    for row in data:
+        table.insert(row)
+
+
 if __name__ == '__main__':
     process_page()

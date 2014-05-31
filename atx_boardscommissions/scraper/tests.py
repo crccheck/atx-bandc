@@ -1,15 +1,30 @@
 import datetime
 import unittest
 
-from main import process_page
+import dataset
+
+from main import process_page, save_page
 
 
 class PageScraper(unittest.TestCase):
-    def test_it_works(self):
+    def test_process_page_works(self):
         html = open('samples/music.html').read()
         data = process_page(html)
         self.assertEqual(len(data), 9)
         self.assertEqual(data[0]['date'], datetime.date(2014, 6, 2))
+
+    def test_save_page_works(self):
+        # bootstrap db
+        db = dataset.connect('sqlite:///:memory:')
+        table = db['test']
+
+        # bootstrap some data
+        html = open('samples/music.html').read()
+        data = process_page(html)
+
+        save_page(data, table)
+        self.assertIn('date', table.columns)
+        self.assertEqual(len(table), 9)
 
 
 if __name__ == '__main__':
