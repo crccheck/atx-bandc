@@ -78,6 +78,29 @@ def process_page(html):
     return data
 
 
+from pdfminer.pdfdocument import PDFDocument
+from pdfminer.pdfparser import PDFParser
+from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+from pdfminer.pdfpage import PDFPage
+from pdfminer.converter import TextConverter
+
+
+def process_pdf():
+    f = open('samples/document_53B86715-0261-C36F-8C2F847EF15AD639.pdf', 'rb')
+    parser = PDFParser(f)
+    document = PDFDocument(parser)
+    rsrcmgr = PDFResourceManager()
+    import sys
+    outfp = sys.stdout
+    device = TextConverter(rsrcmgr, outfp, codec='utf-8', laparams=None,
+       imagewriter=None)
+    interpreter = PDFPageInterpreter(rsrcmgr, device)
+    for page in PDFPage.get_pages(f, [], document):
+        interpreter.process_page(page)
+    device.close()
+    f.close()
+
+
 def save_page(data, table, bandc_slug):
     """
     Save page data to a `dataset` db table.
@@ -162,6 +185,8 @@ def setup_table(table):
 
 
 if __name__ == '__main__':
+    process_pdf()
+    exit()
     db = dataset.connect()  # uses DATABASE_URL
     table = db[TABLE]
     setup_table(table)
