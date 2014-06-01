@@ -1,4 +1,7 @@
 import datetime
+import os
+import sys
+from urllib import urlretrieve
 
 from StringIO import StringIO
 import dataset
@@ -84,21 +87,6 @@ def process_page(html):
     return data
 
 
-def process_pdf(f):
-    parser = PDFParser(f)
-    document = PDFDocument(parser)
-    rsrcmgr = PDFResourceManager()
-    outfp = StringIO()
-    device = TextConverter(rsrcmgr, outfp, codec='utf-8', laparams=None,
-       imagewriter=None)
-    interpreter = PDFPageInterpreter(rsrcmgr, device)
-    for page in PDFPage.get_pages(f, [], document):
-        interpreter.process_page(page)
-    device.close()
-    f.close()
-    return outfp.getvalue()
-
-
 def save_page(data, table, bandc_slug):
     """
     Save page data to a `dataset` db table.
@@ -182,7 +170,70 @@ def setup_table(table):
         table.create_index(['url'])  # XXX broken
 
 
+def pdf_to_text(f):
+    parser = PDFParser(f)
+    document = PDFDocument(parser)
+    rsrcmgr = PDFResourceManager()
+    outfp = StringIO()
+    device = TextConverter(rsrcmgr, outfp, codec='utf-8', laparams=None,
+       imagewriter=None)
+    interpreter = PDFPageInterpreter(rsrcmgr, device)
+    for page in PDFPage.get_pages(f, [], document):
+        interpreter.process_page(page)
+    device.close()
+    f.close()
+    return outfp.getvalue()
+
+
+def grab_pdf(chunk=5):
+    """
+    Fill in missing pdf information.
+
+    If no text was found in the pdf, fill in something anyways just so we know
+    we already tried.
+
+    This is separate from the main scraper because this is more intensive and
+    secondary.
+    """
+    # TODO order by?
+    db = dataset.connect()  # uses DATABASE_URL
+    table = db.load_table(TABLE)
+    result = db.query("SELECT id, url FROM {} WHERE url LIKE '{}%%' "
+        "AND text='' LIMIT {}".format(
+            TABLE,
+            'http://www.austintexas.gov/edims/document.cfm',
+            chunk,
+        )
+    )
+    base_path = '/tmp/bandc_pdfs/'
+    for row in result:
+        filename = row['url'].rsplit('=', 2)[1] + '.pdf'
+        filepath = os.path.join(base_path, filename)
+        print row, filepath
+        if not os.path.isdir(base_path):
+            os.makedirs(base_path)
+        # check if file was already downloaded
+        if not os.path.isfile(filepath):
+            # download pdf to temporary file
+            print urlretrieve(row['url'], filepath)  # TODO log
+        # parse and save pdf text
+        with open(filepath) as f:
+            text = pdf_to_text(f)
+            if not text:
+                text = 'no text found in pdf'
+            data = dict(
+                # set
+                text=text,
+                # where
+                id=row['id'],
+            )
+            table.update(data, ['id'], ensure=False)
+
+
 if __name__ == '__main__':
+    if len(sys.argv) > 1 and sys.argv[1] == 'pdf':
+        grab_pdf()
+        exit()
     db = dataset.connect()  # uses DATABASE_URL
     table = db[TABLE]
     setup_table(table)

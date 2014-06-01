@@ -7,7 +7,7 @@ import dataset
 
 from scrape import (parse_date, clean_text, process_page, save_page,
     get_number_of_pages,
-    process_pdf,
+    pdf_to_text,
     setup_table,
     MeetingCancelled)
 
@@ -72,7 +72,7 @@ class PageScraper(unittest.TestCase):
     def test_process_pdf_works(self):
         f = open(os.path.join(BASE_DIR,
             'samples/document_53B86715-0261-C36F-8C2F847EF15AD639.pdf'), 'rb')
-        out = process_pdf(f)
+        out = pdf_to_text(f)
         self.assertTrue(out)
 
 

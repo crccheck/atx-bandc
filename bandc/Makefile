@@ -11,6 +11,9 @@ scraper/samples:
 	curl http://www.austintexas.gov/cityclerk/boards_commissions/meetings/2014_39_1.htm > $@/parks.html
 	curl http://www.austintexas.gov/cityclerk/boards_commissions/meetings/2014_39_2.htm > $@/parks2.html
 
+pdf:
+	python scraper/scrape.py pdf
+
 resetdb:
 	# assumes postgres
 	phd dropdb
