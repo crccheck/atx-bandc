@@ -219,6 +219,35 @@ def grab_pdf(chunk=8):
             table.update(data, ['id'], ensure=False)
 
 
+def get_pages():
+    """
+    This doesn't appear to work
+    """
+    # response = requests.get('http://www.austintexas.gov/department/boards-and-commissions-information-center')
+    # html = response.text
+    html = open('samples/boards-and-commissions-information-center.html', 'r').read()
+    doc = document_fromstring(html)
+    name_slug_html = doc.xpath('//form[@id="bc_form"]/select[1]/option')
+    data = {}
+    for el in name_slug_html:
+        name = el.text.strip()
+        slug = el.get('value').rsplit('/', 2)[-1]
+        data[name] = {
+            'slug': slug,
+        }
+    name_id_html = doc.xpath('//form[@id="filtered_search_form"]/select[@name="bname"]/option')
+    for el in name_id_html:
+        if not el.text:
+            continue
+        name = el.text.strip()
+        if name not in data:
+            continue
+        pk = el.get('value').rsplit('/', 2)[-1]
+        data[name]['id'] = pk
+    for name, value in data.items():
+        print name, value.get('id'), value['slug']
+
+
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == 'pdf':
         grab_pdf()
@@ -228,3 +257,6 @@ if __name__ == '__main__':
         setup_table(table)
         deep = '--deep' in sys.argv[2:]
         save_pages(table=table, deep=deep)
+    command = sys.argv[1]
+    if command == 'build':
+        get_pages()
