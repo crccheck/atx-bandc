@@ -48,7 +48,7 @@ def process_page(html):
     Pretend it's something you'd expect in a csv.
 
     TODO:
-    * get the project name out of `text`
+    * get the project name out of `title`
     * deal with video rows
     TODO handle when a previously published meeting gets cancelled
     """
@@ -66,12 +66,13 @@ def process_page(html):
         elif date and row_class == DOCUMENT:
             row_type = row.xpath('./a/b/text()')[0]
             url = row.xpath('./a/@href')[0]
-            text = clean_text(u''.join(row.xpath('./text()')).strip())
+            title = clean_text(u''.join(row.xpath('./text()')).strip())
             data.append({
                 'date': date,
                 'type': row_type,
                 'url': url,
-                'text': text,
+                'title': title,
+                'text': '',
                 'scraped_at': now,
             })
     return data
@@ -145,4 +146,6 @@ if __name__ == '__main__':
     table = db[TABLE]
     if 'date' not in table.columns:
         table.create_column('date', sqlalchemy.types.Date)
+    if 'text' not in table.columns:
+        table.create_column('text', sqlalchemy.types.Text)
     save_pages(table=table)

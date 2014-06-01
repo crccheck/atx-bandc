@@ -45,7 +45,7 @@ class PageScraper(unittest.TestCase):
 
         save_page(data, table, 'test')
         self.assertIn('date', table.columns)
-        self.assertEqual(len(table.columns), 7)
+        self.assertEqual(len(table.columns), 8)
         self.assertEqual(len(table), 9)
 
         # re-saving does not create any new rows
