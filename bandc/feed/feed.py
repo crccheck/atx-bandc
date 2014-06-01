@@ -32,7 +32,8 @@ def feed_detail(slug):
         feed.append_item(
             title=row['title'] or row['type'],
             link=row['url'],
-            description=row['text'].strip()[:1000],  # TODO truncate words
+            description=row['type'],
+            # description=row['text'].strip()[:1000],  # TODO truncate words
             # convert date into datetime
             pub_date=datetime.combine(row['date'], datetime.min.time()),
         )
