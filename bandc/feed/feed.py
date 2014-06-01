@@ -18,6 +18,7 @@ slug_to_id = {slug: pk for slug, pk, name in PAGES}
 @route('/')
 def index():
     out = []
+    out.append('<li><a href="{}/">{}</a></li>'.format('all', 'All'))
     for slug, pk, name in PAGES:
         out.append('<li><a href="{}/">{}</a></li>'.format(slug, name))
     return u''.join(out)
@@ -60,12 +61,12 @@ def feed_detail(slug):
             title = '[{}] {}'.format(row['bandc'], title)
         text = row['text'].strip().encode('ascii', 'ignore')[:600].strip()
         text = re.sub(r'\s+', ' ', text)[:500]
-        if text:
-            print text
+        if text.startswith('no text'):
+            text = '{}: {}'.format(row['type'], text)
         feed.append_item(
             title=title,
             link=row['url'],
-            description=text if text and not text.startswith('no text') else row['type'],
+            description=text if text else row['type'],
             # convert date into datetime
             pub_date=datetime.combine(row['date'], datetime.min.time()),
         )
