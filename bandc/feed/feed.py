@@ -27,7 +27,7 @@ def feed_detail(slug):
     filter_kwargs = {}
     if slug != 'all':
         filter_kwargs['bandc'] = slug
-    results = table.find(_limit=LIMIT, order_by='-scraped_at', **filter_kwargs)
+    results = table.find(_limit=LIMIT, order_by='-date', **filter_kwargs)
     for row in results:
         feed.append_item(
             title=row['title'] or row['type'],

@@ -185,7 +185,7 @@ def pdf_to_text(f):
     return outfp.getvalue()
 
 
-def grab_pdf(chunk=5):
+def grab_pdf(chunk=8):
     """
     Fill in missing pdf information.
 
@@ -195,11 +195,10 @@ def grab_pdf(chunk=5):
     This is separate from the main scraper because this is more intensive and
     secondary.
     """
-    # TODO order by?
     db = dataset.connect()  # uses DATABASE_URL
     table = db.load_table(TABLE)
     result = db.query("SELECT id, url FROM {} WHERE url LIKE '{}%%' "
-        "AND text='' LIMIT {}".format(
+        "AND text='' ORDER BY date DESC LIMIT {}".format(
             TABLE,
             'http://www.austintexas.gov/edims/document.cfm',
             chunk,
