@@ -1,16 +1,22 @@
 from datetime import datetime
 
-from bottle import response, route, run
+from bottle import abort, response, route, run
 from rss2producer import RSS2Feed
 import dataset
 
 
 # copy pasted from scraper
 TABLE = 'bandc_items'
+LIMIT = 50
 
 
 @route('/')
 def index():
+    return 'TODO'
+
+
+@route('/<slug>/')
+def feed_detail(slug):
     db = dataset.connect()  # uses DATABASE_URL
     table = db.load_table(TABLE)  # don't allow dataset to create the table
     feed = RSS2Feed(
@@ -18,14 +24,19 @@ def index():
         link='TODO',
         description='description todo',
     )
-    results = table.find(_limit=50, order_by='-scraped_at')
+    filter_kwargs = {}
+    if slug != 'all':
+        filter_kwargs['bandc'] = slug
+    results = table.find(_limit=LIMIT, order_by='-scraped_at', **filter_kwargs)
     for row in results:
         feed.append_item(
             title=row['text'],
             link=row['url'],
-            description=row['text'],
+            description=row['text'],  # TODO
+            # convert date into datetime
             pub_date=datetime.combine(row['date'], datetime.min.time()),
         )
+    # TODO if no results, abort(404, 'No results for that BandC')
     response.content_type = 'application/rss+xml'
     return feed.get_xml()
 
