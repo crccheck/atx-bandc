@@ -223,7 +223,7 @@ def grab_pdf(chunk=5):
                 text = 'no text found in pdf'
             data = dict(
                 # set
-                text=text,
+                text=text.strip(),
                 # where
                 id=row['id'],
             )

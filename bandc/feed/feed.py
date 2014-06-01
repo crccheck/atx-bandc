@@ -30,9 +30,9 @@ def feed_detail(slug):
     results = table.find(_limit=LIMIT, order_by='-scraped_at', **filter_kwargs)
     for row in results:
         feed.append_item(
-            title=row['text'],
+            title=row['title'] or row['type'],
             link=row['url'],
-            description=row['text'],  # TODO
+            description=row['text'].strip()[:1000],  # TODO truncate words
             # convert date into datetime
             pub_date=datetime.combine(row['date'], datetime.min.time()),
         )
