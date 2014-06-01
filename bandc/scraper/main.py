@@ -4,6 +4,7 @@ import dataset
 import requests
 from dateutil.parser import parse
 from lxml.html import document_fromstring
+import sqlalchemy.types
 
 # CONFIGURATION
 
@@ -135,4 +136,6 @@ def get_number_of_pages(html):
 if __name__ == '__main__':
     db = dataset.connect()  # uses DATABASE_URL
     table = db[TABLE]
+    if 'date' not in table.columns:
+        table.create_column('date', sqlalchemy.types.Date)
     save_pages(table=table)
