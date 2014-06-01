@@ -95,9 +95,11 @@ def save_page(data, table, bandc_slug):
         table.insert(row)
 
 
-def save_pages(table=None):
+def save_pages(table=None, deep=True):
     """
     Save multiple pages.
+
+    TODO change `deep` default to False after schema is stable.
     """
     for bandc_slug, pk in PAGES:
         # process first page
@@ -109,7 +111,7 @@ def save_pages(table=None):
         print url
         response = requests.get(url)
         assert response.status_code == 200
-        n_pages = get_number_of_pages(response.text)
+        n_pages = get_number_of_pages(response.text) if deep else 1
         data = process_page(response.text)
         if table is not None:
             save_page(data, table, bandc_slug=bandc_slug)
