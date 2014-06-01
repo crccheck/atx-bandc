@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from bottle import abort, default_app, response, route, run
+from bottle import abort, default_app, request, response, route, run
 from rss2producer import RSS2Feed
 import dataset
 
@@ -45,13 +45,18 @@ def feed_detail(slug):
         )
     feed = RSS2Feed(**feed_info)
     # filter_kwargs = {}
-    where_sql = ''
+    where_sql = 'true'
     if slug != 'all':
-        where_sql = "WHERE bandc = '{}'".format(slug)
+        where_sql = "bandc = '{}'".format(slug)
         # filter_kwargs['bandc'] = slug
+    search = request.query['q']
+    if search:
+        if where_sql:
+            where_sql += ' AND '
+        where_sql += "(title ILIKE '%%{0}%%' OR text ILIKE '%%{0}%%')".format(search)
     # results = table.find(_limit=LIMIT, order_by='-date', **filter_kwargs)
     # HACK for 'order_by' not working
-    sql = 'SELECT * from {} {} ORDER BY date DESC LIMIT {}'.format(
+    sql = 'SELECT * FROM {} WHERE {} ORDER BY date DESC LIMIT {}'.format(
         TABLE,
         where_sql,
         LIMIT,
