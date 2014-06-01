@@ -4,7 +4,8 @@ import os
 
 import dataset
 
-from main import (parse_date, process_page, save_page, get_number_of_pages,
+from main import (parse_date, clean_text, process_page, save_page,
+    get_number_of_pages,
     MeetingCancelled)
 
 
@@ -17,6 +18,15 @@ class PageScraper(unittest.TestCase):
         self.assertEqual(date, datetime.date(2014, 1, 13))
         with self.assertRaises(MeetingCancelled):
             date = parse_date('January 28, 2014 (Cancelled)')
+
+    def test_clean_test(self):
+        fixture = (
+            ('', ''),
+            ('test', 'test'),
+            ('- May 27, 2014 PARB Agenda', 'May 27, 2014 PARB Agenda')
+        )
+        for input, expected in fixture:
+            self.assertEqual(clean_text(input), expected)
 
     def test_process_page_works(self):
         html = open(os.path.join(BASE_DIR, 'samples/music.html')).read()

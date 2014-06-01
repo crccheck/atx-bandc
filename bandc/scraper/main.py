@@ -12,7 +12,8 @@ TABLE = 'bandc_items'
 PAGES = (
     # bandc_slug, id
     # bandc_slug: http://www.austintexas.gov/<bandc_slug>
-    # id: http://www.austintexas.gov/cityclerk/boards_commissions/meetings/<year>_<id>_<page>.htm
+    # id: http://www.austintexas.gov/cityclerk/boards_commissions/meetings/
+    #     <year>_<id>_<page>.htm
     ('parb', '39'),
     ('musiccomm', '12'),
 )
@@ -34,6 +35,10 @@ def parse_date(string):
     if 'cancel' in string.lower():
         raise MeetingCancelled('Meeting Cancelled')
     return parse(string).date()
+
+
+def clean_text(text):
+    return text.lstrip('- ')
 
 
 def process_page(html):
@@ -61,7 +66,7 @@ def process_page(html):
         elif date and row_class == DOCUMENT:
             row_type = row.xpath('./a/b/text()')[0]
             url = row.xpath('./a/@href')[0]
-            text = u''.join(row.xpath('./text()')).strip()
+            text = clean_text(u''.join(row.xpath('./text()')).strip())
             data.append({
                 'date': date,
                 'type': row_type,
