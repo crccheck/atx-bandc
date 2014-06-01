@@ -1,10 +1,16 @@
 import datetime
 
+from StringIO import StringIO
 import dataset
 import requests
-from dateutil.parser import parse
-from lxml.html import document_fromstring
 import sqlalchemy.types
+from dateutil.parser import parse
+from pdfminer.pdfdocument import PDFDocument
+from pdfminer.pdfparser import PDFParser
+from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+from pdfminer.pdfpage import PDFPage
+from pdfminer.converter import TextConverter
+from lxml.html import document_fromstring
 
 # CONFIGURATION
 
@@ -76,6 +82,21 @@ def process_page(html):
                 'scraped_at': now,
             })
     return data
+
+
+def process_pdf(f):
+    parser = PDFParser(f)
+    document = PDFDocument(parser)
+    rsrcmgr = PDFResourceManager()
+    outfp = StringIO()
+    device = TextConverter(rsrcmgr, outfp, codec='utf-8', laparams=None,
+       imagewriter=None)
+    interpreter = PDFPageInterpreter(rsrcmgr, device)
+    for page in PDFPage.get_pages(f, [], document):
+        interpreter.process_page(page)
+    device.close()
+    f.close()
+    return outfp.getvalue()
 
 
 def save_page(data, table, bandc_slug):
