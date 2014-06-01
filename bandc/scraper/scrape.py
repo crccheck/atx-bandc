@@ -109,7 +109,7 @@ def save_pages(table=None, deep=True):
 
     TODO change `deep` default to False after schema is stable.
     """
-    for bandc_slug, pk in PAGES:
+    for bandc_slug, pk, bandc_name in PAGES:
         # process first page
         url = (
             'http://www.austintexas.gov/cityclerk/boards_commissions/'
@@ -249,14 +249,14 @@ def get_pages():
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1 and sys.argv[1] == 'pdf':
+    command = sys.argv[1]
+    if command == 'pdf':
         grab_pdf()
-    if len(sys.argv) > 1 and sys.argv[1] == 'scrape':
+    if command == 'scrape':
         db = dataset.connect()  # uses DATABASE_URL
         table = db[TABLE]
         setup_table(table)
         deep = '--deep' in sys.argv[2:]
         save_pages(table=table, deep=deep)
-    command = sys.argv[1]
     if command == 'build':
         get_pages()
