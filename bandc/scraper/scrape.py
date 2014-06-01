@@ -81,19 +81,27 @@ def process_page(html):
 def save_page(data, table, bandc_slug):
     """
     Save page data to a `dataset` db table.
-
-    TODO only delete if something changed
-    """
+        """
     print 'save_page', table, bandc_slug
 
     # delete old data
     dates = set([x['date'] for x in data])
     for date in dates:
-        table.delete(bandc=bandc_slug, date=date)
+        update_data = dict(
+            # SET
+            dirty=True,
+            # WHERE
+            bandc=bandc_slug,
+            date=date,
+        )
+        table.update(update_data, ('bandc', 'date'))
 
     for row in data:
         row['bandc'] = bandc_slug
-        table.insert(row)
+        row['dirty'] = False
+        table.upsert(row, ['url'])
+
+    table.delete(dirty=True)
 
 
 def save_pages(table=None, deep=True):
@@ -141,11 +149,20 @@ def get_number_of_pages(html):
     return int(last_page_link[0].strip())
 
 
+def setup_table(table):
+    if 'date' not in table.columns:
+        table.create_column('date', sqlalchemy.types.Date)
+    if 'dirty' not in table.columns:
+        table.create_column('dirty', sqlalchemy.types.Boolean)
+    if 'text' not in table.columns:
+        table.create_column('text', sqlalchemy.types.Text)
+    if 'url' not in table.columns:
+        table.create_column('url', sqlalchemy.types.String)
+        table.create_index(['url'])  # XXX broken
+
+
 if __name__ == '__main__':
     db = dataset.connect()  # uses DATABASE_URL
     table = db[TABLE]
-    if 'date' not in table.columns:
-        table.create_column('date', sqlalchemy.types.Date)
-    if 'text' not in table.columns:
-        table.create_column('text', sqlalchemy.types.Text)
+    setup_table(table)
     save_pages(table=table)
