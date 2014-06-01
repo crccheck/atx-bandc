@@ -49,7 +49,7 @@ def feed_detail(slug):
     if slug != 'all':
         where_sql = "bandc = '{}'".format(slug)
         # filter_kwargs['bandc'] = slug
-    search = request.query['q']
+    search = request.query.get('q')
     # FIXME no sql injections please
     if search:
         if where_sql:
