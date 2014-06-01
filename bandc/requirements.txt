@@ -9,6 +9,7 @@ requests==2.3.0
 
 # feed
 bottle==0.12.7
+rss2producer==0.1.1
 
 # dev
 postdoc==0.1.4
