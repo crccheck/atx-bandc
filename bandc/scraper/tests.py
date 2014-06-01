@@ -4,7 +4,7 @@ import os
 
 import dataset
 
-from main import (parse_date, clean_text, process_page, save_page,
+from scrape import (parse_date, clean_text, process_page, save_page,
     get_number_of_pages,
     MeetingCancelled)
 
