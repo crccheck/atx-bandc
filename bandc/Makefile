@@ -8,4 +8,9 @@ scraper/samples:
 	curl http://www.austintexas.gov/cityclerk/boards_commissions/meetings/2014_39_1.htm > $@/parks.html
 	curl http://www.austintexas.gov/cityclerk/boards_commissions/meetings/2014_39_2.htm > $@/parks2.html
 
+resetdb:
+	# assumes postgres
+	phd dropdb
+	phd createdb
+
 .PHONY: scraper/samples

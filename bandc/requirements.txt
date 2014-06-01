@@ -3,3 +3,4 @@ python-dateutil==2.2
 dataset==0.5.2
 psycopg2==2.5.3
 requests==2.3.0
+postdoc==0.1.4
