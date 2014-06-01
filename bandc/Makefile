@@ -3,7 +3,7 @@ test:
 	python scraper/tests.py
 
 scrape:
-	python scraper/scrape.py
+	python scraper/scrape.py scrape
 
 pdf:
 	python scraper/scrape.py pdf

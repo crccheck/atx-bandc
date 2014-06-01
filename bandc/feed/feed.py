@@ -4,9 +4,10 @@ from bottle import abort, default_app, response, route, run
 from rss2producer import RSS2Feed
 import dataset
 
+from settings import TABLE
+
 
 # copy pasted from scraper
-TABLE = 'bandc_items'
 LIMIT = 50
 
 

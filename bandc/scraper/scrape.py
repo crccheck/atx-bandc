@@ -15,17 +15,7 @@ from pdfminer.pdfpage import PDFPage
 from pdfminer.converter import TextConverter
 from lxml.html import document_fromstring
 
-# CONFIGURATION
-
-TABLE = 'bandc_items'
-PAGES = (
-    # bandc_slug, id
-    # bandc_slug: http://www.austintexas.gov/<bandc_slug>
-    # id: http://www.austintexas.gov/cityclerk/boards_commissions/meetings/
-    #     <year>_<id>_<page>.htm
-    ('parb', '39'),
-    ('musiccomm', '12'),
-)
+from settings import TABLE, PAGES
 
 # CONSTANTS
 
@@ -232,7 +222,6 @@ def grab_pdf(chunk=8):
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == 'pdf':
         grab_pdf()
-        exit()
     if len(sys.argv) > 1 and sys.argv[1] == 'scrape':
         db = dataset.connect()  # uses DATABASE_URL
         table = db[TABLE]
