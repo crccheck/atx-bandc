@@ -50,6 +50,7 @@ def feed_detail(slug):
         where_sql = "bandc = '{}'".format(slug)
         # filter_kwargs['bandc'] = slug
     search = request.query['q']
+    # FIXME no sql injections please
     if search:
         if where_sql:
             where_sql += ' AND '
