@@ -12,6 +12,7 @@ LIMIT = 50
 
 
 slug_to_name = {slug: name for slug, pk, name in PAGES}
+slug_to_id = {slug: pk for slug, pk, name in PAGES}
 
 
 @route('/')
@@ -28,11 +29,20 @@ def feed_detail(slug):
         abort(404, 'No results for that Board or Commission')
     db = dataset.connect()  # uses DATABASE_URL
     # table = db.load_table(TABLE)  # don't allow dataset to create the table
-    feed = RSS2Feed(
-        title='Boards and Commissions',
-        link='http://www.austintexas.gov/cityclerk/boards_commissions/',
-        description='Feed of Boards and Commissions',
-    )
+    if slug == 'all':
+        feed_info = dict(
+            title='Boards and Commissions',
+            link='http://www.austintexas.gov/cityclerk/boards_commissions/',
+            description='Feed of Boards and Commissions activity',
+        )
+    else:
+        feed_info = dict(
+            title=slug_to_name[slug],
+            link=('http://www.austintexas.gov/cityclerk/boards_commissions/'
+                'meetings/{}_1.htm'.format(slug_to_id[slug])),
+            description='Feed of {} activity'.format(slug_to_name[slug]),
+        )
+    feed = RSS2Feed(**feed_info)
     filter_kwargs = {}
     if slug != 'all':
         filter_kwargs['bandc'] = slug
@@ -55,9 +65,6 @@ def feed_detail(slug):
         feed.append_item(
             title=title,
             link=row['url'],
-            # description=row['type'],
-            # description=row['text'].decode('utf8').strip()[:100],  # TODO truncate words
-            # description=row['text'].strip()[:100],  # TODO truncate words
             description=text if text and not text.startswith('no text') else row['type'],
             # convert date into datetime
             pub_date=datetime.combine(row['date'], datetime.min.time()),
