@@ -1,6 +1,14 @@
-lxml==3.3.5
-python-dateutil==2.2
+# shared
 dataset==0.5.2
 psycopg2==2.5.3
+
+# scraper
+lxml==3.3.5
+python-dateutil==2.2
 requests==2.3.0
+
+# feed
+bottle==0.12.7
+
+# dev
 postdoc==0.1.4

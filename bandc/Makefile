@@ -13,4 +13,8 @@ resetdb:
 	phd dropdb
 	phd createdb
 
-.PHONY: scraper/samples
+
+feed:
+	python feed/feed.py
+
+.PHONY: scraper/samples feed
