@@ -11,5 +11,8 @@ requests==2.3.0
 bottle==0.12.7
 rss2producer==0.1.1
 
+# heroku
+gunicorn==18.0
+
 # dev
 postdoc==0.1.4

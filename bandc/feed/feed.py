@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from bottle import abort, response, route, run
+from bottle import abort, default_app, response, route, run
 from rss2producer import RSS2Feed
 import dataset
 
@@ -39,6 +39,9 @@ def feed_detail(slug):
     # TODO if no results, abort(404, 'No results for that BandC')
     response.content_type = 'application/rss+xml'
     return feed.get_xml()
+
+
+app = default_app()
 
 
 if __name__ == '__main__':
