@@ -217,12 +217,12 @@ def grab_pdf(chunk=8):
             print urlretrieve(row['url'], filepath)  # TODO log
         # parse and save pdf text
         with open(filepath) as f:
-            text = pdf_to_text(f)
+            text = pdf_to_text(f).strip()
             if not text:
                 text = 'no text found in pdf'
             data = dict(
                 # set
-                text=text.strip(),
+                text=text,
                 # where
                 id=row['id'],
             )
@@ -233,7 +233,9 @@ if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == 'pdf':
         grab_pdf()
         exit()
-    db = dataset.connect()  # uses DATABASE_URL
-    table = db[TABLE]
-    setup_table(table)
-    save_pages(table=table)
+    if len(sys.argv) > 1 and sys.argv[1] == 'scrape':
+        db = dataset.connect()  # uses DATABASE_URL
+        table = db[TABLE]
+        setup_table(table)
+        deep = '--deep' in sys.argv[2:]
+        save_pages(table=table, deep=deep)
