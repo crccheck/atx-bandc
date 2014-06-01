@@ -4,20 +4,28 @@ from bottle import abort, default_app, response, route, run
 from rss2producer import RSS2Feed
 import dataset
 
-from settings import TABLE
+from settings import TABLE, PAGES
 
 
 # copy pasted from scraper
 LIMIT = 50
 
 
+slug_to_name = {slug: name for slug, pk, name in PAGES}
+
+
 @route('/')
 def index():
-    return 'TODO'
+    out = []
+    for slug, pk, name in PAGES:
+        out.append('<li><a href="{}/">{}</a></li>'.format(slug, name))
+    return u''.join(out)
 
 
 @route('/<slug>/')
 def feed_detail(slug):
+    if slug != 'all' and slug not in slug_to_name:
+        abort(404, 'No results for that Board or Commission')
     db = dataset.connect()  # uses DATABASE_URL
     # table = db.load_table(TABLE)  # don't allow dataset to create the table
     feed = RSS2Feed(
@@ -54,7 +62,6 @@ def feed_detail(slug):
             # convert date into datetime
             pub_date=datetime.combine(row['date'], datetime.min.time()),
         )
-    # TODO if no results, abort(404, 'No results for that BandC')
     response.content_type = 'application/rss+xml'
     return feed.get_xml()
 
