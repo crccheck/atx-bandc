@@ -44,13 +44,16 @@ def feed_detail(slug):
             description='Feed of {} activity'.format(slug_to_name[slug]),
         )
     feed = RSS2Feed(**feed_info)
-    filter_kwargs = {}
+    # filter_kwargs = {}
+    where_sql = ''
     if slug != 'all':
-        filter_kwargs['bandc'] = slug
+        where_sql = "WHERE bandc = '{}'".format(slug)
+        # filter_kwargs['bandc'] = slug
     # results = table.find(_limit=LIMIT, order_by='-date', **filter_kwargs)
     # HACK for 'order_by' not working
-    sql = 'SELECT * from {} ORDER BY date DESC LIMIT {}'.format(
+    sql = 'SELECT * from {} {} ORDER BY date DESC LIMIT {}'.format(
         TABLE,
+        where_sql,
         LIMIT,
     )
     results = db.query(sql)
