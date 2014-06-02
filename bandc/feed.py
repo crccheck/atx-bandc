@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 
 from bottle import abort, default_app, request, response, route, run
@@ -63,7 +64,6 @@ def feed_detail(slug):
         LIMIT,
     )
     results = db.query(sql)
-    import re
     for row in results:
         title = row['title'] or row['type']
         if slug == 'all':
