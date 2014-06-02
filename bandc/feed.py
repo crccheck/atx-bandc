@@ -4,14 +4,15 @@ from datetime import datetime
 from bottle import abort, default_app, request, response, route, run
 from rss2producer import RSS2Feed
 import dataset
+import sqlalchemy.sql
 
 from settings import TABLE, PAGES
 
 
-# copy pasted from scraper
 LIMIT = 50
 
 
+# helpers
 slug_to_name = {slug: name for slug, pk, name in PAGES}
 slug_to_id = {slug: pk for slug, pk, name in PAGES}
 
@@ -45,25 +46,28 @@ def feed_detail(slug):
             description='Feed of {} activity'.format(slug_to_name[slug]),
         )
     feed = RSS2Feed(**feed_info)
-    # filter_kwargs = {}
-    where_sql = 'true'
+    # sql
+    where_conditions = []
+    where_values = {}
     if slug != 'all':
-        where_sql = "bandc = '{}'".format(slug)
-        # filter_kwargs['bandc'] = slug
+        where_conditions.append("bandc = :slug")
+        where_values['slug'] = slug
     search = request.query.get('q')
-    # FIXME no sql injections please
     if search:
-        if where_sql:
-            where_sql += ' AND '
-        where_sql += "(title ILIKE '%%{0}%%' OR text ILIKE '%%{0}%%')".format(search)
-    # results = table.find(_limit=LIMIT, order_by='-date', **filter_kwargs)
-    # HACK for 'order_by' not working
-    sql = 'SELECT * FROM {} WHERE {} ORDER BY date DESC LIMIT {}'.format(
-        TABLE,
-        where_sql,
-        LIMIT,
+        where_conditions.append("(title ILIKE :search OR text ILIKE :search)")
+        where_values['search'] = '%{}%'.format(search)
+    where_sql = ''
+    if where_values:
+        where_sql = 'WHERE {}'.format(' AND '.join(where_conditions))
+    # manually construct sql because `dataset` ordering isn't working for me
+    sql = sqlalchemy.sql.text(
+        'SELECT * FROM {} {} ORDER BY date DESC LIMIT {}'.format(
+            TABLE,
+            where_sql,
+            LIMIT,
+        )
     )
-    results = db.query(sql)
+    results = db.query(sql, **where_values)
     for row in results:
         title = row['title'] or row['type']
         if slug == 'all':
