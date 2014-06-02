@@ -7,9 +7,14 @@ PAGES = (
     # id: http://www.austintexas.gov/cityclerk/boards_commissions/meetings/
     #     <year>_<id>_<page>.htm
     # name
+    ('aac', '4', 'Animal Advisory Commission'),
+    ('aarac', '3', 'African American Resource Advisory Commission'),
+    # ('abag', '73', 'Airport Boulevard Advisory Group'),  # last met in 2012
     ('artcomm', '5', 'Arts Commission'),
+    ('bondoversight', '2', 'Bond Oversight Committee'),
     ('hrc', '33', 'Human Rights Commission'),
     ('musiccomm', '12', 'Austin Music Commission'),
     ('parb', '39', 'Parks and Recreation Board'),
-    ('zpc', '54', 'Zoning and Platting Commission'),  # sic
+    ('srb', '55', 'Sign Review Board'),
+    ('zpc', '54', 'Zoning and Planning Commission'),
 )

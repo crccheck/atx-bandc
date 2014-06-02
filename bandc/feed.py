@@ -71,7 +71,7 @@ def feed_detail(slug):
     for row in results:
         title = row['title'] or row['type']
         if slug == 'all':
-            title = '[{}] {}'.format(row['bandc'], title)
+            title = '[{}] {}'.format(slug_to_name[row['bandc']], title)
         text = row['text'].strip().encode('ascii', 'ignore')[:600].strip()
         text = re.sub(r'\s+', ' ', text)[:500]
         if text.startswith('no text'):
