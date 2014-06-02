@@ -1,7 +1,8 @@
 
-Live demo: http://aqueous-forest-2512.herokuapp.com/
+Live demo: http://atx-bandc-feed.herokuapp.com/
 
-http://rss.atimofeev.com/
+If for a preview of the what the rendered RSS feed looks like see:
+http://rss.atimofeev.com/read.php?url=http%3A%2F%2Fatx-bandc-feed.herokuapp.com%2Fall%2F
 
 Links:
 * http://atxhackforchange.org/
