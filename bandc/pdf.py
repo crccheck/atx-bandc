@@ -1,4 +1,5 @@
 import os
+import sys
 from urllib import urlretrieve
 from StringIO import StringIO
 
@@ -72,4 +73,7 @@ def grab_pdf(chunk=8):
 
 
 if __name__ == '__main__':
-    grab_pdf()
+    count = 8
+    if len(sys.argv) > 1:
+        count = int(sys.argv[1])
+    grab_pdf(count)
