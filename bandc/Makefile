@@ -21,6 +21,6 @@ resetdb:
 
 
 feed:
-	python feed/feed.py
+	python scraper/feed.py
 
 .PHONY: scraper/samples feed
