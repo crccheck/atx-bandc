@@ -12,6 +12,12 @@ PAGES = (
     # ('abag', '73', 'Airport Boulevard Advisory Group'),  # last met in 2012
     ('artcomm', '5', 'Arts Commission'),
     ('bondoversight', '2', 'Bond Oversight Committee'),
+    ('cdc', '20', 'Community Development Commission'),
+    ('downtowncommission', '24', 'Downtown Commission'),
+    ('electricboard', '26', 'Electric Board'),
+    ('envboard', '28', ' Environmental Board'),
+    ('haca', '32', 'Housing Authority'),
+    ('hlc', '31', 'Historic Landmark Commission'),
     ('hrc', '33', 'Human Rights Commission'),
     ('musiccomm', '12', 'Austin Music Commission'),
     ('parb', '39', 'Parks and Recreation Board'),
