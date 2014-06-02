@@ -56,31 +56,25 @@ def feed_detail(slug):
         where_values['slug'] = slug
     search = request.query.get('q')
     if search:
+        # blog.lostpropertyhq.com/postgres-full-text-search-is-good-enough/
         table_sql = ("(SELECT *, to_tsvector(title || ' ' || text) as "
-            "document from bandc_items) p_search")
+            "document from {}) p_search".format(TABLE))
         where_conditions.append("p_search.document @@ plainto_tsquery(:search)")
         where_values['search'] = '%{}%'.format(search)
         where_sql = 'WHERE {}'.format(' AND '.join(where_conditions))
-        # TODO table sql can be refactored with below
-        sql = sqlalchemy.sql.text(
-            'SELECT * FROM {} {} ORDER BY date DESC LIMIT {}'.format(
-                table_sql,
-                where_sql,
-                LIMIT,
-            )
-        )
     else:
+        table_sql = TABLE
         where_sql = ''
         if where_values:
             where_sql = 'WHERE {}'.format(' AND '.join(where_conditions))
-        # manually construct sql because `dataset` ordering isn't working for me
-        sql = sqlalchemy.sql.text(
-            'SELECT * FROM {} {} ORDER BY date DESC LIMIT {}'.format(
-                TABLE,
-                where_sql,
-                LIMIT,
-            )
+    # manually construct sql because `dataset` ordering isn't working for me
+    sql = sqlalchemy.sql.text(
+        'SELECT * FROM {} {} ORDER BY date DESC LIMIT {}'.format(
+            table_sql,
+            where_sql,
+            LIMIT,
         )
+    )
     results = db.query(sql, **where_values)
     for row in results:
         title = row['title'] or row['type']
