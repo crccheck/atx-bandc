@@ -5,9 +5,9 @@ import unittest
 
 import dataset
 
+from pdf import pdf_to_text
 from scrape import (parse_date, clean_text, process_page, save_page,
     get_number_of_pages,
-    pdf_to_text,
     setup_table,
     MeetingCancelled)
 
@@ -69,6 +69,8 @@ class PageScraper(unittest.TestCase):
         html = open(os.path.join(BASE_DIR, 'samples/parks.html')).read()
         self.assertEqual(get_number_of_pages(html), 2)
 
+
+class PdfTest(unittest.TestCase):
     def test_process_pdf_works(self):
         f = open(os.path.join(BASE_DIR,
             'samples/document_53B86715-0261-C36F-8C2F847EF15AD639.pdf'), 'rb')

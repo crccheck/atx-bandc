@@ -3,10 +3,10 @@ test:
 	python scraper/tests.py
 
 scrape:
-	python scraper/scrape.py scrape
+	python scraper/scrape.py
 
 pdf:
-	python scraper/scrape.py pdf
+	python scraper/pdf.py
 
 scraper/samples:
 	mkdir -p $@
