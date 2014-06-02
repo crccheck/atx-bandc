@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 
 from bottle import abort, default_app, request, response, route, run
+from pytz import timezone
 from rss2producer import RSS2Feed
 import dataset
 import sqlalchemy.sql
@@ -31,6 +32,7 @@ def feed_detail(slug):
     if slug != 'all' and slug not in slug_to_name:
         abort(404, 'No results for that Board or Commission')
     db = dataset.connect()  # uses DATABASE_URL
+    tz = timezone('America/Chicago')
     # table = db.load_table(TABLE)  # don't allow dataset to create the table
     if slug == 'all':
         feed_info = dict(
@@ -81,7 +83,12 @@ def feed_detail(slug):
             link=row['url'],
             description=text if text else row['type'],
             # convert date into datetime
-            pub_date=datetime.combine(row['date'], datetime.min.time()),
+            pub_date=datetime(
+                row['date'].year,
+                row['date'].month,
+                row['date'].day,
+                tzinfo=tz,
+            ),
         )
     response.content_type = 'application/rss+xml'
     return feed.get_xml()

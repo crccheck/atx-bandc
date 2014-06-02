@@ -6,11 +6,14 @@ psycopg2==2.5.3
 lxml==3.3.5
 python-dateutil==2.2
 requests==2.3.0
+
+# pdf
 pdfminer==20140328
 
 # feed
 bottle==0.12.7
 rss2producer==0.1.1
+pytz==2014.3
 
 # heroku
 gunicorn==18.0
