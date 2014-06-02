@@ -1,14 +1,14 @@
 
 test:
-	python scraper/tests.py
+	python tests.py
 
 scrape:
-	python scraper/scrape.py
+	python scrape.py
 
 pdf:
-	python scraper/pdf.py
+	python pdf.py
 
-scraper/samples:
+samples:
 	mkdir -p $@
 	curl http://www.austintexas.gov/cityclerk/boards_commissions/meetings/2014_12_1.htm > $@/music.html
 	curl http://www.austintexas.gov/cityclerk/boards_commissions/meetings/2014_39_1.htm > $@/parks.html
@@ -21,6 +21,6 @@ resetdb:
 
 
 feed:
-	python scraper/feed.py
+	python feed.py
 
-.PHONY: scraper/samples feed
+.PHONY: samples feed
