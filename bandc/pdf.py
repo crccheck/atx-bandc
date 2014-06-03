@@ -4,10 +4,10 @@ from urllib import urlretrieve
 from StringIO import StringIO
 
 import dataset
-from pdfminer.pdfdocument import PDFDocument
+from pdfminer.pdfdocument import PDFDocument, PDFEncryptionError
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.pdfpage import PDFPage
+from pdfminer.pdfpage import PDFPage, PDFTextExtractionNotAllowed
 from pdfminer.converter import TextConverter
 
 from settings import TABLE
@@ -60,14 +60,25 @@ def grab_pdf(chunk=8):
             print urlretrieve(row['url'], filepath)  # TODO log
         # parse and save pdf text
         with open(filepath) as f:
-            text = pdf_to_text(f).strip()
-            data = dict(
-                # set
-                text=text,
-                pdf_scraped=True,
-                # where
-                id=row['id'],
-            )
+            try:
+                text = pdf_to_text(f).strip()
+                data = dict(
+                    # set
+                    text=text,
+                    pdf_scraped=True,
+                    # where
+                    id=row['id'],
+                )
+            except (PDFTextExtractionNotAllowed, PDFEncryptionError):
+                data = dict(
+                    # set
+                    text='',
+                    # this happens to be initialzed to NULL, so use 'False' to
+                    # indicate error
+                    pdf_scraped=False,
+                    # where
+                    id=row['id'],
+                )
             table.update(data, ['id'], ensure=False)
 
 
