@@ -63,7 +63,8 @@ def process_page(html):
                 'type': row_type,
                 'url': url,
                 'title': title,
-                'text': '',
+                # 'text': '',  # don't overwrite
+                # 'pdf_scraped': ''.  # don't overwrite
                 'scraped_at': now,
             })
     return data
