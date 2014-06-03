@@ -40,7 +40,7 @@ def grab_pdf(chunk=8):
     """
     db = dataset.connect()  # uses DATABASE_URL
     table = db.load_table(TABLE)
-    result = db.query("SELECT id, url FROM {} WHERE url LIKE '{}%%' "
+    result = db.query("SELECT id, url, date FROM {} WHERE url LIKE '{}%%' "
         "AND pdf_scraped IS NULL ORDER BY date DESC LIMIT {}".format(
             TABLE,
             'http://www.austintexas.gov/edims/document.cfm',
@@ -51,7 +51,7 @@ def grab_pdf(chunk=8):
     for row in result:
         filename = row['url'].rsplit('=', 2)[1] + '.pdf'
         filepath = os.path.join(base_path, filename)
-        print row, filepath
+        print u'{date}: {id}: {url}'.format(**row)
         if not os.path.isdir(base_path):
             os.makedirs(base_path)
         # check if file was already downloaded
