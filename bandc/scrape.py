@@ -110,7 +110,9 @@ def save_pages(table=None, deep=True):
         )
         print url
         response = requests.get(url)
-        assert response.status_code == 200
+        if response.status_code != 200:
+            print "WARNING: no data for this year"
+            continue
         n_pages = get_number_of_pages(response.text) if deep else 1
         data = process_page(response.text)
         if table is not None:

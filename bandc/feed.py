@@ -23,7 +23,7 @@ def index():
     out = []
     out.append('<li><a href="{}/">{}</a></li>'.format('all', 'All'))
     for slug, pk, name in PAGES:
-        out.append('<li><a href="{}/">{}</a></li>'.format(slug, name))
+        out.append(u'<li><a href="{}/">{}</a></li>'.format(slug, name))
     return u''.join(out)
 
 
