@@ -147,6 +147,8 @@ def setup_table(table):
         table.create_column('date', sqlalchemy.types.Date)
     if 'dirty' not in table.columns:
         table.create_column('dirty', sqlalchemy.types.Boolean)
+    if 'pdf_scraped' not in table.columns:
+        table.create_column('pdf_scraped', sqlalchemy.types.Boolean)
     if 'text' not in table.columns:
         table.create_column('text', sqlalchemy.types.Text)
     if 'url' not in table.columns:

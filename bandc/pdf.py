@@ -41,7 +41,7 @@ def grab_pdf(chunk=8):
     db = dataset.connect()  # uses DATABASE_URL
     table = db.load_table(TABLE)
     result = db.query("SELECT id, url FROM {} WHERE url LIKE '{}%%' "
-        "AND text='' ORDER BY date DESC LIMIT {}".format(
+        "AND pdf_scraped IS NULL ORDER BY date DESC LIMIT {}".format(
             TABLE,
             'http://www.austintexas.gov/edims/document.cfm',
             chunk,
@@ -61,11 +61,10 @@ def grab_pdf(chunk=8):
         # parse and save pdf text
         with open(filepath) as f:
             text = pdf_to_text(f).strip()
-            if not text:
-                text = 'no text found in pdf'
             data = dict(
                 # set
                 text=text,
+                pdf_scraped=True,
                 # where
                 id=row['id'],
             )
