@@ -58,7 +58,7 @@ def feed_detail(slug):
     if slug == 'all':
         feed_info = dict(
             title='Boards and Commissions',
-            link='http://www.austintexas.gov/cityclerk/boards_commissions/',
+            link='http://www.austintexas.gov/department/boards-and-commissions-information-center',
             description='Feed of Boards and Commissions activity',
         )
     else:
