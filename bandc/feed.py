@@ -101,7 +101,8 @@ def feed_detail(slug):
         title = row['title'] or row['type']
         if slug == 'all':
             title = '[{}] {}'.format(slug_to_name[row['bandc']], title)
-        text = row['text'].strip().encode('ascii', 'ignore')[:600].strip()
+        text = row['text'] or ''
+        text = text.strip().encode('ascii', 'ignore')[:600].strip()
         text = re.sub(r'\s+', ' ', text)[:500]
         if row['pdf_scraped'] and not text:
             text = '{} ({})'.format(row['type'], 'no text found in pdf')
