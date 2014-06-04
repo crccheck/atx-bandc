@@ -44,7 +44,7 @@ def index():
     ping()  # TODO put in the html instead
     out = []
     out.append('<li><a href="{}/">{}</a></li>'.format('all', 'All'))
-    for slug, pk, name in PAGES:
+    for slug, pk, name in sorted(PAGES, key=lambda x: x[2]):
         out.append(u'<li><a href="{}/">{}</a></li>'.format(slug, name))
     return u''.join(out)
 
