@@ -1,7 +1,9 @@
 import re
+import os
 from datetime import datetime
 
 from bottle import abort, default_app, request, response, route, run
+from pyga.requests import Tracker, Page, Session, Visitor
 from pytz import timezone
 from rss2producer import RSS2Feed
 import dataset
@@ -13,13 +15,31 @@ from settings import TABLE, PAGES
 LIMIT = 50
 
 
+ga_account = os.environ.get('GA_ACCOUNT')
+ga_domain = os.environ.get('GA_DOMAIN')
+
+
 # helpers
 slug_to_name = {slug: name for slug, pk, name in PAGES}
 slug_to_id = {slug: pk for slug, pk, name in PAGES}
 
 
+def ping():
+    """ping back to ga"""
+    if not ga_account:
+        return
+
+    tracker = Tracker(ga_account, ga_domain)
+    visitor = Visitor()
+    visitor.ip_address = request.remote_addr
+    session = Session()
+    page = Page(request.path)
+    tracker.track_pageview(page, session, visitor)
+
+
 @route('/')
 def index():
+    ping()
     out = []
     out.append('<li><a href="{}/">{}</a></li>'.format('all', 'All'))
     for slug, pk, name in PAGES:
@@ -29,6 +49,7 @@ def index():
 
 @route('/<slug>/')
 def feed_detail(slug):
+    ping()
     if slug != 'all' and slug not in slug_to_name:
         abort(404, 'No results for that Board or Commission')
     db = dataset.connect()  # uses DATABASE_URL
