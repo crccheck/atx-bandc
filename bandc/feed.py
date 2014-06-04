@@ -34,12 +34,14 @@ def ping():
     visitor.ip_address = request.remote_addr
     session = Session()
     page = Page(request.path)
+    if 'referer' in request.headers:
+        page.referrer = request.headers['referer']
     tracker.track_pageview(page, session, visitor)
 
 
 @route('/')
 def index():
-    ping()
+    ping()  # TODO put in the html instead
     out = []
     out.append('<li><a href="{}/">{}</a></li>'.format('all', 'All'))
     for slug, pk, name in PAGES:
