@@ -8,6 +8,7 @@ from pdfminer.pdfdocument import PDFDocument, PDFEncryptionError
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage, PDFTextExtractionNotAllowed
+from pdfminer.psparser import PSException
 from pdfminer.converter import TextConverter
 
 from settings import TABLE
@@ -69,7 +70,7 @@ def grab_pdf(chunk=8):
                     # where
                     id=row['id'],
                 )
-            except (PDFTextExtractionNotAllowed, PDFEncryptionError):
+            except (PDFTextExtractionNotAllowed, PDFEncryptionError, PSException):
                 data = dict(
                     # set
                     text='',
