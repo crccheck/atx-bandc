@@ -100,9 +100,9 @@ def feed_detail(slug):
     )
     results = db.query(sql, **where_values)
     for row in results:
-        title = row['title'] or row['type']
+        title = row['title'].decode('utf8') or row['type']
         if slug == 'all':
-            title = '[{}] {}'.format(slug_to_name[row['bandc']], title)
+            title = u'[{}] {}'.format(slug_to_name[row['bandc'].decode('utf8')], title)
         text = row['text'] or ''
         text = text.strip().encode('ascii', 'ignore')[:600].strip()
         text = re.sub(r'\s+', ' ', text)[:500]
