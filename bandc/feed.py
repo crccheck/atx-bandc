@@ -49,7 +49,7 @@ def index():
     }
 
 
-@route('/<slug>/')
+@route('/<slug>/feed.xml')
 def feed_detail(slug):
     ping()
     if slug != 'all' and slug not in slug_to_name:

@@ -2,10 +2,10 @@
 
 {% block main %}
   <ul>
-    <li><a href="all/">All</a></li>
+    <li><a href="all/feed.xml">All</a></li>
     {% for slug, pk, name in object_list %}
       <li>
-         <a href="{{ slug }}/">{{ name }}</a>
+         <a href="{{ slug }}/feed.xml">{{ name }}</a>
       </li>
     {% endfor %}
   </ul>
