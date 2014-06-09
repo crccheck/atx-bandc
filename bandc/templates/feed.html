@@ -45,9 +45,11 @@
         </small>
       </h2>
       <time>{{ row['date'] }}</time>
-      <p>
-        {{ row['text'][:1000] }}
-      </p>
+      {% if row['text'] %}
+        <p>
+          {{ row['text'][:1000] }}
+        </p>
+      {% endif %}
       <footer>
         Scraped at: {{ row['scraped_at'] }}
       </footer>
