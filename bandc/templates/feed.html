@@ -4,6 +4,10 @@
 
 {% block extra_style %}
   <style>
+    h1 {
+      margin: 0 0 0.25em;
+    }
+
     .entry {
       border: 1px solid black;
       margin-bottom: 1em;
@@ -26,6 +30,12 @@
 
 {% block main %}
   <h1>{{ title }} </h1>
+  <p>
+    <a href="feed.xml{% if search %}?q={{ search }}{% endif %}">Rss Feed</a>
+    <form action="." method="GET">
+      <input type="search" name="q" placeholder="search" value="{% if search %}{{ search }}{% endif %}">
+    </form>
+  </p>
   {% for row in object_list %}
     <article class="entry">
       <h2>

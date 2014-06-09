@@ -92,6 +92,7 @@ def feed_detail(slug):
     results = get_feed_queryset(slug)
     return {
         'title': 'All' if slug == 'all' else slug_to_name[slug],
+        'search': request.query.get('q'),
         'object_list': results,
     }
 
