@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block main %}
+  <ul>
+    <li><a href="all/">All</a></li>
+    {% for slug, pk, name in object_list %}
+      <li>
+         <a href="{{ slug }}/">{{ name }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

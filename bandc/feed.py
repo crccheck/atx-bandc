@@ -2,7 +2,9 @@ import re
 import os
 from datetime import datetime
 
-from bottle import abort, default_app, request, response, route, run
+import bottle
+from bottle import (abort, default_app, request, response, route, run,
+    jinja2_view as view)
 from pyga.requests import Tracker, Page, Session, Visitor
 from pytz import timezone
 from rss2producer import RSS2Feed
@@ -40,13 +42,11 @@ def ping():
 
 
 @route('/')
+@view('home')
 def index():
-    ping()  # TODO put in the html instead
-    out = []
-    out.append('<li><a href="{}/">{}</a></li>'.format('all', 'All'))
-    for slug, pk, name in sorted(PAGES, key=lambda x: x[2]):
-        out.append(u'<li><a href="{}/">{}</a></li>'.format(slug, name))
-    return u''.join(out)
+    return {
+        'object_list': sorted(PAGES, key=lambda x: x[2]),
+    }
 
 
 @route('/<slug>/')
@@ -124,8 +124,11 @@ def feed_detail(slug):
     return feed.get_xml()
 
 
+BASE_DIR = os.path.dirname(__file__)
+bottle.TEMPLATE_PATH.append(os.path.join(BASE_DIR, 'templates/'))
 app = default_app()
 
 
 if __name__ == '__main__':
+    bottle.debug(True)
     run(host='localhost', port=8000, reloader=True)
