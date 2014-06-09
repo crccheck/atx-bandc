@@ -161,5 +161,5 @@ if __name__ == '__main__':
     db = dataset.connect()  # uses DATABASE_URL
     table = db[TABLE]
     setup_table(table)
-    deep = '--deep' in sys.argv[2:]
+    deep = '--deep' in sys.argv[1:]
     save_pages(table=table, deep=deep)
