@@ -49,28 +49,11 @@ def index():
     }
 
 
-@route('/<slug>/feed.xml')
-def feed_detail(slug):
-    ping()
+def get_feed_queryset(slug):
     if slug != 'all' and slug not in slug_to_name:
         abort(404, 'No results for that Board or Commission')
     db = dataset.connect()  # uses DATABASE_URL
-    tz = timezone('America/Chicago')
     # table = db.load_table(TABLE)  # don't allow dataset to create the table
-    if slug == 'all':
-        feed_info = dict(
-            title='Boards and Commissions',
-            link='http://www.austintexas.gov/department/boards-and-commissions-information-center',
-            description='Feed of Boards and Commissions activity',
-        )
-    else:
-        feed_info = dict(
-            title=slug_to_name[slug],
-            link=('http://www.austintexas.gov/cityclerk/boards_commissions/'
-                'meetings/{}_1.htm'.format(slug_to_id[slug])),
-            description='Feed of {} activity'.format(slug_to_name[slug]),
-        )
-    feed = RSS2Feed(**feed_info)
     # sql
     where_conditions = []
     where_values = {}
@@ -99,6 +82,28 @@ def feed_detail(slug):
         )
     )
     results = db.query(sql, **where_values)
+    return results
+
+
+@route('/<slug>/feed.xml')
+def feed_detail(slug):
+    ping()
+    results = get_feed_queryset(slug)
+    if slug == 'all':
+        feed_info = dict(
+            title='Boards and Commissions',
+            link='http://www.austintexas.gov/department/boards-and-commissions-information-center',
+            description='Feed of Boards and Commissions activity',
+        )
+    else:
+        feed_info = dict(
+            title=slug_to_name[slug],
+            link=('http://www.austintexas.gov/cityclerk/boards_commissions/'
+                'meetings/{}_1.htm'.format(slug_to_id[slug])),
+            description='Feed of {} activity'.format(slug_to_name[slug]),
+        )
+    feed = RSS2Feed(**feed_info)
+    tz = timezone('America/Chicago')
     for row in results:
         title = row['title'].decode('utf8') or row['type']
         if slug == 'all':
