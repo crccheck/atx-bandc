@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block main %}
+  {% for row in object_list %}
+    <div>
+      {{ row['title'] }}
+    </div>
+  {% endfor %}
+{% endblock %}

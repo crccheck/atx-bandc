@@ -49,7 +49,7 @@ def index():
     }
 
 
-def get_feed_queryset(slug):
+def get_feed_queryset(slug, limit=LIMIT):
     if slug != 'all' and slug not in slug_to_name:
         abort(404, 'No results for that Board or Commission')
     db = dataset.connect()  # uses DATABASE_URL
@@ -78,15 +78,25 @@ def get_feed_queryset(slug):
         'SELECT * FROM {} {} ORDER BY date DESC LIMIT {}'.format(
             table_sql,
             where_sql,
-            LIMIT,
+            limit,
         )
     )
     results = db.query(sql, **where_values)
     return results
 
 
-@route('/<slug>/feed.xml')
+@route('/<slug>/')
+@view('feed')
 def feed_detail(slug):
+    # TODO pagination
+    results = get_feed_queryset(slug)
+    return {
+        'object_list': results,
+    }
+
+
+@route('/<slug>/feed.xml')
+def rss_detail(slug):
     ping()
     results = get_feed_queryset(slug)
     if slug == 'all':
