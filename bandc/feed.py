@@ -91,6 +91,7 @@ def feed_detail(slug):
     # TODO pagination
     results = get_feed_queryset(slug)
     return {
+        'title': 'All' if slug == 'all' else slug_to_name[slug],
         'object_list': results,
     }
 

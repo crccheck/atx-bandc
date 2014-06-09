@@ -1,9 +1,46 @@
 {% extends "base.html" %}
 
+{% block page_head %}{{ title }}{% endblock %}
+
+{% block extra_style %}
+  <style>
+    .entry {
+      border: 1px solid black;
+      margin-bottom: 1em;
+    }
+
+    h2 {
+      font-size: 1em;
+      margin: 0;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    footer {
+      font-size: 0.7em;
+    }
+  </style>
+{% endblock %}
+
 {% block main %}
+  <h1>{{ title }} </h1>
   {% for row in object_list %}
-    <div>
-      {{ row['title'] }}
-    </div>
+    <article class="entry">
+      <h2>
+        {{ row['title'] }}
+        <small>
+          <a href="{{ row['url'] }}">(link)</a>
+        </small>
+      </h2>
+      <time>{{ row['date'] }}</time>
+      <p>
+        {{ row['text'][:1000] }}
+      </p>
+      <footer>
+        Scraped at: {{ row['scraped_at'] }}
+      </footer>
+    </article>
   {% endfor %}
 {% endblock %}
