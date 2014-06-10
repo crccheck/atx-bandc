@@ -89,11 +89,16 @@ def get_feed_queryset(slug, limit=LIMIT):
 @view('feed')
 def feed_detail(slug):
     # TODO pagination
+    def process_results(results):
+        for entry in results:
+            entry['pdf_id'] = entry['url'].rsplit('=', 2)[-1]
+            yield entry
+
     results = get_feed_queryset(slug)
     return {
         'title': 'All' if slug == 'all' else slug_to_name[slug],
         'search': request.query.get('q'),
-        'object_list': results,
+        'object_list': process_results(results),
     }
 
 

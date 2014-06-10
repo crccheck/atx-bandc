@@ -45,6 +45,11 @@
         </small>
       </h2>
       <time>{{ row['date'] }}</time>
+      <div>
+        <a href="{{ row['url'] }}">
+          <img src="http://atx-bandc-pdf.crccheck.com/thumbs/{{ row['pdf_id'] }}.jpg" alt="">
+        </a>
+      </div>
       {% if row['text'] %}
         <p>
           {{ row['text'][:1000] }}
