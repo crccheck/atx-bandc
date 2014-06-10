@@ -11,6 +11,7 @@ requests==2.3.0
 boto==2.29.1
 pdfminer==20140328
 sh==1.09
+docopt==0.6.1
 
 # feed
 bottle==0.12.7
@@ -23,4 +24,4 @@ Jinja2==2.7.3
 gunicorn==18.0
 
 # dev
-postdoc==0.1.4
+postdoc==0.2.0

@@ -1,11 +1,22 @@
+"""
+PDF Scraping.
+
+Usage:
+    pdf.py [--count=<count>]
+    pdf.py [--thumb] [--thumb-start=<pdf_id>]
+
+    --count=<count>         Max number of PDFs to grab [default: 8].
+    --thumb                 Create thumbnails
+    --thumb-start=<pdf_id>  Start thumbnails process at this id
+"""
 from glob import glob
 from StringIO import StringIO
 from urllib import urlretrieve
 import os
-import sys
 
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
+from docopt import docopt
 from pdfminer.converter import TextConverter
 from pdfminer.pdfdocument import PDFDocument, PDFEncryptionError
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
@@ -99,10 +110,16 @@ def turn_pdfs_into_images():
     )
     bucket = conn.get_bucket(os.environ.get('AWS_BUCKET'))
     base_path = '/tmp/bandc_pdfs/'
+    started = not options['--thumb-start']
     for filepath in glob(os.path.join(base_path, '*.pdf')):
         filepath.rsplit('.', 2)[0]
         filename = os.path.basename(filepath)
         pdf_id = os.path.splitext(filename)[0]
+        if not started:
+            if pdf_id == options['--thumb_start']:
+                started = True
+            else:
+                continue
         s3_key = '/thumbs/{}.jpg'.format(pdf_id)
         print filepath, pdf_id, s3_key
         k = bucket.get_key(s3_key)
@@ -123,9 +140,9 @@ def turn_pdfs_into_images():
 
 
 if __name__ == '__main__':
-    count = 8
-    if len(sys.argv) > 1:
-        count = int(sys.argv[1])
+    options = docopt(__doc__)
+    print(options)
+    count = int(options['--count'])
     grab_pdf(count)
-    if '--thumb' in sys.argv:
+    if options['--thumb']:
         turn_pdfs_into_images()
