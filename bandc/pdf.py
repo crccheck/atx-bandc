@@ -2,8 +2,8 @@
 PDF Scraping.
 
 Usage:
-    pdf.py [--count=<count>]
-    pdf.py [--thumb] [--thumb-start=<pdf_id>]
+    pdf.py [--count=<count>] [--thumb] [--thumb-start=<pdf_id>]
+    pdf.py [--single=<edims_id>]
 
     --count=<count>         Max number of PDFs to grab [default: 8].
     --thumb                 Create thumbnails
@@ -100,6 +100,55 @@ def grab_pdf(chunk=8):
             table.update(data, ['id'], ensure=False)
 
 
+def grab_pdf_single(edims_id):
+    """Download a pdf, parse the text, and upload the thumbnail all in one."""
+    db = dataset.connect()  # uses DATABASE_URL
+    table = db.load_table(TABLE)
+    result = db.query("SELECT id, url, date FROM {} WHERE url LIKE '%%{}' "
+        .format(
+            TABLE,
+            edims_id,
+        )
+    )
+    base_path = '/tmp/bandc_pdfs/'
+    row = result.next()
+    # download pdf to temporary file
+    filename = row['url'].rsplit('=', 2)[1] + '.pdf'
+    filepath = os.path.join(base_path, filename)
+    print urlretrieve(row['url'], filepath)  # TODO log
+    # parse and save pdf text
+    with open(filepath) as f:
+        text = pdf_to_text(f).strip()
+        data = dict(
+            # set
+            text=text,
+            pdf_scraped=True,
+            # where
+            id=row['id'],
+        )
+        table.update(data, ['id'], ensure=False)
+    # turn pdf into single
+    s3_key = '/thumbs/{}.jpg'.format(edims_id)
+    conn = S3Connection(
+        aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
+        aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
+        host='objects.dreamhost.com',
+        calling_format=boto.s3.connection.OrdinaryCallingFormat(),
+    )
+    bucket = conn.get_bucket(os.environ.get('AWS_BUCKET'))
+    out = sh.convert(
+        filepath + '[0]',  # force to only get 1st page
+        '-thumbnail', '400x400',  # output size
+        '-alpha', 'remove',  # fix black border that appears
+        'jpg:-',  # force to output jpeg to stdout
+    )
+    k = Key(bucket)
+    k.key = s3_key
+    k.set_metadata('Content-Type', 'image/jpeg')
+    k.set_contents_from_string(out.stdout)
+    k.set_canned_acl('public-read')
+
+
 def turn_pdfs_into_images():
     """Run through the tmp directory and turn pdfs into images."""
     conn = S3Connection(
@@ -116,7 +165,7 @@ def turn_pdfs_into_images():
         filename = os.path.basename(filepath)
         pdf_id = os.path.splitext(filename)[0]
         if not started:
-            if pdf_id == options['--thumb_start']:
+            if pdf_id == options['--thumb-start']:
                 started = True
             else:
                 continue
@@ -139,10 +188,17 @@ def turn_pdfs_into_images():
         k.set_canned_acl('public-read')
 
 
+# TODO way to force redownloading and re-parsing a pdf
+# TODO field for the url of where to find the image
+
+
 if __name__ == '__main__':
     options = docopt(__doc__)
     print(options)
-    count = int(options['--count'])
-    grab_pdf(count)
-    if options['--thumb']:
-        turn_pdfs_into_images()
+    if options['--single']:
+        grab_pdf_single(options['--single'])
+    else:
+        count = int(options['--count'])
+        grab_pdf(count)
+        if options['--thumb']:
+            turn_pdfs_into_images()
