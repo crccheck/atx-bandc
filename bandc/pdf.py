@@ -1,15 +1,21 @@
+from glob import glob
+from StringIO import StringIO
+from urllib import urlretrieve
 import os
 import sys
-from urllib import urlretrieve
-from StringIO import StringIO
 
-import dataset
+from boto.s3.connection import S3Connection
+from boto.s3.key import Key
+from pdfminer.converter import TextConverter
 from pdfminer.pdfdocument import PDFDocument, PDFEncryptionError
-from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage, PDFTextExtractionNotAllowed
+from pdfminer.pdfparser import PDFParser
 from pdfminer.psparser import PSException
-from pdfminer.converter import TextConverter
+import boto
+import boto.s3.connection
+import dataset
+import sh
 
 from settings import TABLE
 
@@ -85,12 +91,6 @@ def grab_pdf(chunk=8):
 
 def turn_pdfs_into_images():
     """Run through the tmp directory and turn pdfs into images."""
-    from glob import glob
-    import sh
-    import boto
-    import boto.s3.connection
-    from boto.s3.connection import S3Connection
-    from boto.s3.key import Key
     conn = S3Connection(
         aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
         aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
@@ -126,5 +126,6 @@ if __name__ == '__main__':
     count = 8
     if len(sys.argv) > 1:
         count = int(sys.argv[1])
-    # grab_pdf(count)
-    turn_pdfs_into_images()
+    grab_pdf(count)
+    if '--thumb' in sys.argv:
+        turn_pdfs_into_images()

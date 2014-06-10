@@ -8,7 +8,9 @@ python-dateutil==2.2
 requests==2.3.0
 
 # pdf
+boto==2.29.1
 pdfminer==20140328
+sh==1.09
 
 # feed
 bottle==0.12.7
