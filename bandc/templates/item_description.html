@@ -1,0 +1,10 @@
+{% if row['text'] %}
+  {% if row['thumbnail'] %}
+    <img src="{{ row['thumbnail'] }}" alt="" style="float: left; margin-right: 5px">
+  {% endif %}
+  <p>
+    {{ text }}
+  </p>
+{% else %}
+  {{ row['type'] }}
+{% endif %}

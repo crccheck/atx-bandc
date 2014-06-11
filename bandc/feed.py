@@ -4,7 +4,7 @@ from datetime import datetime
 
 import bottle
 from bottle import (abort, default_app, request, response, route, run,
-    jinja2_view as view)
+    jinja2_view as view, jinja2_template as template)
 from pyga.requests import Tracker, Page, Session, Visitor
 from pytz import timezone
 from rss2producer import RSS2Feed
@@ -127,13 +127,14 @@ def rss_detail(slug):
             title = u'[{}] {}'.format(slug_to_name[row['bandc'].decode('utf8')], title)
         text = row['text'] or ''
         text = text.strip().encode('ascii', 'ignore')[:600].strip()
-        text = re.sub(r'\s+', ' ', text)[:500]
+        text = re.sub(r'\s+', ' ', text)[:500]  # condense whitespace
         if row['pdf_scraped'] and not text:
             text = '{} ({})'.format(row['type'], 'no text found in pdf')
+        description = template('item_description.html', {'text': text, 'row': row})
         feed.append_item(
             title=title,
             link=row['url'],
-            description=text if text else row['type'],
+            description=description,
             # convert date into datetime
             pub_date=datetime(
                 row['date'].year,
