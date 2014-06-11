@@ -11,11 +11,17 @@
     .entry {
       border: 1px solid black;
       margin-bottom: 1em;
+      overflow: hidden;
     }
 
     h2 {
       font-size: 1em;
       margin: 0;
+    }
+
+    .thumbnail-container {
+      float: left;
+      margin-right: 5px;
     }
 
     p {
@@ -46,7 +52,7 @@
       </h2>
       <time>{{ row['date'] }}</time>
       {% if row['thumbnail'] %}
-        <div>
+        <div class="thumbnail-container">
           <a href="{{ row['url'] }}">
             <img src="{{ row['thumbnail'] }}" alt="">
           </a>
