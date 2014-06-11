@@ -4,6 +4,7 @@ PDF Scraping.
 Usage:
     pdf.py [--count=<count>] [--thumb] [--thumb-start=<pdf_id>]
     pdf.py [--single=<edims_id>]
+    pdf.py [--scan]
 
     --count=<count>         Max number of PDFs to grab [default: 8].
     --thumb                 Create thumbnails
@@ -124,8 +125,12 @@ def grab_pdf(chunk=8):
             table.update(data, ['id'], ensure=False)
 
 
-def grab_pdf_single(edims_id):
-    """Download a pdf, parse the text, and upload the thumbnail all in one."""
+def grab_pdf_single(edims_id, text=True):
+    """
+    Download a pdf, parse the text, and upload the thumbnail all in one.
+
+    Steps can be skipped by passing in the args as `False`
+    """
     db = dataset.connect()  # uses DATABASE_URL
     table = db.load_table(TABLE)
     result = db.query("SELECT id, url, date FROM {} WHERE url LIKE '%%{}' "
@@ -139,18 +144,18 @@ def grab_pdf_single(edims_id):
     # download pdf to temporary file
     filename = row['url'].rsplit('=', 2)[1] + '.pdf'
     filepath = os.path.join(base_path, filename)
-    print urlretrieve(row['url'], filepath)  # TODO log
-    # parse and save pdf text
-    with open(filepath) as f:
-        text = pdf_to_text(f).strip()
-        data = dict(
-            # set
-            text=text,
-            pdf_scraped=True,
-            # where
-            id=row['id'],
-        )
-        table.update(data, ['id'], ensure=False)
+    print(urlretrieve(row['url'], filepath))  # TODO log
+    if text:  # should parse pdf text
+        with open(filepath) as f:
+            text = pdf_to_text(f).strip()
+            data = dict(
+                # set
+                text=text,
+                pdf_scraped=True,
+                # where
+                id=row['id'],
+            )
+            table.update(data, ['id'], ensure=False)
     # turn pdf into single
     s3_key = '/thumbs/{}.jpg'.format(edims_id)
     conn = S3Connection(
@@ -222,8 +227,12 @@ def turn_pdfs_into_images():
         edims_has_thumb(edims_id)
 
 
-# TODO way to force redownloading and re-parsing a pdf
-# TODO field for the url of where to find the image
+def scan_for_missing_thumbnails():
+    """Look for parsed pdfs that don't have thumbnails and give it to them."""
+    results = table.find(thumbnail=None, pdf_scraped=True)
+    for row in results:
+        edims_id = row['url'].rsplit('=', 2)[-1]
+        grab_pdf_single(edims_id, text=False)  # don't need to reparse text
 
 
 if __name__ == '__main__':
@@ -233,6 +242,8 @@ if __name__ == '__main__':
     table = db.load_table(TABLE)
     if options['--single']:
         grab_pdf_single(options['--single'])
+    elif options['--scan']:
+        scan_for_missing_thumbnails()
     else:
         count = int(options['--count'])
         grab_pdf(count)
