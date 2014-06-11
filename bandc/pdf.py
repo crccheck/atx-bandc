@@ -32,6 +32,9 @@ import sh
 from settings import TABLE
 
 
+BASE_PATH = '/tmp/bandc_pdfs/'
+
+
 def get_row_by_edims_id(edims_id):
     key = 'http://www.austintexas.gov/edims/document.cfm?id={}'.format(edims_id)
     return table.find_one(url=key)
@@ -90,13 +93,12 @@ def grab_pdf(chunk=8):
             chunk,
         )
     )
-    base_path = '/tmp/bandc_pdfs/'
     for row in result:
         filename = row['url'].rsplit('=', 2)[1] + '.pdf'
-        filepath = os.path.join(base_path, filename)
+        filepath = os.path.join(BASE_PATH, filename)
         print u'{date}: {id}: {url}'.format(**row)
-        if not os.path.isdir(base_path):
-            os.makedirs(base_path)
+        if not os.path.isdir(BASE_PATH):
+            os.makedirs(BASE_PATH)
         # check if file was already downloaded
         if not os.path.isfile(filepath):
             # download pdf to temporary file
@@ -140,10 +142,9 @@ def grab_pdf_single(edims_id, text=True):
         )
     )
     row = result.next()
-    base_path = '/tmp/bandc_pdfs/'
     # download pdf to temporary file
     filename = row['url'].rsplit('=', 2)[1] + '.pdf'
-    filepath = os.path.join(base_path, filename)
+    filepath = os.path.join(BASE_PATH, filename)
     print(urlretrieve(row['url'], filepath))  # TODO log
     if text:  # should parse pdf text
         with open(filepath) as f:
@@ -195,9 +196,8 @@ def turn_pdfs_into_images():
         calling_format=boto.s3.connection.OrdinaryCallingFormat(),
     )
     bucket = conn.get_bucket(os.environ.get('AWS_BUCKET'))
-    base_path = '/tmp/bandc_pdfs/'
     started = not options['--thumb-start']
-    for filepath in glob(os.path.join(base_path, '*.pdf')):
+    for filepath in glob(os.path.join(BASE_PATH, '*.pdf')):
         filepath.rsplit('.', 2)[0]
         filename = os.path.basename(filepath)
         edims_id = os.path.splitext(filename)[0]
