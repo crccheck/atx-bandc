@@ -31,6 +31,30 @@ import sh
 from settings import TABLE
 
 
+def get_row_by_edims_id(edims_id):
+    key = 'http://www.austintexas.gov/edims/document.cfm?id={}'.format(edims_id)
+    return table.find_one(url=key)
+
+
+def edims_has_thumb(edims_id):
+    """
+    This pdf has been scraped and and the thumbnail url should be set.
+
+    Not efficient at all, but meh.
+    """
+    thumb_url = 'http://atx-bandc-pdf.crccheck.com/thumbs/{}.jpg'.format(edims_id)
+    row = get_row_by_edims_id(edims_id)
+    if row and row['thumbnail'] != thumb_url:
+        print('updating thumbnail url for {}'.format(edims_id))
+        data = dict(
+            # set
+            thumbnail=thumb_url,
+            # where
+            id=row['id'],
+        )
+        table.update(data, ['id'], ensure=False)
+
+
 def pdf_to_text(f):
     parser = PDFParser(f)
     document = PDFDocument(parser)
@@ -110,8 +134,8 @@ def grab_pdf_single(edims_id):
             edims_id,
         )
     )
-    base_path = '/tmp/bandc_pdfs/'
     row = result.next()
+    base_path = '/tmp/bandc_pdfs/'
     # download pdf to temporary file
     filename = row['url'].rsplit('=', 2)[1] + '.pdf'
     filepath = os.path.join(base_path, filename)
@@ -171,17 +195,18 @@ def turn_pdfs_into_images():
     for filepath in glob(os.path.join(base_path, '*.pdf')):
         filepath.rsplit('.', 2)[0]
         filename = os.path.basename(filepath)
-        pdf_id = os.path.splitext(filename)[0]
+        edims_id = os.path.splitext(filename)[0]
         if not started:
-            if pdf_id == options['--thumb-start']:
+            if edims_id == options['--thumb-start']:
                 started = True
             else:
                 continue
-        s3_key = '/thumbs/{}.jpg'.format(pdf_id)
-        print filepath, pdf_id, s3_key
+        s3_key = '/thumbs/{}.jpg'.format(edims_id)
+        print filepath, edims_id, s3_key
         k = bucket.get_key(s3_key)
         if k:
             print '.already exists'
+            edims_has_thumb(edims_id)
             continue
         out = sh.convert(
             filepath + '[0]',  # force to only get 1st page
@@ -194,6 +219,7 @@ def turn_pdfs_into_images():
         k.set_metadata('Content-Type', 'image/jpeg')
         k.set_contents_from_string(out.stdout)
         k.set_canned_acl('public-read')
+        edims_has_thumb(edims_id)
 
 
 # TODO way to force redownloading and re-parsing a pdf
@@ -203,6 +229,8 @@ def turn_pdfs_into_images():
 if __name__ == '__main__':
     options = docopt(__doc__)
     print(options)
+    db = dataset.connect()  # uses DATABASE_URL
+    table = db.load_table(TABLE)
     if options['--single']:
         grab_pdf_single(options['--single'])
     else:
