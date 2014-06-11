@@ -1,3 +1,7 @@
 .env
 *.pyc
 *.db
+.ipynb_checkpoints/
+
+# ignore ipython notebook for now
+*.ipynb
