@@ -60,6 +60,7 @@ def edims_has_thumb(edims_id):
 
 
 def pdf_to_text(f):
+    """Get the text from pdf file handle."""
     parser = PDFParser(f)
     document = PDFDocument(parser)
     rsrcmgr = PDFResourceManager()
@@ -77,9 +78,6 @@ def pdf_to_text(f):
 def grab_pdf(chunk=8):
     """
     Fill in missing pdf information.
-
-    If no text was found in the pdf, fill in something anyways just so we know
-    we already tried.
 
     This is separate from the main scraper because this is more intensive and
     secondary.
@@ -188,7 +186,11 @@ def grab_pdf_single(edims_id, text=True):
 
 
 def turn_pdfs_into_images():
-    """Run through the tmp directory and turn pdfs into images."""
+    """
+    Run through the tmp directory and turn pdfs into thumbnails.
+
+    TODO save thumb url back to db. Right now need to re-run with scan.
+    """
     conn = S3Connection(
         aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
         aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
