@@ -45,6 +45,13 @@
         </small>
       </h2>
       <time>{{ row['date'] }}</time>
+      {% if row['thumbnail'] %}
+        <div>
+          <a href="{{ row['url'] }}">
+            <img src="{{ row['thumbnail'] }}" alt="">
+          </a>
+        </div>
+      {% endif %}
       {% if row['text'] %}
         <p>
           {{ row['text'][:1000] }}
