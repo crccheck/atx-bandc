@@ -147,6 +147,14 @@ def grab_pdf_single(edims_id):
     k.set_metadata('Content-Type', 'image/jpeg')
     k.set_contents_from_string(out.stdout)
     k.set_canned_acl('public-read')
+    thumb_url = 'http://atx-bandc-pdf.crccheck.com/thumbs/{}.jpg'.format(edims_id)
+    data = dict(
+        # set
+        thumbnail=thumb_url,
+        # where
+        id=row['id'],
+    )
+    table.update(data, ['id'], ensure=False)
 
 
 def turn_pdfs_into_images():
