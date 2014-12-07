@@ -11,7 +11,6 @@ Options:
 from __future__ import unicode_literals
 
 import datetime
-import sys
 
 from dateutil.parser import parse
 from docopt import docopt
@@ -149,7 +148,7 @@ def save_pages(table=None, deep=True):
         # process first page
         logging.info(response.url)
         if not response.ok:
-            if response.status_code == 502:
+            if response.status_code >= 500:
                 logger.error('http {}'.format(response.status_code))
             else:
                 logger.warn('no data for this year, (http {})'.format(response.status_code))
