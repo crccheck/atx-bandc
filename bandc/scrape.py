@@ -1,13 +1,22 @@
+from __future__ import unicode_literals
+
 import datetime
 import sys
 
-import dataset
-import requests
-import sqlalchemy.types
 from dateutil.parser import parse
 from lxml.html import document_fromstring
+import dataset
+import grequests
+import logging
+import logging.config
+import requests
+import sqlalchemy.types
 
-from settings import TABLE, PAGES
+from settings import TABLE, PAGES, LOGGING
+
+
+logging.config.dictConfig(LOGGING)
+logger = logging.getLogger(__name__)
 
 # CONSTANTS
 
@@ -102,17 +111,37 @@ def save_pages(table=None, deep=True):
 
     TODO change `deep` default to False after schema is stable.
     """
+    headers = {
+        'User-Agent': 'atx_bandc/0.2.0 http://atx-bandc-feed.herokuapp.com/',
+    }
+    # batch grab all the first pages
+    urls = []
     for bandc_slug, pk, bandc_name in PAGES:
         # process first page
-        url = (
+        urls.append(
             'http://www.austintexas.gov/cityclerk/boards_commissions/'
             'meetings/{}_{}_{}.htm'
             .format(2014, pk, '1')
         )
-        print url
-        response = requests.get(url)
-        if response.status_code != 200:
-            print "WARNING: no data for this year"
+    rs = (grequests.get(u, headers=headers) for u in urls)
+    logging.debug('queueing {} urls'.format(len(urls)))
+    # size timing (includes processing, which takes awhile):
+    #   1: 194s
+    #   2: 150s
+    #   3: 127s
+    #   4: 131s
+    #   5: 117s
+    #   6: 113s
+    responses = grequests.map(rs, size=6)
+
+    for (bandc_slug, pk, bandc_name), response in zip(PAGES, responses):
+        # process first page
+        logging.info(response.url)
+        if not response.ok:
+            if response.status_code == 502:
+                logger.error('http {}'.format(response.status_code))
+            else:
+                logger.warn('no data for this year, (http {})'.format(response.status_code))
             continue
         n_pages = get_number_of_pages(response.text) if deep else 1
         data = process_page(response.text)
@@ -126,8 +155,8 @@ def save_pages(table=None, deep=True):
                 'meetings/{}_{}_{}.htm'
                 .format(2014, pk, page_no)
             )
-            print url
-            response = requests.get(url)
+            logging.info(url)
+            response = requests.get(url, headers=headers)
             assert response.status_code == 200
             data = process_page(response.text)
             if table is not None:
@@ -144,6 +173,7 @@ def get_number_of_pages(html):
 
 
 def setup_table(table):
+    """Sets up the table schema if not already setup."""
     if 'date' not in table.columns:
         table.create_column('date', sqlalchemy.types.Date)
     if 'dirty' not in table.columns:
