@@ -7,10 +7,16 @@ from dateutil.parser import parse
 from lxml.html import document_fromstring
 import dataset
 import grequests
+import logging
+import logging.config
 import requests
 import sqlalchemy.types
 
-from settings import TABLE, PAGES
+from settings import TABLE, PAGES, LOGGING
+
+
+logging.config.dictConfig(LOGGING)
+logger = logging.getLogger(__name__)
 
 # CONSTANTS
 
@@ -116,14 +122,23 @@ def save_pages(table=None, deep=True):
         )
     rs = (grequests.get(u) for u in urls)
     print 'queueing {} urls'.format(len(urls))
-    # 5: 117s
-    responses = grequests.map(rs, size=1)
+    # size timing (includes processing, which takes awhile):
+    #   1: 194s
+    #   2: 150s
+    #   3: 127s
+    #   4: 131s
+    #   5: 117s
+    #   6: 113s
+    responses = grequests.map(rs, size=6)
 
     for (bandc_slug, pk, bandc_name), response in zip(PAGES, responses):
         # process first page
-        print response.url
+        logging.info(response.url)
         if not response.ok:
-            print 'WARNING: no data for this year, (http {})'.format(response.status_code)
+            if response.status_code == 502:
+                logger.error('http {}'.format(response.status_code))
+            else:
+                logger.warn('no data for this year, (http {})'.format(response.status_code))
             continue
         n_pages = get_number_of_pages(response.text) if deep else 1
         data = process_page(response.text)
