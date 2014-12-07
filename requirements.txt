@@ -1,6 +1,7 @@
 # shared
 dataset==0.5.2
 psycopg2==2.5.3
+docopt==0.6.2
 
 # scraper
 lxml==3.3.5
@@ -13,7 +14,6 @@ project-runpy==0.3.1
 boto==2.29.1
 pdfminer==20140328
 sh==1.09
-docopt==0.6.1
 
 # feed
 bottle==0.12.7

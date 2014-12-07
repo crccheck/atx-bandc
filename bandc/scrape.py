@@ -1,9 +1,18 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+"""
+Usage: scrape.py [--deep]
+
+Options:
+  --deep  Crawl paginated pages to get the whole year
+"""
 from __future__ import unicode_literals
 
 import datetime
 import sys
 
 from dateutil.parser import parse
+from docopt import docopt
 from lxml.html import document_fromstring
 import dataset
 import grequests
@@ -190,8 +199,8 @@ def setup_table(table):
 
 
 if __name__ == '__main__':
+    options = docopt(__doc__)
     db = dataset.connect()  # uses DATABASE_URL
     table = db[TABLE]
     setup_table(table)
-    deep = '--deep' in sys.argv[1:]
-    save_pages(table=table, deep=deep)
+    save_pages(table=table, deep=options['--deep'])
