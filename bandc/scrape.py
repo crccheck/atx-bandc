@@ -1,11 +1,14 @@
+from __future__ import unicode_literals
+
 import datetime
 import sys
 
-import dataset
-import requests
-import sqlalchemy.types
 from dateutil.parser import parse
 from lxml.html import document_fromstring
+import dataset
+import grequests
+import requests
+import sqlalchemy.types
 
 from settings import TABLE, PAGES
 
@@ -102,17 +105,25 @@ def save_pages(table=None, deep=True):
 
     TODO change `deep` default to False after schema is stable.
     """
+    # batch grab all the first pages
+    urls = []
     for bandc_slug, pk, bandc_name in PAGES:
         # process first page
-        url = (
+        urls.append(
             'http://www.austintexas.gov/cityclerk/boards_commissions/'
             'meetings/{}_{}_{}.htm'
             .format(2014, pk, '1')
         )
-        print url
-        response = requests.get(url)
-        if response.status_code != 200:
-            print "WARNING: no data for this year"
+    rs = (grequests.get(u) for u in urls)
+    print 'queueing {} urls'.format(len(urls))
+    # 5: 117s
+    responses = grequests.map(rs, size=1)
+
+    for (bandc_slug, pk, bandc_name), response in zip(PAGES, responses):
+        # process first page
+        print response.url
+        if not response.ok:
+            print 'WARNING: no data for this year, (http {})'.format(response.status_code)
             continue
         n_pages = get_number_of_pages(response.text) if deep else 1
         data = process_page(response.text)
@@ -144,6 +155,7 @@ def get_number_of_pages(html):
 
 
 def setup_table(table):
+    """Sets up the table schema if not already setup."""
     if 'date' not in table.columns:
         table.create_column('date', sqlalchemy.types.Date)
     if 'dirty' not in table.columns:
