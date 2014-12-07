@@ -111,6 +111,9 @@ def save_pages(table=None, deep=True):
 
     TODO change `deep` default to False after schema is stable.
     """
+    headers = {
+        'User-Agent': 'atx_bandc/0.2.0 http://atx-bandc-feed.herokuapp.com/',
+    }
     # batch grab all the first pages
     urls = []
     for bandc_slug, pk, bandc_name in PAGES:
@@ -120,8 +123,8 @@ def save_pages(table=None, deep=True):
             'meetings/{}_{}_{}.htm'
             .format(2014, pk, '1')
         )
-    rs = (grequests.get(u) for u in urls)
-    print 'queueing {} urls'.format(len(urls))
+    rs = (grequests.get(u, headers=headers) for u in urls)
+    logging.debug('queueing {} urls'.format(len(urls)))
     # size timing (includes processing, which takes awhile):
     #   1: 194s
     #   2: 150s
@@ -152,8 +155,8 @@ def save_pages(table=None, deep=True):
                 'meetings/{}_{}_{}.htm'
                 .format(2014, pk, page_no)
             )
-            print url
-            response = requests.get(url)
+            logging.info(url)
+            response = requests.get(url, headers=headers)
             assert response.status_code == 200
             data = process_page(response.text)
             if table is not None:
