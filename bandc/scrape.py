@@ -1,9 +1,19 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+"""
+Usage: scrape.py [--deep] [-v|-vv]
+
+Options:
+  --deep  Crawl paginated pages to get the whole year
+  -v      INFO level verbosity
+  -vv     DEBUG level verbosity
+"""
 from __future__ import unicode_literals
 
 import datetime
-import sys
 
 from dateutil.parser import parse
+from docopt import docopt
 from lxml.html import document_fromstring
 import dataset
 import grequests
@@ -83,7 +93,7 @@ def save_page(data, table, bandc_slug):
     """
     Save page data to a `dataset` db table.
         """
-    print 'save_page', table, bandc_slug
+    logger.info('save_page {} {}'.format(table, bandc_slug))
 
     # delete old data
     dates = set([x['date'] for x in data])
@@ -138,7 +148,7 @@ def save_pages(table=None, deep=True):
         # process first page
         logging.info(response.url)
         if not response.ok:
-            if response.status_code == 502:
+            if response.status_code >= 500:
                 logger.error('http {}'.format(response.status_code))
             else:
                 logger.warn('no data for this year, (http {})'.format(response.status_code))
@@ -190,8 +200,12 @@ def setup_table(table):
 
 
 if __name__ == '__main__':
+    options = docopt(__doc__)
+    # print options; sys.exit()
+
+    loglevel = ['WARNING', 'INFO', 'DEBUG'][options['-v']]
+    logging.getLogger().setLevel(loglevel)
     db = dataset.connect()  # uses DATABASE_URL
     table = db[TABLE]
     setup_table(table)
-    deep = '--deep' in sys.argv[1:]
-    save_pages(table=table, deep=deep)
+    save_pages(table=table, deep=options['--deep'])
