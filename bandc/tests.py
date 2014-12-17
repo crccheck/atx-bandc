@@ -39,7 +39,8 @@ class PageScraper(unittest.TestCase):
         self.assertEqual(data[0]['date'], datetime.date(2014, 6, 2))
 
     def test_save_page_works(self):
-        engine = create_engine('sqlite:///:memory:', echo=True)
+        # setup
+        engine = create_engine('sqlite:///:memory:')
         connection = engine.connect()
         Base.metadata.create_all(connection)
         Session = sessionmaker(bind=engine)
@@ -70,24 +71,29 @@ class PageScraper(unittest.TestCase):
         connection.close()
         engine.dispose()
 
-    def test_save_page_does_not_overwrite_text(self):
-        # bootstrap db
-        db = dataset.connect('sqlite:///:memory:')
-        table = db['test']
-        setup_table(table)
+    def test_save_page_updates_text(self):
+        # setup
+        engine = create_engine('sqlite:///:memory:')
+        connection = engine.connect()
+        Base.metadata.create_all(connection)
+        Session = sessionmaker(bind=engine)
+        session = Session()
 
         # bootstrap some data
         html = open(os.path.join(BASE_DIR, 'samples/music.html')).read()
         data = process_page(html)
 
-        save_page(data, table, 'test')
-        row = table.find_one()
-        url = row['url']
-        table.update({'text': 'test123', 'url': url}, ['url'])
+        save_page(data, session, 'test')
+        old_item = session.query(Item).first()
+        url = old_item.url
+        old_id = old_item.id
+        old_item.text = 'test123'
 
-        save_page(data, table, 'test')
-        new_row = table.find_one(url=url)
-        self.assertEqual(new_row['text'], 'test123')
+        save_page(data, session, 'test')
+        new_item = session.query(Item).filter_by(url=url).first()
+        self.assertEqual(new_item.text, 'test123')
+        # assert we did an update, not an insert
+        self.assertEqual(new_item.id, old_id)
 
     def test_get_number_of_pages_works(self):
         html = open(os.path.join(BASE_DIR, 'samples/music.html')).read()
