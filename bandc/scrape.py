@@ -15,14 +15,13 @@ import datetime
 from dateutil.parser import parse
 from docopt import docopt
 from lxml.html import document_fromstring
-import dataset
 import grequests
 import logging
 import logging.config
 import requests
-import sqlalchemy.types
 
 from settings import TABLE, PAGES, LOGGING
+from models import Item
 
 
 logging.config.dictConfig(LOGGING)
@@ -89,30 +88,25 @@ def process_page(html):
     return data
 
 
-def save_page(data, table, bandc_slug):
+def save_page(data, session, bandc_slug):
     """
     Save page data to a `dataset` db table.
         """
-    logger.info('save_page {} {}'.format(table, bandc_slug))
+    logger.info('save_page {}'.format(bandc_slug))
 
-    # delete old data
+    # flag old data as dirty
     dates = set([x['date'] for x in data])
     for date in dates:
-        update_data = dict(
-            # SET
-            dirty=True,
-            # WHERE
-            bandc=bandc_slug,
-            date=date,
-        )
-        table.update(update_data, ('bandc', 'date'))
+        (session.query(Item).filter_by(bandc=bandc_slug, date=date)
+            .update({'dirty': True}))
 
+    # upsert new data
     for row in data:
-        row['bandc'] = bandc_slug
-        row['dirty'] = False
-        table.upsert(row, ['url'])
+        session.merge(Item(bandc=bandc_slug, dirty=False, **row))
 
-    table.delete(dirty=True)
+    # delete old dirty data
+    session.query(Item).filter_by(dirty=True).delete()
+    session.commit()
 
 
 def save_pages(table=None, deep=True):
@@ -180,23 +174,6 @@ def get_number_of_pages(html):
     if not last_page_link:
         return 1
     return int(last_page_link[0].strip())
-
-
-def setup_table(table):
-    """Sets up the table schema if not already setup."""
-    if 'date' not in table.columns:
-        table.create_column('date', sqlalchemy.types.Date)
-    if 'dirty' not in table.columns:
-        table.create_column('dirty', sqlalchemy.types.Boolean)
-    if 'pdf_scraped' not in table.columns:
-        table.create_column('pdf_scraped', sqlalchemy.types.Boolean)
-    if 'thumbnail' not in table.columns:
-        table.create_column('thumbnail', sqlalchemy.types.String)
-    if 'text' not in table.columns:
-        table.create_column('text', sqlalchemy.types.Text)
-    if 'url' not in table.columns:
-        table.create_column('url', sqlalchemy.types.String)
-        table.create_index(['url'])  # XXX broken
 
 
 if __name__ == '__main__':

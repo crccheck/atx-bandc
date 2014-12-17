@@ -3,13 +3,14 @@ import os
 import time
 import unittest
 
-import dataset
+from sqlalchemy.engine import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from pdf import pdf_to_text
 from scrape import (parse_date, clean_text, process_page, save_page,
     get_number_of_pages,
-    setup_table,
     MeetingCancelled)
+from models import Base, Item
 
 
 BASE_DIR = os.path.dirname(__file__)
@@ -38,32 +39,36 @@ class PageScraper(unittest.TestCase):
         self.assertEqual(data[0]['date'], datetime.date(2014, 6, 2))
 
     def test_save_page_works(self):
-        # bootstrap db
-        db = dataset.connect('sqlite:///:memory:')
-        table = db['test']
-        setup_table(table)
+        engine = create_engine('sqlite:///:memory:', echo=True)
+        connection = engine.connect()
+        Base.metadata.create_all(connection)
+        Session = sessionmaker(bind=engine)
+        session = Session()
 
         # bootstrap some data
         html = open(os.path.join(BASE_DIR, 'samples/music.html')).read()
         data = process_page(html)
 
-        save_page(data, table, 'test')
-        self.assertIn('date', table.columns)
-        self.assertEqual(len(table.columns), 10)
-        self.assertEqual(len(table), 9)
-        row = table.find_one()
-        scraped_at = row['scraped_at']
-        url = row['url']
-        old_pk = row['id']
+        save_page(data, session, 'test')
+        n_rows = session.query(Item).count()
+        self.assertEqual(n_rows, 9)
+        row = session.query(Item).first()
+        scraped_at = row.scraped_at
+        url = row.url
+        old_pk = row.id
 
         time.sleep(1)  # guarantee > 1 second difference, too tired to mock
-        save_page(data, table, 'test')
+        save_page(data, session, 'test')
         # assert re-saving does not create any new rows
-        self.assertEqual(len(table), 9)
-        new_row = table.find_one(url=url)
+        n_rows = session.query(Item).count()
+        self.assertEqual(n_rows, 9)
+        new_row = session.query(Item).filter_by(url=url).first()
         # assert row was updated, not replaced
-        self.assertEqual(old_pk, new_row['id'])
-        self.assertEqual(scraped_at, new_row['scraped_at'])
+        self.assertEqual(old_pk, new_row.id)
+        self.assertEqual(scraped_at, new_row.scraped_at)
+
+        connection.close()
+        engine.dispose()
 
     def test_save_page_does_not_overwrite_text(self):
         # bootstrap db

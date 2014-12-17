@@ -90,4 +90,10 @@ LOGGING = {
         'handlers': ['cconsole'],
         'level': 'DEBUG',
     },
+    'loggers': {
+        'sqlalchemy.engine.base.Engine': {
+            'handlers': ['cconsole'],
+            'propagate': False,
+        },
+    },
 }
