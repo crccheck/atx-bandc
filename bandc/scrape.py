@@ -11,17 +11,20 @@ Options:
 from __future__ import unicode_literals
 
 import datetime
+import os
 
 from dateutil.parser import parse
 from docopt import docopt
 from lxml.html import document_fromstring
+from sqlalchemy.engine import create_engine
+from sqlalchemy.orm import sessionmaker
 import grequests
 import logging
 import logging.config
 import requests
 
-from settings import TABLE, PAGES, LOGGING
-from models import Item
+from settings import PAGES, LOGGING
+from models import Base, Item
 
 
 logging.config.dictConfig(LOGGING)
@@ -117,7 +120,8 @@ def save_page(data, session, bandc_slug):
     session.commit()
 
 
-def save_pages(table=None, deep=True):
+# TODO remove `session` dependency injection
+def save_pages(session=None, deep=True):
     """
     Save multiple pages.
 
@@ -157,8 +161,8 @@ def save_pages(table=None, deep=True):
             continue
         n_pages = get_number_of_pages(response.text) if deep else 1
         data = process_page(response.text)
-        if table is not None:
-            save_page(data, table, bandc_slug=bandc_slug)
+        if session is not None:
+            save_page(data, session, bandc_slug=bandc_slug)
         # process additional pages
         # TODO DRY
         for page_no in range(2, n_pages + 1):
@@ -171,8 +175,8 @@ def save_pages(table=None, deep=True):
             response = requests.get(url, headers=headers)
             assert response.status_code == 200
             data = process_page(response.text)
-            if table is not None:
-                save_page(data, table, bandc_slug=bandc_slug)
+            if session is not None:
+                save_page(data, session, bandc_slug=bandc_slug)
         # TODO pause to avoid hammering
 
 
@@ -190,7 +194,10 @@ if __name__ == '__main__':
 
     loglevel = ['WARNING', 'INFO', 'DEBUG'][options['-v']]
     logging.getLogger().setLevel(loglevel)
-    db = dataset.connect()  # uses DATABASE_URL
-    table = db[TABLE]
-    setup_table(table)
-    save_pages(table=table, deep=options['--deep'])
+
+    engine = create_engine(os.environ.get('DATABASE_URL'))
+    connection = engine.connect()
+    Base.metadata.create_all(connection)  # checkfirst=True
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    save_pages(session=session, deep=options['--deep'])
