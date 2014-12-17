@@ -21,7 +21,10 @@ class Item(Base):
     # Mark data as old so it can be deleted
     dirty = Column(Boolean, default=False)
     # Has the text been extracted? TODO base this on if `text` is null
-    pdf_scraped = Column(Boolean, default=False)
+    # True   scraped
+    # False  not scraped
+    # None   error scraping
+    pdf_scraped = Column(Boolean, default=None)
     # thumbnail url if it exists
     thumbnail = Column(String)
     # text of the pdf
