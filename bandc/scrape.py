@@ -30,6 +30,9 @@ from models import Base, Item
 logging.config.dictConfig(LOGGING)
 logger = logging.getLogger(__name__)
 
+session = None
+
+
 # CONSTANTS
 
 MEETING_DATE = 'bcic_mtgdate'
@@ -91,7 +94,7 @@ def process_page(html):
     return data
 
 
-def save_page(data, session, bandc_slug):
+def save_page(data, bandc_slug):
     """
     Save page data to a `dataset` db table.
         """
@@ -120,8 +123,7 @@ def save_page(data, session, bandc_slug):
     session.commit()
 
 
-# TODO remove `session` dependency injection
-def save_pages(session=None, deep=True):
+def save_pages(deep=True):
     """
     Save multiple pages.
 
@@ -161,8 +163,8 @@ def save_pages(session=None, deep=True):
             continue
         n_pages = get_number_of_pages(response.text) if deep else 1
         data = process_page(response.text)
-        if session is not None:
-            save_page(data, session, bandc_slug=bandc_slug)
+        if session:
+            save_page(data, bandc_slug=bandc_slug)
         # process additional pages
         # TODO DRY
         for page_no in range(2, n_pages + 1):
@@ -175,8 +177,8 @@ def save_pages(session=None, deep=True):
             response = requests.get(url, headers=headers)
             assert response.status_code == 200
             data = process_page(response.text)
-            if session is not None:
-                save_page(data, session, bandc_slug=bandc_slug)
+            if session:
+                save_page(data, bandc_slug=bandc_slug)
         # TODO pause to avoid hammering
 
 
@@ -200,4 +202,4 @@ if __name__ == '__main__':
     Base.metadata.create_all(connection)  # checkfirst=True
     Session = sessionmaker(bind=engine)
     session = Session()
-    save_pages(session=session, deep=options['--deep'])
+    save_pages(deep=options['--deep'])

@@ -1,6 +1,6 @@
 
 test:
-	python tests.py
+	python -m unittest discover
 
 scrape:
 	python scrape.py -v
