@@ -100,9 +100,17 @@ def save_page(data, session, bandc_slug):
         (session.query(Item).filter_by(bandc=bandc_slug, date=date)
             .update({'dirty': True}))
 
-    # upsert new data
     for row in data:
-        session.merge(Item(bandc=bandc_slug, dirty=False, **row))
+        # no upsert in sqlalchemy
+        old = session.query(Item).filter_by(url=row['url']).first()
+        if not old:
+            session.add(Item(bandc=bandc_slug, dirty=False, **row))
+        else:
+            # ugh there has to be a better way
+            old.dirty = False
+            old.bandc = bandc_slug
+            for k, v in row.items():
+                setattr(old, k, v)
 
     # delete old dirty data
     session.query(Item).filter_by(dirty=True).delete()

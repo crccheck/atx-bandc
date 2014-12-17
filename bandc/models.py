@@ -19,13 +19,13 @@ class Item(Base):
     # when this data was scraped
     scraped_at = Column(DateTime)
     # Mark data as old so it can be deleted
-    dirty = Column(Boolean)
+    dirty = Column(Boolean, default=False)
     # Has the text been extracted? TODO base this on if `text` is null
-    pdf_scraped = Column(Boolean)
+    pdf_scraped = Column(Boolean, default=False)
     # thumbnail url if it exists
     thumbnail = Column(String)
     # text of the pdf
-    text = Column(Text)
+    text = Column(Text, default=None)
     url = Column(String, unique=True)
     # TODO foriegn key to Bandc/board or commission
     bandc = Column(String)
