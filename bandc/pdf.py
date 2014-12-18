@@ -2,16 +2,13 @@
 PDF Scraping.
 
 Usage:
-    pdf.py [--count=<count>] [--thumb] [--thumb-start=<pdf_id>]
-    pdf.py [--single=<edims_id>]
-    pdf.py [--scan]
+    pdf.py process <edims_id>
+    pdf.py scrape [options]
+    pdf.py thumbnails
 
-    --count=<count>         Max number of PDFs to grab [default: 8].
-    --thumb                 Create thumbnails
-    --thumb-start=<pdf_id>  Start thumbnails process at this id
-    --scan                  Only do thumbnails
+Options:
+    --count=<count>  Max number of PDFs to grab [default: 8].
 """
-from glob import glob
 from StringIO import StringIO
 from urllib import urlretrieve
 import os
@@ -128,9 +125,8 @@ def grab_pdf_single(edims_id, text=True):
 
     Steps can be skipped by passing in the args as `False`
     """
-    item = session.query(Item).filter(
-        Item.url.like('%%{}'.format(edims_id)).first()
-    )
+    url = 'http://www.austintexas.gov/edims/document.cfm?id={}'.format(edims_id)
+    item = session.query(Item).filter(Item.url == url).first()
     filepath = pdf_file_path(item)
     if text:  # should parse pdf text
         with open(filepath) as f:
@@ -161,51 +157,6 @@ def grab_pdf_single(edims_id, text=True):
     session.commit()
 
 
-def turn_pdfs_into_images():
-    """
-    Run through the tmp directory and turn pdfs into thumbnails.
-
-    TODO save thumb url back to db. Right now need to re-run with scan.
-    """
-    conn = S3Connection(
-        aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
-        aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
-        host='objects.dreamhost.com',
-        calling_format=boto.s3.connection.OrdinaryCallingFormat(),
-    )
-    bucket = conn.get_bucket(os.environ.get('AWS_BUCKET'))
-    started = not options['--thumb-start']
-    for filepath in glob(os.path.join(BASE_PATH, '*.pdf')):
-        filepath.rsplit('.', 2)[0]
-        filename = os.path.basename(filepath)
-        edims_id = os.path.splitext(filename)[0]
-        if not started:
-            if edims_id == options['--thumb-start']:
-                started = True
-            else:
-                continue
-        s3_key = '/thumbs/{}.jpg'.format(edims_id)
-        print filepath, edims_id, s3_key
-        k = bucket.get_key(s3_key)
-        if k:
-            print '.already exists'
-            edims_has_thumb(edims_id)
-            continue
-        out = sh.convert(
-            filepath + '[0]',  # force to only get 1st page
-            '-thumbnail', '400x400',  # output size
-            '-alpha', 'remove',  # fix black border that appears
-            'jpg:-',  # force to output jpeg to stdout
-        )
-        k = Key(bucket)
-        k.key = s3_key
-        k.set_metadata('Content-Type', 'image/jpeg')
-        k.set_contents_from_string(out.stdout)
-        k.set_canned_acl('public-read')
-        edims_has_thumb(edims_id)
-    session.commit()
-
-
 def scan_for_missing_thumbnails():
     """Look for parsed pdfs that don't have thumbnails and give it to them."""
     queryset = session.query(Item).filter_by(thumbnail=None, pdf_scraped=True)
@@ -216,7 +167,7 @@ def scan_for_missing_thumbnails():
 
 if __name__ == '__main__':
     options = docopt(__doc__)
-    # print(options)
+    # print(options); exit()
 
     engine = create_engine(os.environ.get('DATABASE_URL'))
     connection = engine.connect()
@@ -224,12 +175,10 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    if options['--single']:
-        grab_pdf_single(options['--single'])
-    elif options['--scan']:
+    if options['process']:
+        grab_pdf_single(options['<edims_id>'])
+    elif options['thumbnails']:
         scan_for_missing_thumbnails()
-    else:
+    elif options['scrape']:
         count = int(options['--count'])
         grab_pdf(count)
-        if options['--thumb']:
-            turn_pdfs_into_images()

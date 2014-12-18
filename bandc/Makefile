@@ -6,7 +6,8 @@ scrape:
 	python scrape.py -v
 
 pdf:
-	python pdf.py
+	python pdf.py scrape
+	python pdf.py thumbnails
 
 samples:
 	mkdir -p $@
