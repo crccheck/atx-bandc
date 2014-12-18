@@ -9,6 +9,7 @@ Usage:
     --count=<count>         Max number of PDFs to grab [default: 8].
     --thumb                 Create thumbnails
     --thumb-start=<pdf_id>  Start thumbnails process at this id
+    --scan                  Only do thumbnails
 """
 from glob import glob
 from StringIO import StringIO
@@ -73,6 +74,24 @@ def pdf_to_text(f):
     return outfp.getvalue()
 
 
+def pdf_file_path(item):
+    """
+    Downloads the pdf locally and return the path it.
+
+    TODO force re-download pdf because sometimes they're corrupted
+    """
+    filename = item.url.rsplit('=', 2)[1] + '.pdf'
+    filepath = os.path.join(BASE_PATH, filename)
+    print u'{0.date}: {0.id}: {0.url}'.format(item)
+    if not os.path.isdir(BASE_PATH):
+        os.makedirs(BASE_PATH)
+    # check if file was already downloaded
+    if not os.path.isfile(filepath):
+        # download pdf to temporary file
+        print urlretrieve(item.url, filepath)  # TODO log
+    return filepath
+
+
 def grab_pdf(chunk=8):
     """
     Fill in missing pdf information.
@@ -89,15 +108,7 @@ def grab_pdf(chunk=8):
         .limit(chunk))
 
     for item in result:
-        filename = item.url.rsplit('=', 2)[1] + '.pdf'
-        filepath = os.path.join(BASE_PATH, filename)
-        print u'{0.date}: {0.id}: {0.url}'.format(item)
-        if not os.path.isdir(BASE_PATH):
-            os.makedirs(BASE_PATH)
-        # check if file was already downloaded
-        if not os.path.isfile(filepath):
-            # download pdf to temporary file
-            print urlretrieve(item.url, filepath)  # TODO log
+        filepath = pdf_file_path(item)
         # parse and save pdf text
         with open(filepath) as f:
             try:
@@ -117,18 +128,15 @@ def grab_pdf_single(edims_id, text=True):
 
     Steps can be skipped by passing in the args as `False`
     """
-    row = session.query(Item).filter(
+    item = session.query(Item).filter(
         Item.url.like('%%{}'.format(edims_id)).first()
     )
-    # download pdf to temporary file
-    filename = row.url.rsplit('=', 2)[1] + '.pdf'
-    filepath = os.path.join(BASE_PATH, filename)
-    print(urlretrieve(row.url, filepath))  # TODO log
+    filepath = pdf_file_path(item)
     if text:  # should parse pdf text
         with open(filepath) as f:
             text = pdf_to_text(f).strip()
-            row.text = text
-            row.pdf_scraped = True
+            item.text = text
+            item.pdf_scraped = True
     # turn pdf into single
     s3_key = '/thumbs/{}.jpg'.format(edims_id)
     conn = S3Connection(
@@ -149,7 +157,7 @@ def grab_pdf_single(edims_id, text=True):
     k.set_metadata('Content-Type', 'image/jpeg')
     k.set_contents_from_string(out.stdout)
     k.set_canned_acl('public-read')
-    row.thumbnail = 'http://atx-bandc-pdf.crccheck.com/thumbs/{}.jpg'.format(edims_id)
+    item.thumbnail = 'http://atx-bandc-pdf.crccheck.com/thumbs/{}.jpg'.format(edims_id)
     session.commit()
 
 
@@ -200,9 +208,9 @@ def turn_pdfs_into_images():
 
 def scan_for_missing_thumbnails():
     """Look for parsed pdfs that don't have thumbnails and give it to them."""
-    results = session.query(Item).filter_by(thumbnail=None, pdf_scraped=True)
-    for row in results:
-        edims_id = row.url.rsplit('=', 2)[-1]
+    queryset = session.query(Item).filter_by(thumbnail=None, pdf_scraped=True)
+    for item in queryset:
+        edims_id = item.edims_id
         grab_pdf_single(edims_id, text=False)  # don't need to reparse text
 
 

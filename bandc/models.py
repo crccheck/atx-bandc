@@ -35,3 +35,10 @@ class Item(Base):
 
     def __repr__(self):
         return '{} {}'.format(self.title, self.url)
+
+    @property
+    def edims_id(self):
+        """Get the EDIMS id associate with the document or None."""
+        if self.url.startswith('http://www.austintexas.gov/edims/document'):
+            return self.url.rsplit('=', 2)[-1]
+        return None
