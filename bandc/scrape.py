@@ -11,22 +11,27 @@ Options:
 from __future__ import unicode_literals
 
 import datetime
+import os
 
 from dateutil.parser import parse
 from docopt import docopt
 from lxml.html import document_fromstring
-import dataset
+from sqlalchemy.engine import create_engine
+from sqlalchemy.orm import sessionmaker
 import grequests
 import logging
 import logging.config
 import requests
-import sqlalchemy.types
 
-from settings import TABLE, PAGES, LOGGING
+from settings import PAGES, LOGGING
+from models import Base, Item
 
 
 logging.config.dictConfig(LOGGING)
 logger = logging.getLogger(__name__)
+
+session = None
+
 
 # CONSTANTS
 
@@ -89,33 +94,36 @@ def process_page(html):
     return data
 
 
-def save_page(data, table, bandc_slug):
+def save_page(data, bandc_slug):
     """
     Save page data to a `dataset` db table.
         """
-    logger.info('save_page {} {}'.format(table, bandc_slug))
+    logger.info('save_page {}'.format(bandc_slug))
 
-    # delete old data
+    # flag old data as dirty
     dates = set([x['date'] for x in data])
     for date in dates:
-        update_data = dict(
-            # SET
-            dirty=True,
-            # WHERE
-            bandc=bandc_slug,
-            date=date,
-        )
-        table.update(update_data, ('bandc', 'date'))
+        (session.query(Item).filter_by(bandc=bandc_slug, date=date)
+            .update({'dirty': True}))
 
     for row in data:
-        row['bandc'] = bandc_slug
-        row['dirty'] = False
-        table.upsert(row, ['url'])
+        # no upsert in sqlalchemy
+        old = session.query(Item).filter_by(url=row['url']).first()
+        if not old:
+            session.add(Item(bandc=bandc_slug, dirty=False, **row))
+        else:
+            # ugh there has to be a better way
+            old.dirty = False
+            old.bandc = bandc_slug
+            for k, v in row.items():
+                setattr(old, k, v)
 
-    table.delete(dirty=True)
+    # delete old dirty data
+    session.query(Item).filter_by(dirty=True).delete()
+    session.commit()
 
 
-def save_pages(table=None, deep=True):
+def save_pages(deep=True):
     """
     Save multiple pages.
 
@@ -155,8 +163,8 @@ def save_pages(table=None, deep=True):
             continue
         n_pages = get_number_of_pages(response.text) if deep else 1
         data = process_page(response.text)
-        if table is not None:
-            save_page(data, table, bandc_slug=bandc_slug)
+        if session:
+            save_page(data, bandc_slug=bandc_slug)
         # process additional pages
         # TODO DRY
         for page_no in range(2, n_pages + 1):
@@ -169,8 +177,8 @@ def save_pages(table=None, deep=True):
             response = requests.get(url, headers=headers)
             assert response.status_code == 200
             data = process_page(response.text)
-            if table is not None:
-                save_page(data, table, bandc_slug=bandc_slug)
+            if session:
+                save_page(data, bandc_slug=bandc_slug)
         # TODO pause to avoid hammering
 
 
@@ -182,30 +190,16 @@ def get_number_of_pages(html):
     return int(last_page_link[0].strip())
 
 
-def setup_table(table):
-    """Sets up the table schema if not already setup."""
-    if 'date' not in table.columns:
-        table.create_column('date', sqlalchemy.types.Date)
-    if 'dirty' not in table.columns:
-        table.create_column('dirty', sqlalchemy.types.Boolean)
-    if 'pdf_scraped' not in table.columns:
-        table.create_column('pdf_scraped', sqlalchemy.types.Boolean)
-    if 'thumbnail' not in table.columns:
-        table.create_column('thumbnail', sqlalchemy.types.String)
-    if 'text' not in table.columns:
-        table.create_column('text', sqlalchemy.types.Text)
-    if 'url' not in table.columns:
-        table.create_column('url', sqlalchemy.types.String)
-        table.create_index(['url'])  # XXX broken
-
-
 if __name__ == '__main__':
     options = docopt(__doc__)
     # print options; sys.exit()
 
     loglevel = ['WARNING', 'INFO', 'DEBUG'][options['-v']]
     logging.getLogger().setLevel(loglevel)
-    db = dataset.connect()  # uses DATABASE_URL
-    table = db[TABLE]
-    setup_table(table)
-    save_pages(table=table, deep=options['--deep'])
+
+    engine = create_engine(os.environ.get('DATABASE_URL'))
+    connection = engine.connect()
+    Base.metadata.create_all(connection)  # checkfirst=True
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    save_pages(deep=options['--deep'])

@@ -1,12 +1,13 @@
 
 test:
-	python tests.py
+	python -m unittest discover
 
 scrape:
-	python scrape.py
+	python scrape.py -v
 
 pdf:
-	python pdf.py
+	python pdf.py scrape --count=20
+	python pdf.py thumbnails
 
 samples:
 	mkdir -p $@

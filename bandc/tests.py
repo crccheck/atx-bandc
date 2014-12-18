@@ -1,14 +1,10 @@
 import datetime
 import os
-import time
 import unittest
 
-import dataset
-
 from pdf import pdf_to_text
-from scrape import (parse_date, clean_text, process_page, save_page,
+from scrape import (parse_date, clean_text, process_page,
     get_number_of_pages,
-    setup_table,
     MeetingCancelled)
 
 
@@ -36,53 +32,6 @@ class PageScraper(unittest.TestCase):
         data = process_page(html)
         self.assertEqual(len(data), 9)
         self.assertEqual(data[0]['date'], datetime.date(2014, 6, 2))
-
-    def test_save_page_works(self):
-        # bootstrap db
-        db = dataset.connect('sqlite:///:memory:')
-        table = db['test']
-        setup_table(table)
-
-        # bootstrap some data
-        html = open(os.path.join(BASE_DIR, 'samples/music.html')).read()
-        data = process_page(html)
-
-        save_page(data, table, 'test')
-        self.assertIn('date', table.columns)
-        self.assertEqual(len(table.columns), 10)
-        self.assertEqual(len(table), 9)
-        row = table.find_one()
-        scraped_at = row['scraped_at']
-        url = row['url']
-        old_pk = row['id']
-
-        time.sleep(1)  # guarantee > 1 second difference, too tired to mock
-        save_page(data, table, 'test')
-        # assert re-saving does not create any new rows
-        self.assertEqual(len(table), 9)
-        new_row = table.find_one(url=url)
-        # assert row was updated, not replaced
-        self.assertEqual(old_pk, new_row['id'])
-        self.assertEqual(scraped_at, new_row['scraped_at'])
-
-    def test_save_page_does_not_overwrite_text(self):
-        # bootstrap db
-        db = dataset.connect('sqlite:///:memory:')
-        table = db['test']
-        setup_table(table)
-
-        # bootstrap some data
-        html = open(os.path.join(BASE_DIR, 'samples/music.html')).read()
-        data = process_page(html)
-
-        save_page(data, table, 'test')
-        row = table.find_one()
-        url = row['url']
-        table.update({'text': 'test123', 'url': url}, ['url'])
-
-        save_page(data, table, 'test')
-        new_row = table.find_one(url=url)
-        self.assertEqual(new_row['text'], 'test123')
 
     def test_get_number_of_pages_works(self):
         html = open(os.path.join(BASE_DIR, 'samples/music.html')).read()
