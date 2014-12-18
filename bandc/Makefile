@@ -6,7 +6,7 @@ scrape:
 	python scrape.py -v
 
 pdf:
-	python pdf.py scrape
+	python pdf.py scrape --count=20
 	python pdf.py thumbnails
 
 samples:

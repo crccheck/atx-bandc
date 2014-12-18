@@ -11,6 +11,8 @@ Options:
 """
 from StringIO import StringIO
 from urllib import urlretrieve
+import logging
+import logging.config
 import os
 
 from boto.s3.connection import S3Connection
@@ -29,10 +31,14 @@ import boto.s3.connection
 import sh
 
 from models import Base, Item
+from settings import LOGGING
 
 
 BASE_PATH = '/tmp/bandc_pdfs/'
 
+
+logging.config.dictConfig(LOGGING)
+logger = logging.getLogger(__name__)
 
 session = None
 
@@ -101,7 +107,7 @@ def grab_pdf(chunk=8):
             Item.pdf_scraped == None,  # NOQA
             Item.url.like('http://www.austintexas.gov/edims/document.cfm%%'),
         )
-        .order_by(Item.date)
+        .order_by(Item.date.desc())
         .limit(chunk))
 
     for item in result:
@@ -119,7 +125,7 @@ def grab_pdf(chunk=8):
     session.commit()
 
 
-def grab_pdf_single(edims_id, text=True):
+def grab_pdf_single(edims_id, scrape_text=True):
     """
     Download a pdf, parse the text, and upload the thumbnail all in one.
 
@@ -128,7 +134,7 @@ def grab_pdf_single(edims_id, text=True):
     url = 'http://www.austintexas.gov/edims/document.cfm?id={}'.format(edims_id)
     item = session.query(Item).filter(Item.url == url).first()
     filepath = pdf_file_path(item)
-    if text:  # should parse pdf text
+    if scrape_text:  # should parse pdf text
         with open(filepath) as f:
             text = pdf_to_text(f).strip()
             item.text = text
@@ -150,19 +156,24 @@ def grab_pdf_single(edims_id, text=True):
     )
     k = Key(bucket)
     k.key = s3_key
-    k.set_metadata('Content-Type', 'image/jpeg')
-    k.set_contents_from_string(out.stdout)
+    k.set_contents_from_string(
+        out.stdout,
+        headers={
+            'Content-Type': 'image/jpeg',
+            'Cache-Control': 'public,max-age=15552000',  # 180 days
+        },
+    )
     k.set_canned_acl('public-read')
     item.thumbnail = 'http://atx-bandc-pdf.crccheck.com/thumbs/{}.jpg'.format(edims_id)
     session.commit()
 
 
-def scan_for_missing_thumbnails():
+def thumbnails():
     """Look for parsed pdfs that don't have thumbnails and give it to them."""
     queryset = session.query(Item).filter_by(thumbnail=None, pdf_scraped=True)
     for item in queryset:
         edims_id = item.edims_id
-        grab_pdf_single(edims_id, text=False)  # don't need to reparse text
+        grab_pdf_single(edims_id, scrape_text=False)  # don't need to reparse text
 
 
 if __name__ == '__main__':
@@ -178,7 +189,7 @@ if __name__ == '__main__':
     if options['process']:
         grab_pdf_single(options['<edims_id>'])
     elif options['thumbnails']:
-        scan_for_missing_thumbnails()
+        thumbnails()
     elif options['scrape']:
         count = int(options['--count'])
         grab_pdf(count)
