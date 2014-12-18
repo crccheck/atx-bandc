@@ -12,7 +12,7 @@ grequests==0.2.0
 project-runpy==0.3.1
 
 # pdf
-boto==2.29.1
+boto==2.34.0
 pdfminer==20140328
 sh==1.09
 

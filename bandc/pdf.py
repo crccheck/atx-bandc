@@ -2,12 +2,14 @@
 PDF Scraping.
 
 Usage:
-    pdf.py process <edims_id>
-    pdf.py scrape [options]
-    pdf.py thumbnails
+    pdf.py process <edims_id> [-v|-vv]
+    pdf.py scrape [-v|-vv] [options]
+    pdf.py thumbnails [-v|-vv]
 
 Options:
-    --count=<count>  Max number of PDFs to grab [default: 8].
+  --count=<count>  Max number of PDFs to grab [default: 8].
+  -v               INFO level verbosity
+  -vv     DEBUG level verbosity
 """
 from StringIO import StringIO
 from urllib import urlretrieve
@@ -131,6 +133,9 @@ def grab_pdf_single(edims_id, scrape_text=True):
 
     Steps can be skipped by passing in the args as `False`
     """
+    # FIXME why does this not want to work?
+    if edims_id == '223378':
+        return
     url = 'http://www.austintexas.gov/edims/document.cfm?id={}'.format(edims_id)
     item = session.query(Item).filter(Item.url == url).first()
     filepath = pdf_file_path(item)
@@ -148,16 +153,17 @@ def grab_pdf_single(edims_id, scrape_text=True):
         calling_format=boto.s3.connection.OrdinaryCallingFormat(),
     )
     bucket = conn.get_bucket(os.environ.get('AWS_BUCKET'))
+    print 'converting pdf: {}'.format(filepath)
     out = sh.convert(
         filepath + '[0]',  # force to only get 1st page
         '-thumbnail', '400x400',  # output size
         '-alpha', 'remove',  # fix black border that appears
         'jpg:-',  # force to output jpeg to stdout
     )
-    k = Key(bucket)
-    k.key = s3_key
+    jpeg_image = out.stdout
+    k = bucket.new_key(s3_key)
     k.set_contents_from_string(
-        out.stdout,
+        jpeg_image,
         headers={
             'Content-Type': 'image/jpeg',
             'Cache-Control': 'public,max-age=15552000',  # 180 days
@@ -179,6 +185,9 @@ def thumbnails():
 if __name__ == '__main__':
     options = docopt(__doc__)
     # print(options); exit()
+
+    loglevel = ['WARNING', 'INFO', 'DEBUG'][options['-v']]
+    logging.getLogger().setLevel(loglevel)
 
     engine = create_engine(os.environ.get('DATABASE_URL'))
     connection = engine.connect()
