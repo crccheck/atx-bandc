@@ -1,3 +1,12 @@
+"""
+This information is compiled from:
+http://www.austintexas.gov/department/boards-and-commissions
+
+Get the names from the form's select input, then you get the slug from
+that board's website, then you get the id from link to their meetings url.
+
+TODO automate this.
+"""
 TABLE = 'bandc_items'
 
 # CONFIGURATION
