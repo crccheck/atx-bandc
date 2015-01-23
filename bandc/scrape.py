@@ -35,6 +35,7 @@ session = None
 
 # CONSTANTS
 
+YEAR = 2015
 MEETING_DATE = 'bcic_mtgdate'
 DOCUMENT = 'bcic_doc'
 
@@ -139,7 +140,7 @@ def save_pages(deep=True):
         urls.append(
             'http://www.austintexas.gov/cityclerk/boards_commissions/'
             'meetings/{}_{}_{}.htm'
-            .format(2014, pk, '1')
+            .format(YEAR, pk, '1')
         )
     rs = (grequests.get(u, headers=headers) for u in urls)
     logging.debug('queueing {} urls'.format(len(urls)))
@@ -171,7 +172,7 @@ def save_pages(deep=True):
             url = (
                 'http://www.austintexas.gov/cityclerk/boards_commissions/'
                 'meetings/{}_{}_{}.htm'
-                .format(2014, pk, page_no)
+                .format(YEAR, pk, page_no)
             )
             logging.info(url)
             response = requests.get(url, headers=headers)
