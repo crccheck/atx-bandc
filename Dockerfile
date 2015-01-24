@@ -2,13 +2,13 @@ FROM debian:wheezy
 MAINTAINER Chris <c@crccheck.com>
 
 RUN apt-get update -qq
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -yq \
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   python2.7 \
   python-dev \
   python-pip \
   imagemagick \
   libxml2-dev libxslt1-dev \
-  libpq-dev
+  libpq-dev > /dev/null
   # libxml2-dev and libxslt1-dev needed for lxml, build-dep no workie
 
 RUN pip install --upgrade pip

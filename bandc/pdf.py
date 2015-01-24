@@ -119,7 +119,11 @@ def grab_pdf(chunk=8):
             try:
                 item.text = pdf_to_text(f).strip()
                 item.pdf_scraped = True
-            except (PDFTextExtractionNotAllowed, PDFEncryptionError, PSException):
+            except (PDFTextExtractionNotAllowed, PDFEncryptionError, PSException,
+                    # File "/usr/local/lib/python2.7/dist-packages/pdfminer/pdfpage.py", line 52, in __init__
+                    #     self.resources = resolve1(self.attrs['Resources'])
+                    # KeyError: 'Resources'
+                    KeyError):
                 item.text = ''
                 # this happens to be initialzed to NULL, so use 'False' to
                 # indicate error
