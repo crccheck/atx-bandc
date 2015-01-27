@@ -24,7 +24,7 @@ pyga==2.5.0
 Jinja2==2.7.3
 
 # heroku
-gunicorn==18.0
+waitress==0.8.9
 
 # dev
 postdoc==0.2.0
