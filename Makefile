@@ -10,6 +10,10 @@ db: ## Start the database
 	  -e POSTGRES_PASSWORD=bandcdevpassword \
 	  postgres:9.5 || docker start $(NAME)_db
 
+resetdb: ## Reset the database
+	docker rm -f $(NAME)_db
+	${MAKE} -s db
+
 docker/build: ## Build the Docker image
 	docker build -t ${IMAGE} .
 

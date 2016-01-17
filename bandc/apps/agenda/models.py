@@ -4,7 +4,13 @@ from django.db import models
 
 
 class Year(models.Model):
-    """Represents a calendar year."""
+    """
+    Represents a calendar year.
+
+    Every year gets its own set of urls, so it's helpful to have a model just
+    for the year. Not every board or commission meets every year, so knowing
+    which ones actually meet saves a lot of on scraping time.
+    """
     year = models.PositiveIntegerField()
 
     def __unicode__(self):
@@ -17,10 +23,13 @@ class BandC(models.Model):
         max_length=50,
         help_text='The id, probaly an auto-inc integer.')
     slug = models.SlugField(max_length=255)
+    homepage = models.URLField()
+    description = models.TextField(null=True, blank=True)
 
     years_active = models.ManyToManyField(Year)
 
     class Meta:
+        ordering = ('name',)
         verbose_name = 'Board or Commission'
         verbose_name_plural = 'Boards and Commissions'
 
