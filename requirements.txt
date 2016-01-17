@@ -4,6 +4,7 @@ Django==1.9.1
 docopt==0.6.2
 psycopg2==2.5.3
 SQLAlchemy==0.9.8
+dj-database-url==0.3.0
 
 # scraper
 lxml==3.3.5

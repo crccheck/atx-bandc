@@ -1,15 +1,20 @@
-IMAGE=atx-bandc
+NAME = bandc
+IMAGE = crccheck/$(NAME)
 
-help:
-	@echo "docker/build   Build the Docker image"
-	@echo "docker/scrape  Scape and process pdfs"
-	@echo "docker/pdf     Just process pdfs"
+help: ## Shows this help
+	@echo "$$(grep -h '#\{2\}' $(MAKEFILE_LIST) | sed 's/: #\{2\} /	/' | column -t -s '	')"
 
-docker/build:
-	docker build -t crccheck/${IMAGE} .
+db: ## Start the database
+	docker run --name $(NAME)_db -d \
+	  -e POSTGRES_USER=bandc \
+	  -e POSTGRES_PASSWORD=bandcdevpassword \
+	  postgres:9.5 || docker start $(NAME)_db
 
-docker/scrape:
-	docker run --rm --env-file=env-prod crccheck/${IMAGE} make scrape pdf
+docker/build: ## Build the Docker image
+	docker build -t ${IMAGE} .
 
-docker/pdf:
-	docker run --rm --env-file=env-prod crccheck/${IMAGE} make pdf
+docker/scrape: ## Scrape and process pdfs
+	docker run --rm --env-file=env-prod ${IMAGE} make scrape pdf
+
+docker/pdf: ## Just process pdfs
+	docker run --rm --env-file=env-prod ${IMAGE} make pdf
