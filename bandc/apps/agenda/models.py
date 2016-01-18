@@ -7,20 +7,6 @@ from django.db import models
 from lxml.html import document_fromstring
 
 
-class Year(models.Model):
-    """
-    Represents a calendar year.
-
-    Every year gets its own set of urls, so it's helpful to have a model just
-    for the year. Not every board or commission meets every year, so knowing
-    which ones actually meet saves a lot of on scraping time.
-    """
-    year = models.PositiveIntegerField()
-
-    def __unicode__(self):
-        return self.year
-
-
 class BandC(models.Model):
     name = models.CharField(max_length=255)
     identifier = models.CharField(
@@ -34,7 +20,6 @@ class BandC(models.Model):
     scraped_at = models.DateTimeField(
         null=True, blank=True,
         help_text='The last time documents were scraped.')
-    years_active = models.ManyToManyField(Year)
 
     class Meta:
         ordering = ('name',)

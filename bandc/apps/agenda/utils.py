@@ -5,7 +5,7 @@ import requests
 from dateutil.parser import parse
 from lxml.html import document_fromstring
 
-from .models import Year, BandC, Meeting, Document
+from .models import BandC, Meeting, Document
 
 
 logger = logging.getLogger(__name__)
