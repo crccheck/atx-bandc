@@ -1,15 +1,40 @@
-IMAGE=atx-bandc
+NAME = bandc
+IMAGE = crccheck/$(NAME)
 
-help:
-	@echo "docker/build   Build the Docker image"
-	@echo "docker/scrape  Scape and process pdfs"
-	@echo "docker/pdf     Just process pdfs"
+help: ## Shows this help
+	@echo "$$(grep -h '#\{2\}' $(MAKEFILE_LIST) | sed 's/: #\{2\} /	/' | column -t -s '	')"
 
-docker/build:
-	docker build -t crccheck/${IMAGE} .
+clean:
+	rm -rf MANIFEST
+	rm -rf build
+	rm -rf dist
+	rm -rf *.egg-info
+	find . -name "*.pyc" -delete
+	find . -name ".DS_Store" -delete
 
-docker/scrape:
-	docker run --rm --env-file=env-prod crccheck/${IMAGE} make scrape pdf
+install: ## Install requirements
+	sudo apt-get install -y imagemagick
+	pip install -r requirements.txt
 
-docker/pdf:
-	docker run --rm --env-file=env-prod crccheck/${IMAGE} make pdf
+db: ## Start the database
+	docker run --name $(NAME)_db -d \
+	  -e POSTGRES_USER=bandc \
+	  -e POSTGRES_PASSWORD=bandcdevpassword \
+	  postgres:9.5 || docker start $(NAME)_db
+
+resetdb: ## Reset the database
+	docker rm -f $(NAME)_db
+	${MAKE} -s db
+
+test: ## Run test suite
+test: clean
+	python manage.py test --keepdb
+
+docker/build: ## Build the Docker image
+	docker build -t ${IMAGE} .
+
+docker/scrape: ## Scrape and process pdfs
+	docker run --rm --env-file=env-prod ${IMAGE} make scrape pdf
+
+docker/pdf: ## Just process pdfs
+	docker run --rm --env-file=env-prod ${IMAGE} make pdf
