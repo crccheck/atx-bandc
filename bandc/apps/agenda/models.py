@@ -44,6 +44,20 @@ class BandC(models.Model):
     def __unicode__(self):
         return self.name
 
+    @property
+    def current_meeting_url_format(self):
+        """Format with (page)."""
+        return (
+            'http://www.austintexas.gov/cityclerk/boards_commissions/'
+            'meetings/%s_{}.htm' % self.identifier).format
+
+    @property
+    def historical_meeting_url_format(self):
+        """Format with (year, identifier, page)."""
+        return (
+            'http://www.austintexas.gov/cityclerk/boards_commissions/'
+            'meetings/{}_%s_{}.htm' % self.identifier).format
+
     def pull_details(self):
         """Get details about a bandc you have to get from the homepage."""
         response = requests.get(self.homepage)
@@ -64,11 +78,18 @@ class BandC(models.Model):
         self.identifier = identifier
         self.save()
 
+    def pull(self):
+        from .utils import pull_bandc
+
+        pull_bandc(self)
+
 
 class Meeting(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, null=True, blank=True)
     date = models.DateField()
-    bandc = models.ForeignKey(BandC)
+    bandc = models.ForeignKey(BandC, related_name='meetings')
+
+    scraped_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ('date',)
@@ -82,7 +103,7 @@ class Document(models.Model):
     A meeting document.
     """
     scrape_status_choices = (
-        ('scraped', 'Scraped'),
+        ('scraped', 'Scraped'),  # default
         ('toscrape', 'To Scrape'),
         ('error', 'Error Scraping'),
     )
@@ -91,32 +112,25 @@ class Document(models.Model):
     type = models.CharField(
         max_length=50,
         help_text='Document/video, etc. scraped from the css class')
-
     meeting = models.ForeignKey(Meeting)
+    url = models.URLField(unique=True)
 
-    # when this data was scraped
+    # Meta fields
+    #############
+
     scraped_at = models.DateTimeField(auto_now_add=True)
-
-    # Mark data as old so it can be deleted
-    dirty = models.BooleanField(default=False)
-
-    # Has the text been extracted? TODO base this on if `text` is null
-    # True   scraped
-    # False  not scraped
-    # None   error scraping
     scrape_status = models.CharField(
-        choices=scrape_status_choices, default='no', max_length=20,
+        choices=scrape_status_choices, default='scraped', max_length=20,
     )
+
+    # Extracted fields
+    ##################
 
     thumbnail = models.URLField(null=True, blank=True)
 
     text = models.TextField(
         null=True, blank=True,
         help_text='The text scraped from the pdf')
-
-    url = models.URLField()
-
-    bandc = models.ForeignKey(BandC)
 
     def __unicode__(self):
         return '{} {}'.format(self.title, self.url)
