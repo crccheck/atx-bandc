@@ -3,9 +3,19 @@ from __future__ import unicode_literals
 import logging
 import requests
 from dateutil.parser import parse
+from lxml import etree
 from lxml.html import document_fromstring
+from obj_update import obj_update_or_create
 
 from .models import BandC, Meeting, Document
+
+
+# CONSTANTS
+
+YEAR = 2015
+MEETING_DATE = 'bcic_mtgdate'
+MEETING_TITLE = 'bcic_mtgtype'
+DOCUMENT = 'bcic_doc'
 
 
 logger = logging.getLogger(__name__)
@@ -34,23 +44,6 @@ def populate_bandc_list():
         )
 
 
-def get_active_bandcs_for_year(year):
-    """
-    Check which bandcs met that year.
-
-    Parameters
-    ----------
-    year: int
-        The calendar year to scrape.
-    """
-
-# CONSTANTS
-
-YEAR = 2015
-MEETING_DATE = 'bcic_mtgdate'
-DOCUMENT = 'bcic_doc'
-
-
 class MeetingCancelled(Exception):
     pass
 
@@ -68,20 +61,31 @@ def clean_text(text):
     return text.lstrip('- ')
 
 
+def inner_html(node):
+    """
+    Equivalent to doing node.innerHTML if this were JavaScript.
+
+    # http://stackoverflow.com/questions/6123351/equivalent-to-innerhtml-when-using-lxml-html-to-parse-html/6396097#6396097
+    """
+    return (
+        (node.text or '') +
+        ''.join([etree.tostring(child) for child in node.iterchildren()])
+    )
+
+
 def process_page(html):
     """
     Transform the raw html into semi-structured data.
 
-    Pretend it's something you'd expect in a csv.
-
-    TODO:
-    * get the project name out of `title`
-    * deal with video rows
-    TODO handle when a previously published meeting gets cancelled
+    Returns
+    -------
+    tuple (dict, dict)
+        Returns all the meeting data, and all the documents found.
     """
     doc = document_fromstring(html)
     date = ''
-    data = []
+    meeting_data = []
+    doc_data = []
     for row in doc.xpath('//div[@id="bcic"]/h5'):
         row_class = row.attrib['class']  # assume each has only one css class
         if row_class == MEETING_DATE:
@@ -89,45 +93,68 @@ def process_page(html):
                 date = parse_date(row.text)
             except MeetingCancelled:
                 date = None
+        elif date and row_class == MEETING_TITLE:
+            # XXX assume all meeting date rows are followed by meeting title
+            meeting_data.append({
+                'date': date,
+                'title': inner_html(row),
+            })
         elif date and row_class == DOCUMENT:
             row_type = row.xpath('./a/b/text()')[0]
             url = row.xpath('./a/@href')[0]
             title = clean_text(''.join(row.xpath('./text()')).strip())
-            data.append({
+            doc_data.append({
                 'date': date,
                 'type': row_type,
                 'url': url,
                 'title': title,
             })
-    return data
+    return meeting_data, doc_data
 
 
-def save_page(data, bandc):
+def save_page(meeting_data, doc_data, bandc):
     """
     Save one page worth of data.
     """
     logger.info('save_page %s', bandc)
 
-    # # Flag old data as dirty
-    # dates = set([x['date'] for x in data])
-    # bandc.meetings.filter(date__in=dates).update(dirty=True)
-
     new_meetings = False
-    for row in data:
-        meeting, created = Meeting.objects.get_or_create(
-            bandc=bandc, date=row['date'])
+    meetings = {}
+    for row in meeting_data:
+        meeting, created = obj_update_or_create(
+            Meeting,
+            bandc=bandc, date=row['date'],
+            defaults={'title': row['title']})
+
         new_meetings = new_meetings and created
-        Document.objects.get_or_create(
+        meetings[row['date']] = {
+            'meeting': meeting,
+            'docs': set(meeting.documents.values_list('url', flat=True)),
+        }
+
+    for row in doc_data:
+        doc, created = Document.objects.get_or_create(
             url=row['url'],
-            meeting=meeting,
+            meeting=meetings[row['date']]['meeting'],
             defaults=dict(
                 title=row['title'],
                 type=row['type'],
             )
         )
+        if not created:
+            try:
+                meetings[row['date']]['docs'].remove(row['url'])
+            except KeyError:
+                pass
 
-    # # Delete old dirty data
-    # session.query(Item).filter_by(dirty=True).delete()
+    stale_documents = []
+    for meeting in meetings.values():
+        stale_documents.extend(meeting['docs'])
+
+    if stale_documents:
+        print 'These docs are stale:', stale_documents
+        Document.objects.filter(url__in=stale_documents).update(active=False)
+
     return False and new_meetings  # TODO
 
 
@@ -153,6 +180,6 @@ def pull_bandc(bandc):
         assert response.ok
 
         n_pages = get_number_of_pages(response.text)  # TODO only do this once
-        data = process_page(response.text)
+        meeting_data, doc_data = process_page(response.text)
         page_number += 1
-        process_next = save_page(data, bandc=bandc) and page_number <= n_pages
+        process_next = save_page(meeting_data, doc_data, bandc=bandc) and page_number <= n_pages

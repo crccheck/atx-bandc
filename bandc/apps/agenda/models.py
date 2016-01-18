@@ -70,15 +70,16 @@ class BandC(models.Model):
 
 
 class Meeting(models.Model):
-    title = models.CharField(max_length=255, null=True, blank=True)
+    title = models.CharField(max_length=512, null=True, blank=True)  # html
     date = models.DateField()
     bandc = models.ForeignKey(BandC, related_name='meetings')
 
     scraped_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ('-date',)
         get_latest_by = 'date'
+        ordering = ('-date',)
+        unique_together = ('date', 'bandc')
 
     def __unicode__(self):
         return '{}'.format(self.bandc, self.title or self.date)
@@ -94,7 +95,7 @@ class Document(models.Model):
         ('error', 'Error Scraping'),
     )
 
-    meeting = models.ForeignKey(Meeting)
+    meeting = models.ForeignKey(Meeting, related_name='documents')
     title = models.CharField(max_length=255)
     type = models.CharField(
         max_length=50,
