@@ -31,6 +31,9 @@ class BandC(models.Model):
     description = models.TextField(null=True, blank=True)  # allow html
 
     scrapable = models.BooleanField(default=True)
+    scraped_at = models.DateTimeField(
+        null=True, blank=True,
+        help_text='The last time documents were scraped.')
     years_active = models.ManyToManyField(Year)
 
     class Meta:
@@ -62,8 +65,22 @@ class BandC(models.Model):
         self.save()
 
 
-class Item(models.Model):
-    """An agenda item."""
+class Meeting(models.Model):
+    title = models.CharField(max_length=255)
+    date = models.DateField()
+    bandc = models.ForeignKey(BandC)
+
+    class Meta:
+        ordering = ('date',)
+
+    def __unicode__(self):
+        return self.title
+
+
+class Document(models.Model):
+    """
+    A meeting document.
+    """
     scrape_status_choices = (
         ('scraped', 'Scraped'),
         ('toscrape', 'To Scrape'),
@@ -75,8 +92,7 @@ class Item(models.Model):
         max_length=50,
         help_text='Document/video, etc. scraped from the css class')
 
-    # the date of the meeting this item came up
-    date = models.DateField()
+    meeting = models.ForeignKey(Meeting)
 
     # when this data was scraped
     scraped_at = models.DateTimeField(auto_now_add=True)
