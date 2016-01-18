@@ -1,6 +1,10 @@
 from __future__ import unicode_literals
 
+import os.path
+
+import requests
 from django.db import models
+from lxml.html import document_fromstring
 
 
 class Year(models.Model):
@@ -24,8 +28,9 @@ class BandC(models.Model):
         help_text='The id, probaly an auto-inc integer.')
     slug = models.SlugField(max_length=255)
     homepage = models.URLField()
-    description = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True)  # allow html
 
+    scrapable = models.BooleanField(default=True)
     years_active = models.ManyToManyField(Year)
 
     class Meta:
@@ -35,6 +40,26 @@ class BandC(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def pull_details(self):
+        """Get details about a bandc you have to get from the homepage."""
+        response = requests.get(self.homepage)
+        assert response.ok
+
+        doc = document_fromstring(response.text)
+
+        # TODO description
+        agenda_links = doc.xpath('//a/@href[contains(.,"cityclerk/'
+                                 'boards_commissions/meetings/")]')
+        if not agenda_links:
+            self.scrapable = False
+            self.save()
+            return
+
+        identifier = os.path.splitext(os.path.basename(
+            agenda_links[0]))[0].split('_')[-2]
+        self.identifier = identifier
+        self.save()
 
 
 class Item(models.Model):
