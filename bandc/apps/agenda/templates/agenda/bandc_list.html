@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+  <ul>
+    <li>
+      <a href="all/">All</a>
+      <a href="{% url 'bandc:feed' slug='all' %}"><small>(rss)</small></a>
+    </li>
+    {% for bandc in object_list %}
+      <li>
+         <a href="{{ todo }}/">{{ bandc }}</a>
+         <a href="{% url 'bandc:feed' slug=bandc.slug %}"><small>(rss)</small></a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
