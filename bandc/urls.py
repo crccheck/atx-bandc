@@ -4,7 +4,7 @@ from bandc.apps.agenda.feeds import BandCDocumentFeed
 
 
 urlpatterns = [
-    url(r'^feeds/all/$', BandCDocumentFeed(), name='home'),
+    url(r'^feeds/(?P<slug>[-\w]+)/$', BandCDocumentFeed(), name='bandc_feed'),
 
     url(r'^admin/', include(admin.site.urls)),
 ]

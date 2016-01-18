@@ -13,7 +13,7 @@ class BandC(models.Model):
         max_length=50,
         unique=True,
         help_text='The id, probaly an auto-inc integer.')
-    slug = models.SlugField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True)
     homepage = models.URLField()
     description = models.TextField(null=True, blank=True)  # allow html
 
