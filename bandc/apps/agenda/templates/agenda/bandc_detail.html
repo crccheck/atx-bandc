@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block page_head %}{{ title }}{% endblock %}
+
+{% block extra_style %}
+  <style>
+    h1 {
+      margin: 0 0 0.25em;
+    }
+
+    .entry {
+      border: 1px solid black;
+      margin-bottom: 1em;
+      overflow: hidden;
+    }
+
+    h2 {
+      font-size: 1em;
+      margin: 0;
+    }
+
+    .thumbnail-container {
+      float: left;
+      margin-right: 5px;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    footer {
+      font-size: 0.7em;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <h1>{{ object }}</h1>
+  <p>
+    <a href="{% url 'bandc:feed' slug=object.slug %}">RSS Feed</a>
+  </p>
+  {% for meeting in object.meetings.all|slice:":5" %}
+    <!-- FIXME hide inactive documents -->
+    {% for doc in meeting.documents.all %}
+      <article class="entry">
+        <h2>
+          {{ doc }}
+          <small>
+            <a href="{{ doc.url }}">(link)</a>
+          </small>
+        </h2>
+        <time>{{ meeting.date }}</time>
+        {% if doc.thumbnail %}
+          <div class="thumbnail-container">
+            <a href="{{ doc.url }}">
+              <img src="{{ doc.thumbnail }}" alt="">
+            </a>
+          </div>
+        {% endif %}
+        {% if doc.text %}
+          <p>
+            {{ doc.text|truncatewords:"1000" }}
+          </p>
+        {% endif %}
+        <footer>
+          Scraped at: {{ doc.scraped_at }}
+        </footer>
+      </article>
+    {% endfor %}
+  {% endfor %}
+{% endblock %}

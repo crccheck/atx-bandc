@@ -9,7 +9,7 @@
     </li>
     {% for bandc in object_list %}
       <li>
-         <a href="{{ todo }}/">{{ bandc }}</a>
+         <a href="{% url 'bandc:bandc_detail' slug=bandc.slug %}">{{ bandc }}</a>
          <a href="{% url 'bandc:feed' slug=bandc.slug %}"><small>(rss)</small></a>
       </li>
     {% endfor %}

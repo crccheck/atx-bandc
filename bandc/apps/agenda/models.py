@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import os.path
 
 import requests
+from django.core.urlresolvers import reverse
 from django.db import models
 from lxml.html import document_fromstring
 
@@ -29,6 +30,9 @@ class BandC(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('bandc:bandc_detail', kwargs={'slug': self.slug})
 
     @property
     def current_meeting_url_format(self):
