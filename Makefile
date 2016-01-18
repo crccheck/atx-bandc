@@ -4,6 +4,10 @@ IMAGE = crccheck/$(NAME)
 help: ## Shows this help
 	@echo "$$(grep -h '#\{2\}' $(MAKEFILE_LIST) | sed 's/: #\{2\} /	/' | column -t -s '	')"
 
+install: ## Install requirements
+	sudo apt-get install -y imagemagick
+	pip install -r requirements.txt
+
 db: ## Start the database
 	docker run --name $(NAME)_db -d \
 	  -e POSTGRES_USER=bandc \
