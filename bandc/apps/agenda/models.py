@@ -91,8 +91,8 @@ class Document(models.Model):
     A meeting document.
     """
     scrape_status_choices = (
-        ('scraped', 'Scraped'),  # default
-        ('toscrape', 'To Scrape'),
+        ('toscrape', 'To Scrape'),  # default
+        ('scraped', 'Scraped'),
         ('error', 'Error Scraping'),
     )
 
@@ -109,7 +109,7 @@ class Document(models.Model):
     active = models.BooleanField(default=True)
     scraped_at = models.DateTimeField(auto_now_add=True)
     scrape_status = models.CharField(
-        choices=scrape_status_choices, default='scraped', max_length=20,
+        choices=scrape_status_choices, default='toscrape', max_length=20,
     )
 
     # Extracted fields

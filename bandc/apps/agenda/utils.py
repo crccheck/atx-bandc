@@ -167,6 +167,9 @@ def get_number_of_pages(html):
 
 
 def pull_bandc(bandc):
+    """
+    Get info about all the meetings for the most recent year.
+    """
     headers = {
         # TODO pull version from VERSION
         'User-Agent': 'atx_bandc/0.2.0 http://atx-bandc-feed.herokuapp.com/',

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django_object_actions import DjangoObjectActions
 
 from .models import BandC, Meeting, Document
 
@@ -21,6 +22,12 @@ class MeetingAdmin(admin.ModelAdmin):
 
 
 @admin.register(Document)
-class DocumentAdmin(admin.ModelAdmin):
+class DocumentAdmin(DjangoObjectActions, admin.ModelAdmin):
     list_display = ('__unicode__', 'edims_id', 'date')
     raw_id_fields = ('meeting', )
+
+    def pdf(self, request, obj):
+        from .pdf import process_pdf
+        process_pdf(obj)
+
+    objectactions = ('pdf', )

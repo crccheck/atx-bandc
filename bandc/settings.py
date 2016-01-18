@@ -25,6 +25,7 @@ INSTALLED_APPS = (
 
     # support
     'django_extensions',
+    'django_object_actions',
 )
 
 MIDDLEWARE_CLASSES = (

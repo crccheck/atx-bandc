@@ -11,8 +11,6 @@ Options:
   -v               INFO level verbosity
   -vv     DEBUG level verbosity
 """
-from StringIO import StringIO
-from urllib import urlretrieve
 import logging
 import logging.config
 import os
@@ -20,12 +18,6 @@ import os
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from docopt import docopt
-from pdfminer.converter import TextConverter
-from pdfminer.pdfdocument import PDFDocument, PDFEncryptionError
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.pdfpage import PDFPage, PDFTextExtractionNotAllowed
-from pdfminer.pdfparser import PDFParser
-from pdfminer.psparser import PSException
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import sessionmaker
 import boto
@@ -34,9 +26,6 @@ import sh
 
 from models import Base, Item
 from settings import LOGGING
-
-
-BASE_PATH = '/tmp/bandc_pdfs/'
 
 
 logging.config.dictConfig(LOGGING)
@@ -61,74 +50,6 @@ def edims_has_thumb(edims_id):
     if row and row.thumbnail != thumb_url:
         print('updating thumbnail url for {}'.format(edims_id))
         row.thumbnail = thumb_url
-
-
-def pdf_to_text(f):
-    """Get the text from pdf file handle."""
-    parser = PDFParser(f)
-    document = PDFDocument(parser)
-    rsrcmgr = PDFResourceManager()
-    outfp = StringIO()
-    device = TextConverter(rsrcmgr, outfp, codec='utf-8', laparams=None,
-       imagewriter=None)
-    interpreter = PDFPageInterpreter(rsrcmgr, device)
-    for page in PDFPage.get_pages(f, [], document):
-        interpreter.process_page(page)
-    device.close()
-    f.close()
-    return outfp.getvalue()
-
-
-def pdf_file_path(item):
-    """
-    Downloads the pdf locally and return the path it.
-
-    TODO force re-download pdf because sometimes they're corrupted
-    """
-    filename = item.url.rsplit('=', 2)[1] + '.pdf'
-    filepath = os.path.join(BASE_PATH, filename)
-    print u'{0.date}: {0.id}: {0.url}'.format(item)
-    if not os.path.isdir(BASE_PATH):
-        os.makedirs(BASE_PATH)
-    # check if file was already downloaded
-    if not os.path.isfile(filepath):
-        # download pdf to temporary file
-        print urlretrieve(item.url, filepath)  # TODO log
-    return filepath
-
-
-def grab_pdf(chunk=8):
-    """
-    Fill in missing pdf information.
-
-    This is separate from the main scraper because this is more intensive and
-    secondary.
-    """
-    result = (
-        session.query(Item).filter(
-            Item.pdf_scraped == None,  # NOQA
-            Item.url.like('http://www.austintexas.gov/edims/document.cfm%%'),
-        )
-        .order_by(Item.date.desc())
-        .limit(chunk))
-
-    for item in result:
-        filepath = pdf_file_path(item)
-        # parse and save pdf text
-        with open(filepath) as f:
-            try:
-                item.text = pdf_to_text(f).strip()
-                item.pdf_scraped = True
-            except (PDFTextExtractionNotAllowed, PDFEncryptionError, PSException,
-                    # File "/usr/local/lib/python2.7/dist-packages/pdfminer/pdfpage.py", line 52, in __init__
-                    #     self.resources = resolve1(self.attrs['Resources'])
-                    # KeyError: 'Resources'
-                    KeyError):
-                item.text = ''
-                # this happens to be initialzed to NULL, so use 'False' to
-                # indicate error
-                item.pdf_scraped = False
-    session.commit()
 
 
 def grab_pdf_single(edims_id, scrape_text=True):
