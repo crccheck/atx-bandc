@@ -4,6 +4,14 @@ IMAGE = crccheck/$(NAME)
 help: ## Shows this help
 	@echo "$$(grep -h '#\{2\}' $(MAKEFILE_LIST) | sed 's/: #\{2\} /	/' | column -t -s '	')"
 
+clean:
+	rm -rf MANIFEST
+	rm -rf build
+	rm -rf dist
+	rm -rf *.egg-info
+	find . -name "*.pyc" -delete
+	find . -name ".DS_Store" -delete
+
 install: ## Install requirements
 	sudo apt-get install -y imagemagick
 	pip install -r requirements.txt
@@ -19,6 +27,7 @@ resetdb: ## Reset the database
 	${MAKE} -s db
 
 test: ## Run test suite
+test: clean
 	python manage.py test --keepdb
 
 docker/build: ## Build the Docker image
