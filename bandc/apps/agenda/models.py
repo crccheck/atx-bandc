@@ -92,10 +92,11 @@ class Meeting(models.Model):
     scraped_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ('date',)
+        ordering = ('-date',)
+        get_latest_by = 'date'
 
     def __unicode__(self):
-        return self.title
+        return '{}'.format(self.bandc, self.title or self.date)
 
 
 class Document(models.Model):
@@ -108,16 +109,17 @@ class Document(models.Model):
         ('error', 'Error Scraping'),
     )
 
+    meeting = models.ForeignKey(Meeting)
     title = models.CharField(max_length=255)
     type = models.CharField(
         max_length=50,
         help_text='Document/video, etc. scraped from the css class')
-    meeting = models.ForeignKey(Meeting)
-    url = models.URLField(unique=True)
+    url = models.URLField('URL', unique=True)
 
     # Meta fields
     #############
 
+    active = models.BooleanField(default=True)
     scraped_at = models.DateTimeField(auto_now_add=True)
     scrape_status = models.CharField(
         choices=scrape_status_choices, default='scraped', max_length=20,
@@ -130,10 +132,13 @@ class Document(models.Model):
 
     text = models.TextField(
         null=True, blank=True,
-        help_text='The text scraped from the pdf')
+        help_text='The text extracted from the pdf')
+
+    class Meta:
+        ordering = ('-meeting__date',)
 
     def __unicode__(self):
-        return '{} {}'.format(self.title, self.url)
+        return '{}'.format(self.title or self.type)
 
     @property
     def edims_id(self):
@@ -141,3 +146,7 @@ class Document(models.Model):
         if self.url.startswith('http://www.austintexas.gov/edims/document'):
             return self.url.rsplit('=', 2)[-1]
         return None
+
+    @property
+    def date(self):
+        return self.meeting.date

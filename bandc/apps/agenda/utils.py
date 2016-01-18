@@ -119,6 +119,7 @@ def save_page(data, bandc):
         new_meetings = new_meetings and created
         Document.objects.get_or_create(
             url=row['url'],
+            meeting=meeting,
             defaults=dict(
                 title=row['title'],
                 type=row['type'],

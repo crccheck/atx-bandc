@@ -1,12 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Year, BandC
-
-
-@admin.register(Year)
-class YearAdmin(admin.ModelAdmin):
-    pass
+from .models import BandC, Meeting, Document
 
 
 @admin.register(BandC)
@@ -18,3 +13,14 @@ class BandCAdmin(admin.ModelAdmin):
             obj.homepage,
             obj.homepage.split('//')[1],  # don't show sceme to save space
         ))
+
+
+@admin.register(Meeting)
+class MeetingAdmin(admin.ModelAdmin):
+    list_display = ('bandc', 'date')
+
+
+@admin.register(Document)
+class DocumentAdmin(admin.ModelAdmin):
+    list_display = ('__unicode__', 'edims_id', 'date')
+    raw_id_fields = ('meeting', )
