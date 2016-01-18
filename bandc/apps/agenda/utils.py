@@ -182,4 +182,5 @@ def pull_bandc(bandc):
         n_pages = get_number_of_pages(response.text)  # TODO only do this once
         meeting_data, doc_data = process_page(response.text)
         page_number += 1
-        process_next = save_page(meeting_data, doc_data, bandc=bandc) and page_number <= n_pages
+        process_next = save_page(meeting_data, doc_data, bandc=bandc) and (
+            page_number <= n_pages)
