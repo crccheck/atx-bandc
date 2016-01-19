@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import os.path
 
 import requests
+from django.core.urlresolvers import reverse
 from django.db import models
 from lxml.html import document_fromstring
 
@@ -11,9 +12,10 @@ class BandC(models.Model):
     name = models.CharField(max_length=255)
     identifier = models.CharField(
         max_length=50,
+        null=True, blank=True,  # we don't get this info until later
         unique=True,
         help_text='The id, probaly an auto-inc integer.')
-    slug = models.SlugField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True)
     homepage = models.URLField()
     description = models.TextField(null=True, blank=True)  # allow html
 
@@ -29,6 +31,9 @@ class BandC(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('bandc:bandc_detail', kwargs={'slug': self.slug})
 
     @property
     def current_meeting_url_format(self):

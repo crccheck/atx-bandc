@@ -1,1 +1,1 @@
-web: waitress-serve --port=$PORT bandc.feed:app
+web: waitress-serve --port=$PORT bandc.wsgi:application

@@ -3,7 +3,6 @@ from django.contrib import admin
 
 
 urlpatterns = [
-    # url(r'^$', 'bandc.views.home', name='home'),
-
     url(r'^admin/', include(admin.site.urls)),
+    url(r'', include('bandc.apps.agenda.urls', namespace='bandc')),
 ]

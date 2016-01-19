@@ -1,14 +1,26 @@
 from django.core.management.base import BaseCommand, CommandError
+
 from bandc.apps.agenda.models import BandC
+from bandc.apps.agenda.utils import populate_bandc_list
 
 
 class Command(BaseCommand):
     help = 'Scrape'
 
     def add_arguments(self, parser):
-        parser.add_argument('identifier', nargs='+')
+        parser.add_argument(
+            '--bandc', action='store_true',
+            help='Initialize or update the list of BandCs.')
+        parser.add_argument('identifier', nargs='*')
 
     def handle(self, *args, **options):
+        if options['bandc']:
+            populate_bandc_list()
+
+            for bandc in BandC.objects.filter(identifier=None):
+                print bandc
+                bandc.pull_details()
+
         queryset = BandC.objects.filter(scrapable=True)
         if options['identifier']:
             queryset = queryset.filter(identifier__in=options['identifier'])
