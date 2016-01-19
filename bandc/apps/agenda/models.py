@@ -12,6 +12,7 @@ class BandC(models.Model):
     name = models.CharField(max_length=255)
     identifier = models.CharField(
         max_length=50,
+        null=True, blank=True,  # we don't get this info until later
         unique=True,
         help_text='The id, probaly an auto-inc integer.')
     slug = models.SlugField(max_length=255, unique=True)
