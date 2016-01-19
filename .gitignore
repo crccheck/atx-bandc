@@ -4,5 +4,7 @@ env-*
 *.db
 .ipynb_checkpoints/
 
+celerybeat-schedule
+
 # ignore ipython notebook for now
 *.ipynb
