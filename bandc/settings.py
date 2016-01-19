@@ -132,8 +132,8 @@ LOGGING = {
 
 # Celery tasks
 
-BROKER_URL = 'django://'
-CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
+BROKER_URL = env.get('REDIS_URL')
+CELERY_RESULT_BACKEND = env.get('REDIS_URL')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

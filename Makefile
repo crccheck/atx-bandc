@@ -17,7 +17,7 @@ install: ## Install requirements
 	pip install -r requirements.txt
 
 workers: ## Start celery workers
-	celery --app=bandc worker --beat --loglevel=info
+	python manage.py celery --app=bandc worker --beat --loglevel=info
 
 db: ## Start the database
 	docker run --name $(NAME)_db -d \
