@@ -3,7 +3,7 @@ import os
 BASE_DIR = os.path.dirname(__file__)
 
 import dj_database_url
-import raven
+# import raven
 from project_runpy import env
 
 SECRET_KEY = env.get('SECRET_KEY', 'Rotom')
@@ -94,7 +94,7 @@ STATICFILES_DIRS = (
 
 RAVEN_CONFIG = {
     'dsn': env.get('RAVEN_DSN'),
-    'release': raven.fetch_git_sha(os.path.dirname(BASE_DIR)),
+    # 'release': raven.fetch_git_sha(os.path.dirname(BASE_DIR)),
 }
 
 LOGGING = {
