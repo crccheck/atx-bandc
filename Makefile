@@ -16,6 +16,9 @@ install: ## Install requirements
 	sudo apt-get install -y imagemagick
 	pip install -r requirements.txt
 
+workers: ## Start celery workers
+	python manage.py celery --app=bandc worker --beat --loglevel=info
+
 db: ## Start the database
 	docker run --name $(NAME)_db -d \
 	  -e POSTGRES_USER=bandc \
