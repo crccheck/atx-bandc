@@ -8,6 +8,7 @@ from lxml.html import document_fromstring
 from obj_update import obj_update_or_create
 
 from .models import BandC, Meeting, Document
+from .tasks import get_details_from_pdf
 
 
 # CONSTANTS
@@ -118,6 +119,7 @@ def save_page(meeting_data, doc_data, bandc):
     """
     logger.info('save_page %s', bandc)
 
+    # Populate meetings
     new_meetings = False
     meetings = {}
     for row in meeting_data:
@@ -132,6 +134,7 @@ def save_page(meeting_data, doc_data, bandc):
             'docs': set(meeting.documents.values_list('url', flat=True)),
         }
 
+    # Populate documents
     for row in doc_data:
         doc, created = Document.objects.get_or_create(
             url=row['url'],
@@ -146,11 +149,15 @@ def save_page(meeting_data, doc_data, bandc):
                 meetings[row['date']]['docs'].remove(row['url'])
             except KeyError:
                 pass
+        if True and doc.scrape_status == 'toscrape':
+            get_details_from_pdf.delay(doc.pk)
 
+    # Look for stale documents
     stale_documents = []
     for meeting in meetings.values():
         stale_documents.extend(meeting['docs'])
 
+    # Deal with stale documents
     if stale_documents:
         print 'These docs are stale:', stale_documents
         Document.objects.filter(url__in=stale_documents).update(active=False)

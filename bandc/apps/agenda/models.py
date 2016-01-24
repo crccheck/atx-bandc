@@ -99,6 +99,7 @@ class Document(models.Model):
         ('toscrape', 'To Scrape'),  # default
         ('scraped', 'Scraped'),
         ('error', 'Error Scraping'),
+        ('unscrapable', 'Unscrapable'),
     )
 
     meeting = models.ForeignKey(Meeting, related_name='documents')

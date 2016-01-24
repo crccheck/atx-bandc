@@ -100,6 +100,11 @@ def upload_thumb(document, thumbnail):
 
 
 def process_pdf(document):
+    if not document.edims_id:
+        document.scrape_status = 'unscrapable'
+        document.save()
+        return
+
     filepath = pdf_file_path(document)
     # Parse and save pdf text
     with open(filepath) as f:

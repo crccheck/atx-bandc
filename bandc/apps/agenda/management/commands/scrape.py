@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from bandc.apps.agenda.models import BandC
 from bandc.apps.agenda.utils import populate_bandc_list
+from bandc.apps.agenda.tasks import pull
 
 
 class Command(BaseCommand):
@@ -15,6 +16,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options['bandc']:
+            self.stdout.write('Updating list of BandCs')
             populate_bandc_list()
 
             for bandc in BandC.objects.filter(identifier=None):
@@ -32,10 +34,13 @@ class Command(BaseCommand):
         # priority buckets so defunct BandCs aren't scraped
 
         if count:
-            self.stdout.write('count: {}'.format(queryset.count()))
+            self.stdout.write('Checking {} BandCs'.format(queryset.count()))
         else:
             raise CommandError('No BandCs to scrape')
 
         for bandc in queryset:
-            bandc.pull()
+            if True:
+                pull.delay(bandc.pk)
+            else:
+                bandc.pull()
             self.stdout.write(self.style.SUCCESS('Scraped "%s"' % bandc))

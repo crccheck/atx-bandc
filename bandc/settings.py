@@ -3,6 +3,7 @@ import os
 BASE_DIR = os.path.dirname(__file__)
 
 import dj_database_url
+import raven
 from project_runpy import env
 
 SECRET_KEY = env.get('SECRET_KEY', 'Rotom')
@@ -25,9 +26,9 @@ INSTALLED_APPS = (
 
     # support
     'djcelery',
+    'raven.contrib.django.raven_compat',
     'django_extensions',
     'django_object_actions',
-    'kombu.transport.django',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -90,6 +91,11 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
+
+RAVEN_CONFIG = {
+    'dsn': env.get('RAVEN_DSN'),
+    'release': raven.fetch_git_sha(os.path.dirname(BASE_DIR)),
+}
 
 LOGGING = {
     'version': 1,

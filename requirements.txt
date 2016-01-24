@@ -7,6 +7,9 @@ django-object-actions==0.7.0
 celery==3.1.19
 django-celery==3.1.17
 redis==2.10.5
+# For monitoring celery jobs
+# flower==0.8.4
+raven==5.10.1
 
 # scraper
 lxml==3.5.0
