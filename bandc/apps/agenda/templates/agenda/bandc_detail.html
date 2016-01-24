@@ -3,72 +3,68 @@
 {% block page_head %}{{ title }}{% endblock %}
 
 {% block extra_style %}
+  <link rel="alternate" type="application/rss+xml" href="{% url 'bandc:feed' slug=view.kwargs.slug %">
   <style>
-    h1 {
-      margin: 0 0 0.25em;
-    }
-
     .entry {
-      border: 1px solid black;
+      backround: #EEE;
+      border: 1px solid #666;
       margin-bottom: 1em;
       overflow: hidden;
-    }
-
-    h2 {
-      font-size: 1em;
-      margin: 0;
+      padding: 0.5em;
     }
 
     .thumbnail-container {
       float: left;
       margin-right: 5px;
     }
-
-    p {
-      margin: 0;
-    }
-
-    footer {
-      font-size: 0.7em;
-    }
   </style>
 {% endblock %}
 
 {% block content %}
   {% if bandc %}
-    <h1>{{ bandc }}</h1>
-    <a href="{{ bandc.homepage }}">Homepage</a>
+    <h2>
+      {{ bandc }}
+      <small>
+        <a href="{{ bandc.homepage }}" target="_blank">Homepage</a>
+      </small>
+    </h2>
     <!-- {{ bandc.description }} -->
-    <p>
-      <a href="{% url 'bandc:feed' slug=bandc.slug %}">RSS Feed</a>
-    </p>
   {% else %}
-    <h1>All documents</h1>
+    <h2>All documents</h2>
   {% endif %}
+  <p>
+    <a href="{% url 'bandc:feed' slug=view.kwargs.slug %}">RSS feed for this page</a>
+  </p>
 
   {% for doc in object_list %}
     <article class="entry">
-      <h2>
+      <span class="label label-default">
+        {% if not bandc %}
+          {{ doc.meeting.bandc }} -
+        {% endif %}
+        {{ doc.meeting.date }}
+      </span>
+      <h4>
         {{ doc }}
         <small>
-          <a href="{{ doc.url }}">(link)</a>
+          <a href="{{ doc.url }}" target="_blank">(link)</a>
         </small>
-      </h2>
+      </h4>
       <time>{{ meeting.date }}</time>
       {% if doc.thumbnail %}
         <div class="thumbnail-container">
-          <a href="{{ doc.url }}">
+          <a href="{{ doc.url }}" class="thumbnail" target="_blank">
             <img src="{{ doc.thumbnail }}" alt="">
           </a>
         </div>
       {% endif %}
       {% if doc.text %}
         <p>
-          {{ doc.text|truncatewords:"1000" }}
+          {{ doc.text|truncatewords:"400" }}
         </p>
       {% endif %}
       <footer>
-        Scraped at: {{ doc.scraped_at }}
+        <small>Scraped at: {{ doc.scraped_at }}</small>
       </footer>
     </article>
   {% endfor %}

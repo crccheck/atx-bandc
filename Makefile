@@ -1,5 +1,5 @@
 NAME = bandc
-IMAGE = crccheck/$(NAME)
+IMAGE = crccheck/atx-bandc:develop
 PORT ?= 8000
 
 help: ## Shows this help
@@ -42,3 +42,14 @@ docker/build: ## Build the Docker image
 
 docker/scrape: ## Scrape and process pdfs
 	docker run --rm --env-file=env-prod ${IMAGE} python manage.py scrape
+
+docker/converttest:
+	docker run --rm ${IMAGE} \
+	convert \
+	"./bandc/apps/agenda/tests/samples/document_559F43E9-A324-12E8-80CA01C0F02507A7.pdf" \
+	-thumbnail 400x400 \
+	-alpha remove \
+	jpg:/tmp/test.jpg
+
+docker/bash:
+	docker run --rm -it ${IMAGE} /bin/bash
