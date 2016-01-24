@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block page_head %}{{ object }}{% endblock %}
+
+{% block content %}
+  <article class="entry">
+    <span class="label label-default">
+      {{ object.meeting.bandc }} -
+      {{ object.meeting.date }}
+    </span>
+    <h4>
+      {{ object }}
+      <small>
+        <a href="{{ object.url }}" target="_blank">(original link)</a>
+      </small>
+    </h4>
+    <h5>
+      {{ object.type }}
+    </h5>
+    <time>{{ meeting.date }}</time>
+    {% if object.thumbnail %}
+      <div class="thumbnail-container pull-left" style="margin: 0 0.5em 0.25em 0;">
+        <a href="{{ object.url }}" class="thumbnail" target="_blank">
+          <img src="{{ object.thumbnail }}" alt="">
+        </a>
+      </div>
+    {% endif %}
+    {% if object.text %}
+      <p>
+        {{ object.text }}
+      </p>
+    {% endif %}
+    <footer>
+      <small>Scraped at: {{ object.scraped_at }}</small>
+    </footer>
+  </article>
+{% endblock %}

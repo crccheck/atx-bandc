@@ -50,15 +50,17 @@
         {{ doc.meeting.date }}
       </span>
       <h4>
-        {{ doc }}
+        <a href="{% url 'bandc:document_detail' bandc_slug=doc.meeting.bandc.slug pk=doc.pk %}">
+          {{ doc }}
+        </a>
         <small>
-          <a href="{{ doc.url }}" target="_blank">(link)</a>
+          <a href="{{ doc.url }}" target="_blank">(original link)</a>
         </small>
       </h4>
       <time>{{ meeting.date }}</time>
       {% if doc.thumbnail %}
         <div class="thumbnail-container">
-          <a href="{{ doc.url }}" class="thumbnail" target="_blank">
+          <a href="{% url 'bandc:document_detail' bandc_slug=doc.meeting.bandc.slug pk=doc.pk %}" class="thumbnail">
             <img src="{{ doc.thumbnail }}" alt="">
           </a>
         </div>
