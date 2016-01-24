@@ -3,7 +3,8 @@ MAINTAINER Chris <c@crccheck.com>
 
 RUN apt-get update -qq && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    imagemagick \
+    # For pdfs
+    ghostscript imagemagick \
     # For lxml
     libxml2-dev libxslt1-dev \
     libpq-dev \
