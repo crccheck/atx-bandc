@@ -2,6 +2,10 @@
 
 
 {% block content %}
+  <p>
+    RSS feeds for most <a href="http://www.austintexas.gov/department/boards-and-commissions" target="_blank">City
+      of Austin boards and commissions</a>.
+  </p>
   <ul>
     <li>
       <a href="{% url 'bandc:bandc_detail' slug='all' %}">All</a>
@@ -14,4 +18,8 @@
       </li>
     {% endfor %}
   </ul>
+  <footer><small>
+    All times are Central. All data is publicly available.
+    <a href="https://github.com/crccheck/atx-bandc" target="_blank">Source code available here.</a>
+  </small></footer>
 {% endblock %}

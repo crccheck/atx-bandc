@@ -8,7 +8,8 @@
   <style>
     .entry {
       backround: #EEE;
-      border: 1px solid #666;
+      border: 1px solid #888;
+      border-left: 0.4em solid #666;
       margin-bottom: 1em;
       overflow: hidden;
       padding: 0.5em;
@@ -16,7 +17,7 @@
 
     .thumbnail-container {
       float: left;
-      margin-right: 5px;
+      margin-right: 0.9em;
     }
   </style>
 {% endblock %}
@@ -26,7 +27,9 @@
     <h2>
       {{ bandc }}
       <small>
-        <a href="{{ bandc.homepage }}" target="_blank">Homepage</a>
+        <a href="{{ bandc.homepage }}" target="_blank">
+          Homepage <i class="fa fa-external-link"></i>
+        </a>
       </small>
     </h2>
     <!-- {{ bandc.description }} -->
@@ -34,7 +37,9 @@
     <h2>All documents</h2>
   {% endif %}
   <p>
-    <a href="{% url 'bandc:feed' slug=view.kwargs.slug %}">RSS feed for this page</a>
+    <a href="{% url 'bandc:feed' slug=view.kwargs.slug %}">
+      <i class="fa fa-rss-square"></i> RSS feed for this page
+    </a>
   </p>
 
   <div class="text-center">
@@ -42,7 +47,7 @@
   </div>
 
   {% for doc in object_list %}
-    <article class="entry">
+    <article class="entry {{ bandc.slug|slugify }}">
       <span class="label label-default">
         {% if not bandc %}
           {{ doc.meeting.bandc }} -
@@ -54,7 +59,9 @@
           {{ doc }}
         </a>
         <small>
-          <a href="{{ doc.url }}" target="_blank">(original link)</a>
+          <a href="{{ doc.url }}" target="_blank">
+            (original link) <i class="fa fa-external-link"></i>
+          </a>
         </small>
       </h4>
       <time>{{ meeting.date }}</time>
@@ -69,6 +76,8 @@
         <p>
           {{ doc.text|truncatewords:"400" }}
         </p>
+      {% else %}
+        <p>{{ doc.type }}</p>
       {% endif %}
       <footer>
         <small>Scraped at: {{ doc.scraped_at }}</small>

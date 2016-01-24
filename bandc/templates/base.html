@@ -5,11 +5,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block head_title %}{% endblock %}</title>
-  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
   {% block extra_style %}{% endblock %}
 </head>
 <body>
   <div class="container-fluid">
+    <ol class="breadcrumb">
+      <li><a href="{% url 'bandc:bandc_list'%}">Home</a></li>
+      {% block breadcrumbs %}{% endblock %}
+    </ol>
     {% block content %}{% endblock %}
   </div>
   <script>

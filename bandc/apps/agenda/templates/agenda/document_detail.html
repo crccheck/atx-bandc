@@ -2,6 +2,10 @@
 
 {% block page_head %}{{ object }}{% endblock %}
 
+{% block breadcrumbs %}
+  <li><a href="{% url 'bandc:bandc_detail' slug=object.meeting.bandc.slug %}">{{ object.meeting.bandc }}</a></li>
+{% endblock %}
+
 {% block content %}
   <article class="entry">
     <span class="label label-default">
