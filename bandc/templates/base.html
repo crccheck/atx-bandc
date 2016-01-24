@@ -6,14 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block head_title %}{% endblock %}</title>
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-  <!-- <link rel="stylesheet" href="{% static 'app.css' %}"> -->
   {% block extra_style %}{% endblock %}
 </head>
 <body>
   <div class="container-fluid">
     {% block content %}{% endblock %}
   </div>
-  <!-- <script src="{% static 'app.js' %}"></script> -->
+  <script>
+    (function(c,o,r,g,i,s){c.GoogleAnalyticsObject=g;c[g]||(c[g]=
+    function(){(c[g].q=c[g].q||[]).push(arguments)});c[g].g=+new Date;
+    i=o.createElement(r);s=o.getElementsByTagName(r)[0];
+    i.src='//www.google-analytics.com/analytics.js';
+    s.parentNode.insertBefore(i,s)}(window,document,'script','ga'));
+    ga('create','UA-6535799-8', 'auto');ga('send','pageview');
+  </script>
   {% block extra_script %}{% endblock %}
 </body>
 </html>
