@@ -6,6 +6,7 @@ from .models import BandC, Document
 
 class BandCDetail(ListView):
     template_name = 'agenda/bandc_detail.html'
+    paginate_by = 20
 
     def get_queryset(self, **kwargs):
         queryset = (
@@ -19,7 +20,7 @@ class BandCDetail(ListView):
             self.bandc = get_object_or_404(BandC, slug=self.kwargs['slug'])
             queryset = queryset.filter(meeting__bandc=self.bandc)
 
-        return queryset[:50]
+        return queryset
 
     def get_context_data(self, **kwargs):
         data = super(BandCDetail, self).get_context_data(**kwargs)

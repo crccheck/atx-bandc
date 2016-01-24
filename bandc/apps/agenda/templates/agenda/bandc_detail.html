@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load bootstrap_pagination %}
 
 {% block page_head %}{{ title }}{% endblock %}
 
@@ -36,6 +37,10 @@
     <a href="{% url 'bandc:feed' slug=view.kwargs.slug %}">RSS feed for this page</a>
   </p>
 
+  <div class="text-center">
+    {% bootstrap_paginate page_obj range=10 show_first_last="true" %}
+  </div>
+
   {% for doc in object_list %}
     <article class="entry">
       <span class="label label-default">
@@ -68,4 +73,8 @@
       </footer>
     </article>
   {% endfor %}
+
+  <div class="text-center">
+    {% bootstrap_paginate page_obj range=10 show_first_last="true" %}
+  </div>
 {% endblock %}
