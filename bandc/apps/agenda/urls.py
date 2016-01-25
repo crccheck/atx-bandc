@@ -1,13 +1,13 @@
 from django.conf.urls import url
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView
 
 from .feeds import BandCDocumentFeed
-from .models import BandC, Document
-from .views import BandCDetail
+from .models import Document
+from .views import BandCList, BandCDetail
 
 
 urlpatterns = [
-    url(r'^$', ListView.as_view(model=BandC), name='bandc_list'),
+    url(r'^$', BandCList.as_view(), name='bandc_list'),
     url(r'^(?P<slug>[^/]+)/$', BandCDetail.as_view(), name='bandc_detail'),
     url(r'^feeds/(?P<slug>[^/]+)/$', BandCDocumentFeed(), name='feed'),
     url(r'^(?P<bandc_slug>[^/]+)/(?P<pk>\d+)/$',

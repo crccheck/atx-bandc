@@ -4,6 +4,13 @@ from django.shortcuts import get_object_or_404
 from .models import BandC, Document
 
 
+class BandCList(ListView):
+    model = BandC
+
+    def get_queryset(self):
+        return super(BandCList, self).get_queryset().select_related('latest_meeting')
+
+
 class BandCDetail(ListView):
     template_name = 'agenda/bandc_detail.html'
     paginate_by = 20
