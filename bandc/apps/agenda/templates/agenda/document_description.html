@@ -1,10 +1,10 @@
+{% if obj.thumbnail %}
+  <img src="{{ obj.thumbnail }}" alt="" style="float: left; margin-right: 5px">
+{% endif %}
 {% if obj.text %}
-  {% if obj.thumbnail %}
-    <img src="{{ obj.thumbnail }}" alt="" style="float: left; margin-right: 5px">
-  {% endif %}
   <p>
-    {{ obj.text|truncatewords:100 }}
+    {{ obj.rss_text|truncatewords:100 }}
   </p>
 {% else %}
-  {{ obj.type }}
+  <p>{{ obj.type }}</p>
 {% endif %}

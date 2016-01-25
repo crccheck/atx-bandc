@@ -1,11 +1,15 @@
 from __future__ import unicode_literals
 
 import os.path
+import re
 
 import requests
 from django.core.urlresolvers import reverse
 from django.db import models
 from lxml.html import document_fromstring
+
+
+bad_chars = re.compile(r'[\x00-\x08\x0B-\x0C\x0E-\x1F]')
 
 
 class BandC(models.Model):
@@ -138,8 +142,17 @@ class Document(models.Model):
         """Get the EDIMS id associate with the document or None."""
         if self.url.startswith('http://www.austintexas.gov/edims/document'):
             return self.url.rsplit('=', 2)[-1]
+
         return None
 
     @property
     def date(self):
         return self.meeting.date
+
+    @property
+    def rss_text(self):
+        """text field safe for xml"""
+        if not self.text:
+            return self.text
+
+        return bad_chars.sub('', self.text)
