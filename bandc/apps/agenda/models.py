@@ -27,6 +27,7 @@ class BandC(models.Model):
     scraped_at = models.DateTimeField(
         null=True, blank=True,
         help_text='The last time documents were scraped.')
+    latest_meeting = models.ForeignKey('Meeting', null=True, blank=True, related_name='+')
 
     class Meta:
         ordering = ('name',)

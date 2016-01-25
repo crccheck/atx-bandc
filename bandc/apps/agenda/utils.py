@@ -133,6 +133,9 @@ def save_page(meeting_data, doc_data, bandc):
             'meeting': meeting,
             'docs': set(meeting.documents.values_list('url', flat=True)),
         }
+    if not bandc.latest_meeting or bandc.latest_meeting.date < row['date']:
+        bandc.latest_meeting = meeting
+        bandc.save()
 
     # Populate documents
     for row in doc_data:

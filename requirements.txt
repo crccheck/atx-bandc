@@ -12,6 +12,7 @@ redis==2.10.5
 # For monitoring celery jobs
 # flower==0.8.4
 raven==5.10.1
+factory-boy==2.6.0
 
 # scraper
 lxml==3.5.0
