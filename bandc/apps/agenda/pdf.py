@@ -115,9 +115,12 @@ def process_pdf(document):
                 # File "/usr/local/lib/python2.7/dist-packages/pdfminer/pdfpage.py", line 52, in __init__
                 #     self.resources = resolve1(self.attrs['Resources'])
                 # KeyError: 'Resources'
-                KeyError):
+                KeyError,
+                # File "/usr/local/lib/python2.7/site-packages/pdfminer/utils.py", line 46, in apply_png_predictor
+                #   raise ValueError(ft)
+                ValueError):
             document.text = ''
-            document.pdf_scraped = 'error'
+            document.scrape_status = 'error'
 
     thumbnail = grab_pdf_thumbnail(filepath)
     bucket_path = upload_thumb(document, thumbnail)
