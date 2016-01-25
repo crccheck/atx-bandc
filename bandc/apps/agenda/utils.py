@@ -119,6 +119,9 @@ def save_page(meeting_data, doc_data, bandc):
     """
     logger.info('save_page %s', bandc)
 
+    if not meeting_data:
+        return False
+
     # Populate meetings
     new_meetings = False
     meetings = {}
