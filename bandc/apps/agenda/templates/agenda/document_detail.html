@@ -15,7 +15,14 @@
     <h4>
       {{ object }}
       <small>
-        <a href="{{ object.url }}" target="_blank">(original link)</a>
+        <a href="{{ object.url }}" target="_blank">
+          (original link)
+          {% if object.edims_id %}
+            <i class="fa fa-file-pdf-o"></i>
+          {% else %}
+            <i class="fa fa-external-link"></i>
+          {% endif %}
+          </a>
       </small>
     </h4>
     <h5>

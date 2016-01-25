@@ -60,7 +60,12 @@
         </a>
         <small>
           <a href="{{ doc.url }}" target="_blank">
-            (original link) <i class="fa fa-external-link"></i>
+            (original link)
+            {% if doc.edims_id %}
+              <i class="fa fa-file-pdf-o"></i>
+            {% else %}
+              <i class="fa fa-external-link"></i>
+            {% endif %}
           </a>
         </small>
       </h4>
