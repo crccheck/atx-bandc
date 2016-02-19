@@ -138,6 +138,12 @@ class Document(models.Model):
     def __unicode__(self):
         return '{}'.format(self.title or self.type)
 
+    def get_absolute_url(self):
+        return reverse('bandc:document_detail', kwargs={
+            'bandc_slug': self.meeting.bandc.slug,
+            'pk': self.pk,
+        })
+
     @property
     def edims_id(self):
         """Get the EDIMS id associate with the document or None."""

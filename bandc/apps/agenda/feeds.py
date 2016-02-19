@@ -10,10 +10,14 @@ class BandCDocumentFeed(Feed):
     description_template = 'agenda/document_description.html'
 
     def get_object(self, request, slug):
+        self.slug = slug
         if slug == 'all':
             return None
 
         return BandC.objects.get(slug=slug)
+
+    def title(self, obj):
+        return unicode(obj) if obj else 'Austin Boards and Commissions'
 
     def link(self, obj):
         return reverse('bandc:feed', kwargs={'slug': getattr(obj, 'slug', 'all')})
@@ -25,10 +29,17 @@ class BandCDocumentFeed(Feed):
         return 'Meeting activity of Austin Boards and Commissions.'
 
     def items(self, obj):
-        queryset = Document.objects.filter(active=True).order_by('-meeting__date')
+        queryset = (
+            Document.objects.filter(active=True)
+            .select_related('meeting__bandc')
+            .order_by('-meeting__date')
+        )
         if obj:
             queryset = queryset.filter(meeting__bandc=obj)
         return queryset[:50]
 
-    def item_link(self, item):
-        return item.url
+    def item_title(self, item):
+        if self.slug == 'all':
+            return '{} - {}'.format(item.meeting.bandc, item)
+
+        return unicode(item)
