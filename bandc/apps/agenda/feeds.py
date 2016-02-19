@@ -17,7 +17,7 @@ class BandCDocumentFeed(Feed):
         return BandC.objects.get(slug=slug)
 
     def title(self, obj):
-        return unicode(obj) if obj else 'Austin Boards and Commissions'
+        return unicode(obj) if obj else 'Austin Boards and Commissions - All'
 
     def link(self, obj):
         return reverse('bandc:feed', kwargs={'slug': getattr(obj, 'slug', 'all')})
@@ -32,11 +32,14 @@ class BandCDocumentFeed(Feed):
         queryset = (
             Document.objects.filter(active=True)
             .select_related('meeting__bandc')
-            .order_by('-meeting__date')
+            .order_by('-scraped_at')
         )
         if obj:
             queryset = queryset.filter(meeting__bandc=obj)
         return queryset[:50]
+
+    def item_pubdate(self, item):
+        return item.scraped_at
 
     def item_title(self, item):
         if self.slug == 'all':

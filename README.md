@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/crccheck/atx-bandc.svg?branch=master)](https://travis-ci.org/crccheck/atx-bandc)
+[![Build Status](https://travis-ci.org/crccheck/atx-bandc.svg?branch=develop)](https://travis-ci.org/crccheck/atx-bandc)
 
 
 Links:
