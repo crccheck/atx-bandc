@@ -1,6 +1,7 @@
 import datetime
 import os.path
 
+import mock
 from django.test import TestCase
 
 from ..factories import BandCFactory
@@ -43,7 +44,8 @@ class UtilsTests(TestCase):
         html = open(os.path.join(BASE_DIR, 'samples/parks.html')).read()
         self.assertEqual(get_number_of_pages(html), 2)
 
-    def test_save_page_works(self):
+    @mock.patch('bandc.apps.agenda.utils.get_details_from_pdf')
+    def test_save_page_works(self, mock_task):
         html = open(os.path.join(BASE_DIR, 'samples/music.html')).read()
         meeting_data, doc_data = process_page(html)
         bandc = BandCFactory()
@@ -53,6 +55,7 @@ class UtilsTests(TestCase):
         save_page(meeting_data, doc_data, bandc)
 
         self.assertEqual(bandc.latest_meeting.date.isoformat(), '2014-02-03')
+        self.assertTrue(mock_task.delay.called)
 
     def test_save_page_handles_no_data(self):
         meeting_data, doc_data = [], []

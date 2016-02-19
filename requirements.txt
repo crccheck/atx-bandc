@@ -1,9 +1,9 @@
 # shared
-Django==1.9.1
+Django==1.9.2
 psycopg2==2.6.1
-dj-database-url==0.3.0
+dj-database-url==0.4.0
 dj-obj-update==0.2.1
-django-bootstrap-pagination==1.5.1
+django-bootstrap-pagination==1.6.0
 django-extensions==1.6.1
 django-object-actions==0.7.0
 celery==3.1.20
@@ -11,8 +11,9 @@ django-celery==3.1.17
 redis==2.10.5
 # For monitoring celery jobs
 # flower==0.8.4
-raven==5.10.1
-factory-boy==2.6.0
+raven==5.10.2
+factory-boy==2.6.1
+mock==1.3.0
 
 # scraper
 lxml==3.5.0
