@@ -12,8 +12,6 @@ DEBUG = env.get('DEBUG', False)
 ALLOWED_HOSTS = ['*']
 
 
-# Application definition
-
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -92,11 +90,11 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-
 RAVEN_CONFIG = {
-    'dsn': env.get('RAVEN_DSN'),
     # 'release': raven.fetch_git_sha(os.path.dirname(BASE_DIR)),
 }
+if 'RAVEN_DSN' in env:
+    RAVEN_CONFIG['dsn'] = env.get('RAVEN_DSN')
 
 LOGGING = {
     'version': 1,

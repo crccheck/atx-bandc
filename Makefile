@@ -36,8 +36,11 @@ resetdb: ## Reset the dev database
 	docker rm -f $(NAME)_db
 	${MAKE} -s db
 
+check:
+	python manage.py check
+
 test: ## Run test suite
-test: clean
+test: clean check
 	python manage.py test --keepdb
 
 docker/build: ## Build the Docker image
