@@ -17,7 +17,7 @@ class BandCDocumentFeed(Feed):
         return BandC.objects.get(slug=slug)
 
     def title(self, obj):
-        return unicode(obj) if obj else 'Austin Boards and Commissions - All'
+        return unicode(obj) if obj else 'City of Austin Boards and Commissions - All'
 
     def link(self, obj):
         return reverse('bandc:feed', kwargs={'slug': getattr(obj, 'slug', 'all')})

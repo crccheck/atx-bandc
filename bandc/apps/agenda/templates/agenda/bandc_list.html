@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% block head_title %}City of Austin Boards and Commissions{% endblock %}
 
 {% block content %}
   <p>
@@ -11,7 +12,7 @@
     <a href="{% url 'bandc:bandc_detail' slug='all' %}">View All</a>
     or
     <a href="{% url 'bandc:feed' slug='all' %}">
-      Subscribe to RSS feed <i class="fa fa-rss-square" title="rss"></i>
+      Subscribe to the RSS feed <i class="fa fa-rss-square" title="rss"></i>
     </a>
   </p>
 
