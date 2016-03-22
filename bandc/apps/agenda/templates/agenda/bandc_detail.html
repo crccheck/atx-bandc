@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load bootstrap_pagination %}
 
-{% block page_head %}{{ title }}{% endblock %}
+{% block head_title %}{% firstof bandc "All documents" %}{% endblock %}
 
 {% block extra_style %}
   <link rel="alternate" type="application/rss+xml" href="{% url 'bandc:feed' slug=view.kwargs.slug %">

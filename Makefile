@@ -13,6 +13,9 @@ clean:
 	find . -name "*.pyc" -delete
 	find . -name ".DS_Store" -delete
 
+requirements.txt: requirements.in
+	pip-compile $< > $@
+
 install: ## Install requirements
 	sudo apt-get install -y imagemagick
 	pip install -r requirements.txt
@@ -33,8 +36,11 @@ resetdb: ## Reset the dev database
 	docker rm -f $(NAME)_db
 	${MAKE} -s db
 
+check:
+	python manage.py check
+
 test: ## Run test suite
-test: clean
+test: clean check
 	python manage.py test --keepdb
 
 docker/build: ## Build the Docker image
