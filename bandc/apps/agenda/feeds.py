@@ -6,6 +6,9 @@ from django.core.urlresolvers import reverse
 from .models import BandC, Document
 
 
+RSS_SIZE = 100
+
+
 class BandCDocumentFeed(Feed):
     description_template = 'agenda/document_description.html'
 
@@ -36,7 +39,7 @@ class BandCDocumentFeed(Feed):
         )
         if obj:
             queryset = queryset.filter(meeting__bandc=obj)
-        return queryset[:50]
+        return queryset[:RSS_SIZE]
 
     def item_pubdate(self, item):
         return item.scraped_at
