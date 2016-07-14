@@ -13,12 +13,13 @@ clean:
 	find . -name "*.pyc" -delete
 	find . -name ".DS_Store" -delete
 
-requirements.txt: requirements.in
-	pip-compile $< > $@
-
 install: ## Install requirements
 	sudo apt-get install -y imagemagick
 	pip install -r requirements.txt
+
+.PHONY: requirements.txt
+requirements.txt: ## Regenerate requirements.txt
+	pip-compile --upgrade --output-file $@ requirements.in
 
 workers: ## Start celery workers
 	python manage.py celery worker --loglevel=info
