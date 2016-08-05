@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import logging
 import os
 from StringIO import StringIO
 from urllib import urlretrieve
@@ -18,6 +19,7 @@ from pdfminer.psparser import PSException
 
 
 BASE_PATH = '/tmp/bandc_pdfs/'  # TODO settings
+logger = logging.getLogger(__name__)
 
 
 def pdf_to_text(f):
@@ -112,6 +114,8 @@ def process_pdf(document):
             document.text = pdf_to_text(f).strip()
             document.scrape_status = 'scraped'
         except (PDFTextExtractionNotAllowed, PDFEncryptionError, PSException,
+                # int() argument must be a string or a number, not 'PSKeyword'
+                TypeError,
                 # File "/usr/local/lib/python2.7/dist-packages/pdfminer/pdfpage.py", line 52, in __init__
                 #     self.resources = resolve1(self.attrs['Resources'])
                 # KeyError: 'Resources'
@@ -121,6 +125,7 @@ def process_pdf(document):
                 ValueError):
             document.text = ''
             document.scrape_status = 'error'
+            logger.error('PDF scrape error on EDIMS %s', document.edims_id)
 
     thumbnail = grab_pdf_thumbnail(filepath)
     bucket_path = upload_thumb(document, thumbnail)
