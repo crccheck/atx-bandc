@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import logging
 import os
 from StringIO import StringIO
@@ -18,7 +16,7 @@ from pdfminer.pdfparser import PDFParser
 from pdfminer.psparser import PSException
 
 
-BASE_PATH = '/tmp/bandc_pdfs/'  # TODO settings
+BASE_PATH = "/tmp/bandc_pdfs/"  # TODO settings
 logger = logging.getLogger(__name__)
 
 
@@ -29,8 +27,8 @@ def pdf_to_text(f):
     rsrcmgr = PDFResourceManager()
     outfp = StringIO()
     device = TextConverter(
-        rsrcmgr, outfp, codec='utf-8', laparams=None,
-        imagewriter=None)
+        rsrcmgr, outfp, codec="utf-8", laparams=None, imagewriter=None
+    )
     interpreter = PDFPageInterpreter(rsrcmgr, device)
     for page in PDFPage.get_pages(f, [], document):
         interpreter.process_page(page)
@@ -51,9 +49,9 @@ def pdf_file_path(document):
     if not os.path.isdir(BASE_PATH):
         os.makedirs(BASE_PATH)
 
-    filename = document.edims_id + '.pdf'
+    filename = document.edims_id + ".pdf"
     filepath = os.path.join(BASE_PATH, filename)
-    print '{0.date}: {0.url}'.format(document)
+    print "{0.date}: {0.url}".format(document)
     # Check if file was already downloaded
     if not os.path.isfile(filepath):
         # download pdf to temporary file
@@ -65,12 +63,14 @@ def grab_pdf_thumbnail(filepath):
     """
     Returns jpeg image thumbnail of the input pdf.
     """
-    print 'converting pdf: {}'.format(filepath)
+    print "converting pdf: {}".format(filepath)
     out = sh.convert(
-        filepath + '[0]',  # force to only get 1st page
-        '-thumbnail', '400x400',  # output size
-        '-alpha', 'remove',  # fix black border that appears
-        'jpg:-',  # force to output jpeg to stdout
+        filepath + "[0]",  # force to only get 1st page
+        "-thumbnail",
+        "400x400",  # output size
+        "-alpha",
+        "remove",  # fix black border that appears
+        "jpg:-",  # force to output jpeg to stdout
     )
     return out.stdout
 
@@ -81,29 +81,29 @@ def upload_thumb(document, thumbnail):
 
     Returns the path (key name).
     """
-    s3_key = '/thumbs/{}.jpg'.format(document.edims_id)
+    s3_key = "/thumbs/{}.jpg".format(document.edims_id)
     conn = S3Connection(
-        aws_access_key_id=env.get('AWS_ACCESS_KEY_ID'),
-        aws_secret_access_key=env.get('AWS_SECRET_ACCESS_KEY'),
-        host=env.get('AWS_S3_HOST'),
+        aws_access_key_id=env.get("AWS_ACCESS_KEY_ID"),
+        aws_secret_access_key=env.get("AWS_SECRET_ACCESS_KEY"),
+        host=env.get("AWS_S3_HOST"),
         calling_format=boto.s3.connection.OrdinaryCallingFormat(),
     )
-    bucket = conn.get_bucket(env.get('AWS_BUCKET'))
+    bucket = conn.get_bucket(env.get("AWS_BUCKET"))
     k = bucket.new_key(s3_key)
     k.set_contents_from_string(
         thumbnail,
         headers={
-            'Content-Type': 'image/jpeg',
-            'Cache-Control': 'public,max-age=15552000',  # 180 days
+            "Content-Type": "image/jpeg",
+            "Cache-Control": "public,max-age=15552000",  # 180 days
         },
     )
-    k.set_canned_acl('public-read')
+    k.set_canned_acl("public-read")
     return s3_key
 
 
 def process_pdf(document):
     if not document.edims_id:
-        document.scrape_status = 'unscrapable'
+        document.scrape_status = "unscrapable"
         document.save()
         return
 
@@ -112,23 +112,27 @@ def process_pdf(document):
     with open(filepath) as f:
         try:
             document.text = pdf_to_text(f).strip()
-            document.scrape_status = 'scraped'
-        except (PDFTextExtractionNotAllowed, PDFEncryptionError, PSException,
-                # int() argument must be a string or a number, not 'PSKeyword'
-                TypeError,
-                # File "/usr/local/lib/python2.7/dist-packages/pdfminer/pdfpage.py", line 52, in __init__
-                #     self.resources = resolve1(self.attrs['Resources'])
-                # KeyError: 'Resources'
-                KeyError,
-                # File "/usr/local/lib/python2.7/site-packages/pdfminer/utils.py", line 46, in apply_png_predictor
-                #   raise ValueError(ft)
-                ValueError):
-            document.text = ''
-            document.scrape_status = 'error'
-            logger.error('PDF scrape error on EDIMS %s', document.edims_id)
+            document.scrape_status = "scraped"
+        except (
+            PDFTextExtractionNotAllowed,
+            PDFEncryptionError,
+            PSException,
+            # int() argument must be a string or a number, not 'PSKeyword'
+            TypeError,
+            # File "/usr/local/lib/python2.7/dist-packages/pdfminer/pdfpage.py", line 52, in __init__
+            #     self.resources = resolve1(self.attrs['Resources'])
+            # KeyError: 'Resources'
+            KeyError,
+            # File "/usr/local/lib/python2.7/site-packages/pdfminer/utils.py", line 46, in apply_png_predictor
+            #   raise ValueError(ft)
+            ValueError,
+        ):
+            document.text = ""
+            document.scrape_status = "error"
+            logger.error("PDF scrape error on EDIMS %s", document.edims_id)
 
     thumbnail = grab_pdf_thumbnail(filepath)
     bucket_path = upload_thumb(document, thumbnail)
-    document.thumbnail = 'http://atx-bandc-pdf.crccheck.com{}'.format(bucket_path)
+    document.thumbnail = "http://atx-bandc-pdf.crccheck.com{}".format(bucket_path)
 
     document.save()
