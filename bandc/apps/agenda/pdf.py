@@ -20,18 +20,16 @@ BASE_PATH = "/tmp/bandc_pdfs/"  # TODO settings
 logger = logging.getLogger(__name__)
 
 
-def pdf_to_text(f):
+def pdf_to_text(fp):
     """Get the text from pdf file handle."""
-    parser = PDFParser(f)
-    document = PDFDocument(parser)
     rsrcmgr = PDFResourceManager()
     outfp = StringIO()
     device = TextConverter(rsrcmgr, outfp, laparams=None, imagewriter=None)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
-    for page in PDFPage.get_pages(f, [], document):
+    for page in PDFPage.get_pages(fp, set()):
         interpreter.process_page(page)
     device.close()
-    f.close()
+    fp.close()
     return outfp.getvalue()
 
 
