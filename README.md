@@ -32,14 +32,9 @@ websites and:
   * a thumbnail generated and put on S3
 * the documents are put into an RSS feed
 
-Since there are so many things going on, all these tasks are done with
-[Celery].
-
 
 Links
 -----
 
 * http://atxhackforchange.org/
 * http://www.austintexas.gov/department/boards-and-commissions-information-center
-
-[Celery]: http://docs.celeryproject.org/en/latest/index.html

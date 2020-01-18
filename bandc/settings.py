@@ -23,8 +23,6 @@ INSTALLED_APPS = (
     'bandc.apps.agenda',
 
     # support
-    'djcelery',
-    'raven.contrib.django.raven_compat',
     'django_extensions',
     'django_object_actions',
     'bootstrap_pagination',
@@ -133,12 +131,3 @@ LOGGING = {
         },
     },
 }
-
-
-# Celery tasks
-
-BROKER_URL = env.get('REDIS_URL')
-CELERY_RESULT_BACKEND = env.get('REDIS_URL')
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'

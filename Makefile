@@ -21,9 +21,6 @@ install: ## Install requirements
 requirements.txt: ## Regenerate requirements.txt
 	pip-compile --upgrade --output-file $@ requirements.in
 
-workers: ## Start celery workers
-	python manage.py celery worker --loglevel=info
-
 serve: ## Serve the wsgi application
 	waitress-serve --port=$(PORT) bandc.wsgi:application
 
