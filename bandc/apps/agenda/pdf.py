@@ -1,7 +1,7 @@
 import logging
 import os
-from StringIO import StringIO
-from urllib import urlretrieve
+from io import StringIO
+from urllib.request import urlretrieve
 
 import boto
 import boto.s3.connection
@@ -51,11 +51,11 @@ def pdf_file_path(document):
 
     filename = document.edims_id + ".pdf"
     filepath = os.path.join(BASE_PATH, filename)
-    print "{0.date}: {0.url}".format(document)
+    print("{0.date}: {0.url}".format(document))
     # Check if file was already downloaded
     if not os.path.isfile(filepath):
         # download pdf to temporary file
-        print urlretrieve(document.url, filepath)  # TODO log
+        print(urlretrieve(document.url, filepath))  # TODO log
     return filepath
 
 
@@ -63,7 +63,7 @@ def grab_pdf_thumbnail(filepath):
     """
     Returns jpeg image thumbnail of the input pdf.
     """
-    print "converting pdf: {}".format(filepath)
+    print("converting pdf: {}".format(filepath))
     out = sh.convert(
         filepath + "[0]",  # force to only get 1st page
         "-thumbnail",
