@@ -41,6 +41,9 @@ test: ## Run test suite
 test: clean check
 	python manage.py test --keepdb
 
+tdd: ## Run test watcher
+	nodemon -e py -x "python manage.py test --failfast --keepdb ${SCOPE}"
+
 docker/build: ## Build the Docker image
 	docker build -t ${IMAGE} .
 

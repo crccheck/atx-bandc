@@ -26,9 +26,7 @@ def pdf_to_text(f):
     document = PDFDocument(parser)
     rsrcmgr = PDFResourceManager()
     outfp = StringIO()
-    device = TextConverter(
-        rsrcmgr, outfp, codec="utf-8", laparams=None, imagewriter=None
-    )
+    device = TextConverter(rsrcmgr, outfp, laparams=None, imagewriter=None)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
     for page in PDFPage.get_pages(f, [], document):
         interpreter.process_page(page)
