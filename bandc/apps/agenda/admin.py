@@ -18,12 +18,9 @@ class BandCAdmin(admin.ModelAdmin):
 
         return obj.latest_meeting.date
 
-    def homepage_url(self, obj):
+    def homepage_url(self, obj: BandC):
         return format_html(
-            '<a href="{}" target="bandc">{}</a>'.format(
-                obj.homepage,
-                obj.homepage.split("//")[1],  # don't show sceme to save space
-            )
+            f'<a href="{obj.homepage}" target="bandc">{obj.homepage.split("//")[1]}</a>'
         )
 
 
@@ -39,7 +36,7 @@ class DocumentAdmin(DjangoObjectActions, admin.ModelAdmin):
     list_filter = ("scrape_status",)
     raw_id_fields = ("meeting",)
 
-    def pdf(self, request, obj):
-        get_details_from_pdf.delay(obj.pk)
+    def pdf(self, request, obj: Document):
+        get_details_from_pdf(obj.pk)
 
     objectactions = ("pdf",)

@@ -141,7 +141,7 @@ def save_page(meeting_data, doc_data, bandc):
             except KeyError:
                 pass
         if True and doc.scrape_status == "toscrape":
-            get_details_from_pdf.delay(doc.pk)
+            get_details_from_pdf(doc.pk)
 
     # Look for stale documents
     stale_documents = []

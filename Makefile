@@ -31,7 +31,6 @@ serve: ## Serve the wsgi application
 	waitress-serve --port=$(PORT) bandc.wsgi:application
 
 test: ## Run test suite
-test: clean check
 	python manage.py test --keepdb
 
 tdd: ## Run test watcher
