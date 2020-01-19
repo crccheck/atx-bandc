@@ -13,8 +13,11 @@ clean:
 	find . -name "*.pyc" -delete
 	find . -name ".DS_Store" -delete
 
+# On OSX, tested with ImageMagick 7.0.9-16 and Ghostscript 9.50
+# brew install imagemagick gs
+
+# sudo apt-get install -y imagemagick
 install: ## Install requirements
-	sudo apt-get install -y imagemagick
 	pip install -r requirements.txt
 
 .PHONY: requirements.txt

@@ -59,14 +59,14 @@ def grab_pdf_thumbnail(filepath):
     """
     Returns jpeg image thumbnail of the input pdf.
     """
-    print("converting pdf: {}".format(filepath))
+    logger.info("converting pdf: %s", filepath)
     out = sh.convert(
         filepath + "[0]",  # force to only get 1st page
         "-thumbnail",
         "400x400",  # output size
         "-alpha",
-        "remove",  # fix black border that appears
-        "jpg:-",  # force to output jpeg to stdout
+        "remove",  # '-alpha remove' prevents black border
+        "jpg:-",  # output jpeg to stdout
     )
     return out.stdout
 
