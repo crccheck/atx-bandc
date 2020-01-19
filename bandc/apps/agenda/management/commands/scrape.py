@@ -6,17 +6,19 @@ from bandc.apps.agenda.tasks import pull
 
 
 class Command(BaseCommand):
-    help = 'Scrape'
+    help = "Scrape"
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--bandc', action='store_true',
-            help='Initialize or update the list of BandCs.')
-        parser.add_argument('identifier', nargs='*')
+            "--bandc",
+            action="store_true",
+            help="Initialize or update the list of BandCs.",
+        )
+        parser.add_argument("identifier", nargs="*")
 
     def handle(self, *args, **options):
-        if options['bandc']:
-            self.stdout.write('Updating list of BandCs')
+        if options["bandc"]:
+            self.stdout.write("Updating list of BandCs")
             populate_bandc_list()
 
             for bandc in BandC.objects.filter(identifier=None):
@@ -24,8 +26,8 @@ class Command(BaseCommand):
                 bandc.pull_details()
 
         queryset = BandC.objects.filter(scrapable=True)
-        if options['identifier']:
-            queryset = queryset.filter(identifier__in=options['identifier'])
+        if options["identifier"]:
+            queryset = queryset.filter(identifier__in=options["identifier"])
 
         count = queryset.count()
 
@@ -34,9 +36,9 @@ class Command(BaseCommand):
         # priority buckets so defunct BandCs aren't scraped
 
         if count:
-            self.stdout.write('Checking {} BandCs'.format(queryset.count()))
+            self.stdout.write("Checking {} BandCs".format(queryset.count()))
         else:
-            raise CommandError('No BandCs to scrape')
+            raise CommandError("No BandCs to scrape")
 
         for bandc in queryset:
             if True:

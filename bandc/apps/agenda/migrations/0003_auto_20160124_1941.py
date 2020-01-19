@@ -9,18 +9,33 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('agenda', '0002_auto_20160118_2355'),
+        ("agenda", "0002_auto_20160118_2355"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='bandc',
-            name='latest_meeting',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='agenda.Meeting'),
+            model_name="bandc",
+            name="latest_meeting",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="+",
+                to="agenda.Meeting",
+            ),
         ),
         migrations.AlterField(
-            model_name='document',
-            name='scrape_status',
-            field=models.CharField(choices=[('toscrape', 'To Scrape'), ('scraped', 'Scraped'), ('error', 'Error Scraping'), ('unscrapable', 'Unscrapable')], default='toscrape', max_length=20),
+            model_name="document",
+            name="scrape_status",
+            field=models.CharField(
+                choices=[
+                    ("toscrape", "To Scrape"),
+                    ("scraped", "Scraped"),
+                    ("error", "Error Scraping"),
+                    ("unscrapable", "Unscrapable"),
+                ],
+                default="toscrape",
+                max_length=20,
+            ),
         ),
     ]
