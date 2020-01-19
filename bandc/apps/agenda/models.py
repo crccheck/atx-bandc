@@ -40,7 +40,7 @@ class BandC(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse("bandc:bandc_detail", kwargs={"slug": self.slug})
+        return reverse("bandc_detail", kwargs={"slug": self.slug})
 
     @property
     def current_meeting_url_format(self):
@@ -149,7 +149,7 @@ class Document(models.Model):
 
     def get_absolute_url(self):
         return reverse(
-            "bandc:document_detail",
+            "document_detail",
             kwargs={"bandc_slug": self.meeting.bandc.slug, "pk": self.pk,},
         )
 

@@ -4,10 +4,10 @@
 {% block head_title %}{% firstof bandc "All documents" %}{% endblock %}
 
 {% block extra_style %}
-  <link rel="alternate" type="application/rss+xml" href="{% url 'bandc:feed' slug=view.kwargs.slug %">
+<link rel="alternate" type="application/rss+xml" href="{% url 'feed' slug=view.kwargs.slug %">
   <style>
     .entry {
-      backround: #EEE;
+      background: #EEE;
       border: 1px solid #888;
       border-left: 0.4em solid #666;
       margin-bottom: 1em;
@@ -27,70 +27,70 @@
     <h2>
       {{ bandc }}
       <small>
-        <a href="{{ bandc.homepage }}" target="_blank">
-          Homepage <i class="fa fa-external-link"></i>
-        </a>
-      </small>
-    </h2>
-    <!-- {{ bandc.description }} -->
-  {% else %}
-    <h2>All documents</h2>
-  {% endif %}
-  <p>
-    <a href="{% url 'bandc:feed' slug=view.kwargs.slug %}">
-      <i class="fa fa-rss-square"></i> RSS feed for this page
+        <a href=" {{ bandc.homepage }}" target="_blank">
+Homepage <i class="fa fa-external-link"></i>
+</a>
+</small>
+</h2>
+<!-- {{ bandc.description }} -->
+{% else %}
+<h2>All documents</h2>
+{% endif %}
+<p>
+  <a href="{% url 'feed' slug=view.kwargs.slug %}">
+    <i class="fa fa-rss-square"></i> RSS feed for this page
+  </a>
+</p>
+
+<div class="text-center">
+  {% bootstrap_paginate page_obj range=10 show_first_last="true" %}
+</div>
+
+{% for doc in object_list %}
+<article class="entry {{ bandc.slug|slugify }}">
+  <span class="label label-default">
+    {% if not bandc %}
+    {{ doc.meeting.bandc }} -
+    {% endif %}
+    {{ doc.meeting.date }}
+  </span>
+  <h4>
+    <a href="{% url 'document_detail' bandc_slug=doc.meeting.bandc.slug pk=doc.pk %}">
+      {{ doc }}
     </a>
-  </p>
-
-  <div class="text-center">
-    {% bootstrap_paginate page_obj range=10 show_first_last="true" %}
-  </div>
-
-  {% for doc in object_list %}
-    <article class="entry {{ bandc.slug|slugify }}">
-      <span class="label label-default">
-        {% if not bandc %}
-          {{ doc.meeting.bandc }} -
+    <small>
+      <a href="{{ doc.url }}" target="_blank">
+        (original link)
+        {% if doc.edims_id %}
+        <i class="fa fa-file-pdf-o"></i>
+        {% else %}
+        <i class="fa fa-external-link"></i>
         {% endif %}
-        {{ doc.meeting.date }}
-      </span>
-      <h4>
-        <a href="{% url 'bandc:document_detail' bandc_slug=doc.meeting.bandc.slug pk=doc.pk %}">
-          {{ doc }}
-        </a>
-        <small>
-          <a href="{{ doc.url }}" target="_blank">
-            (original link)
-            {% if doc.edims_id %}
-              <i class="fa fa-file-pdf-o"></i>
-            {% else %}
-              <i class="fa fa-external-link"></i>
-            {% endif %}
-          </a>
-        </small>
-      </h4>
-      <time>{{ meeting.date }}</time>
-      {% if doc.thumbnail %}
-        <div class="thumbnail-container">
-          <a href="{% url 'bandc:document_detail' bandc_slug=doc.meeting.bandc.slug pk=doc.pk %}" class="thumbnail">
-            <img src="{{ doc.thumbnail }}" alt="">
-          </a>
-        </div>
-      {% endif %}
-      {% if doc.text %}
-        <p>
-          {{ doc.text|truncatewords:"400" }}
-        </p>
-      {% else %}
-        <p>{{ doc.type }}</p>
-      {% endif %}
-      <footer>
-        <small>Scraped at: {{ doc.scraped_at }}</small>
-      </footer>
-    </article>
-  {% endfor %}
-
-  <div class="text-center">
-    {% bootstrap_paginate page_obj range=10 show_first_last="true" %}
+      </a>
+    </small>
+  </h4>
+  <time>{{ meeting.date }}</time>
+  {% if doc.thumbnail %}
+  <div class="thumbnail-container">
+    <a href="{% url 'document_detail' bandc_slug=doc.meeting.bandc.slug pk=doc.pk %}" class="thumbnail">
+      <img src="{{ doc.thumbnail }}" alt="">
+    </a>
   </div>
+  {% endif %}
+  {% if doc.text %}
+  <p>
+    {{ doc.text|truncatewords:"400" }}
+  </p>
+  {% else %}
+  <p>{{ doc.type }}</p>
+  {% endif %}
+  <footer>
+    <small>Scraped at: {{ doc.scraped_at }}</small>
+  </footer>
+</article>
+{% endfor %}
+
+<div class="text-center">
+  {% bootstrap_paginate page_obj range=10 show_first_last="true" %}
+</div>
 {% endblock %}
