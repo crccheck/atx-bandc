@@ -3,46 +3,46 @@
 {% block head_title %}City of Austin Boards and Commissions{% endblock %}
 
 {% block content %}
-  <p>
-    RSS feeds for most <a href="http://www.austintexas.gov/department/boards-and-commissions" target="_blank">City
-      of Austin boards and commissions</a>.
-  </p>
+<p>
+  RSS feeds for most <a href="http://www.austintexas.gov/department/boards-and-commissions" target="_blank">City
+    of Austin boards and commissions</a>.
+</p>
 
-  <p>
-    <a href="{% url 'bandc:bandc_detail' slug='all' %}">View All</a>
-    or
-    <a href="{% url 'bandc:feed' slug='all' %}">
-      Subscribe to the RSS feed <i class="fa fa-rss-square" title="rss"></i>
-    </a>
-  </p>
+<p>
+  <a href="{% url 'bandc_detail' slug='all' %}">View All</a>
+  or
+  <a href="{% url 'feed' slug='all' %}">
+    Subscribe to the RSS feed <i class="fa fa-rss-square" title="rss"></i>
+  </a>
+</p>
 
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Board or Commission</th>
-        <th>Latest Data</th>
-        <th>RSS</th>
-    </thead>
-    <tbody>
-      {% for bandc in object_list %}
-        <tr>
-           <td>
-              {% if bandc.latest_meeting %}
-                <a href="{% url 'bandc:bandc_detail' slug=bandc.slug %}">{{ bandc }}</a>
-              {% else %}
-                {{ bandc }}
-              {% endif %}
-            </td>
-           <td>{{ bandc.latest_meeting.date.isoformat }}</td>
-           <td>
-             <a href="{% url 'bandc:feed' slug=bandc.slug %}"><i class="fa fa-rss-square" title="rss"></i></a>
-           </td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Board or Commission</th>
+      <th>Latest Data</th>
+      <th>RSS</th>
+  </thead>
+  <tbody>
+    {% for bandc in object_list %}
+    <tr>
+      <td>
+        {% if bandc.latest_meeting %}
+        <a href="{% url 'bandc_detail' slug=bandc.slug %}">{{ bandc }}</a>
+        {% else %}
+        {{ bandc }}
+        {% endif %}
+      </td>
+      <td>{{ bandc.latest_meeting.date.isoformat }}</td>
+      <td>
+        <a href="{% url 'feed' slug=bandc.slug %}"><i class="fa fa-rss-square" title="rss"></i></a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
-  <footer><small>
+<footer><small>
     All times are Central. All data is publicly available.
     <a href="https://github.com/crccheck/atx-bandc" target="_blank">Source code available here.</a>
   </small></footer>

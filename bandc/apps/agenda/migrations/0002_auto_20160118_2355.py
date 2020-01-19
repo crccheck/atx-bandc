@@ -8,13 +8,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('agenda', '0001_initial'),
+        ("agenda", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='bandc',
-            name='identifier',
-            field=models.CharField(blank=True, help_text='The id, probaly an auto-inc integer.', max_length=50, null=True, unique=True),
+            model_name="bandc",
+            name="identifier",
+            field=models.CharField(
+                blank=True,
+                help_text="The id, probaly an auto-inc integer.",
+                max_length=50,
+                null=True,
+                unique=True,
+            ),
         ),
     ]
