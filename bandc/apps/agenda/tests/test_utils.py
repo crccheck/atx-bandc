@@ -1,7 +1,7 @@
 import datetime
 import os.path
-
 from unittest import mock
+
 from django.test import TestCase
 
 from ..factories import BandCFactory

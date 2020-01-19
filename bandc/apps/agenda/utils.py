@@ -62,17 +62,6 @@ def clean_text(text):
     return text.lstrip("- ")
 
 
-def inner_html(node):
-    """
-    Equivalent to doing node.innerHTML if this were JavaScript.
-
-    # https://stackoverflow.com/questions/6123351/equivalent-to-innerhtml-when-using-lxml-html-to-parse-html/6396097#6396097
-    """
-    return (node.text or "") + "".join(
-        [etree.tostring(child) for child in node.iterchildren()]
-    )
-
-
 def process_page(html):
     """
     Transform the raw html into semi-structured data.
@@ -86,6 +75,7 @@ def process_page(html):
     date = ""
     meeting_data = []
     doc_data = []
+    # WISHLIST do two-pass to group into meetings then parse contents
     for row in doc.xpath('//div[@id="bcic"]/h5'):
         row_class = row.attrib["class"]  # assume each has only one css class
         if row_class == MEETING_DATE:
@@ -95,15 +85,13 @@ def process_page(html):
                 date = None
         elif date and row_class == MEETING_TITLE:
             # XXX assume all meeting date rows are followed by meeting title
-            meeting_data.append(
-                {"date": date, "title": inner_html(row),}
-            )
+            meeting_data.append({"date": date, "title": row.text_content()})
         elif date and row_class == DOCUMENT:
             row_type = row.xpath("./a/b/text()")[0]
             url = row.xpath("./a/@href")[0]
             title = clean_text("".join(row.xpath("./text()")).strip())
             doc_data.append(
-                {"date": date, "type": row_type, "url": url, "title": title,}
+                {"date": date, "type": row_type, "url": url, "title": title}
             )
     return meeting_data, doc_data
 
