@@ -1,3 +1,4 @@
+import datetime as dt
 import os.path
 import re
 from typing import Union
@@ -153,7 +154,7 @@ class Document(models.Model):
     class Meta:
         ordering = ("-meeting__date",)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "{}".format(self.title or self.type)
 
     def get_absolute_url(self):
@@ -175,11 +176,11 @@ class Document(models.Model):
         return None
 
     @property
-    def date(self):
+    def date(self) -> dt.datetime:
         return self.meeting.date
 
     @property
-    def rss_text(self):
+    def rss_text(self) -> str:
         """text field safe for xml"""
         if not self.text:
             return self.text
