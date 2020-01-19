@@ -46,7 +46,7 @@ class BandC(models.Model):
     def current_meeting_url_format(self):
         """Format with (page)."""
         return (
-            "http://www.austintexas.gov/cityclerk/boards_commissions/"
+            "https://www.austintexas.gov/cityclerk/boards_commissions/"
             "meetings/%s_{}.htm" % self.identifier
         ).format
 
@@ -54,7 +54,7 @@ class BandC(models.Model):
     def historical_meeting_url_format(self):
         """Format with (year, identifier, page)."""
         return (
-            "http://www.austintexas.gov/cityclerk/boards_commissions/"
+            "https://www.austintexas.gov/cityclerk/boards_commissions/"
             "meetings/{}_%s_{}.htm" % self.identifier
         ).format
 
@@ -164,7 +164,7 @@ class Document(models.Model):
     @property
     def edims_id(self):
         """Get the EDIMS id associate with the document or None."""
-        if self.url.startswith("http://www.austintexas.gov/edims/document"):
+        if self.url.startswith("https://www.austintexas.gov/edims/document"):
             return self.url.rsplit("=", 2)[-1]
 
         return None

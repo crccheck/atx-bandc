@@ -65,7 +65,7 @@ def inner_html(node):
     """
     Equivalent to doing node.innerHTML if this were JavaScript.
 
-    # http://stackoverflow.com/questions/6123351/equivalent-to-innerhtml-when-using-lxml-html-to-parse-html/6396097#6396097
+    # https://stackoverflow.com/questions/6123351/equivalent-to-innerhtml-when-using-lxml-html-to-parse-html/6396097#6396097
     """
     return (node.text or "") + "".join(
         [etree.tostring(child) for child in node.iterchildren()]
@@ -175,7 +175,7 @@ def pull_bandc(bandc):
     """
     headers = {
         # TODO pull version from VERSION
-        "User-Agent": "atx_bandc/0.2.0 http://atx-bandc-feed.herokuapp.com/",
+        "User-Agent": "atx_bandc/v0.2.0 https://github.com/crccheck/atx-bandc",
     }
 
     page_number = 1
