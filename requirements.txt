@@ -20,6 +20,7 @@ faker==4.0.0              # via factory-boy
 idna==2.8                 # via requests
 lxml==4.4.2
 pdfminer==20191125
+pillow==7.0.0
 pip-tools==4.3.0
 project-runpy==1.0.1
 psycopg2==2.8.4

@@ -59,7 +59,7 @@ def grab_pdf_thumbnail(filepath):
     """
     Returns jpeg image thumbnail of the input pdf.
     """
-    logger.info("converting pdf: %s", filepath)
+    logger.info("Converting pdf: %s", filepath)
     out = sh.convert(
         filepath + "[0]",  # force to only get 1st page
         "-thumbnail",

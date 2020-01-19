@@ -139,8 +139,12 @@ class Document(models.Model):
     # Extracted fields
     ##################
 
-    thumbnail = models.URLField(null=True, blank=True)
-
+    thumbnail = models.ImageField(
+        upload_to="thumbs/%Y/%m",
+        null=True,
+        blank=True,
+        help_text="A jpeg of the first page",
+    )
     text = models.TextField(
         null=True, blank=True, help_text="The text extracted from the pdf"
     )
