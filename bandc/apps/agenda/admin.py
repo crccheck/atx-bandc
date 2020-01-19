@@ -26,7 +26,7 @@ class BandCAdmin(admin.ModelAdmin):
 
 @admin.register(Meeting)
 class MeetingAdmin(admin.ModelAdmin):
-    list_display = ("bandc", "date")
+    list_display = ("bandc", "date", "title")
     list_filter = ("bandc",)
 
 

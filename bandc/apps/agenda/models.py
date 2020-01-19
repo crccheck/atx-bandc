@@ -103,7 +103,7 @@ class Meeting(models.Model):
         unique_together = ("date", "bandc")
 
     def __str__(self):
-        return "{}".format(self.bandc, self.title or self.date)
+        return "{} {}".format(self.bandc, self.title or self.date)
 
 
 class Document(models.Model):
