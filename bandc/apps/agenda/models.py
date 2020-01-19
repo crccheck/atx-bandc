@@ -1,5 +1,6 @@
 import os.path
 import re
+from typing import Union
 
 import requests
 from django.urls import reverse
@@ -84,10 +85,10 @@ class BandC(models.Model):
         self.identifier = identifier
         self.save()
 
-    def pull(self):
+    def pull(self) -> None:
         from .utils import pull_bandc
 
-        pull_bandc(self)
+        return pull_bandc(self)
 
 
 class Meeting(models.Model):
@@ -162,9 +163,13 @@ class Document(models.Model):
         )
 
     @property
-    def edims_id(self):
-        """Get the EDIMS id associate with the document or None."""
-        if self.url.startswith("https://www.austintexas.gov/edims/document"):
+    def edims_id(self) -> Union[str, None]:
+        """Get the EDIMS id associate with the document or None.
+
+        For example, http://www.austintexas.gov/edims/document.cfm?id=333514
+        turns into "333514"
+        """
+        if "/edims/document.cfm" in self.url:
             return self.url.rsplit("=", 2)[-1]
 
         return None

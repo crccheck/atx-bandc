@@ -47,4 +47,4 @@ class Command(BaseCommand):
 
         for bandc in queryset:
             bandc.pull()
-            self.stdout.write(self.style.SUCCESS('Scraped "%s"' % bandc))
+            self.stdout.write(self.style.SUCCESS(f'Scraped "{bandc}"'))
