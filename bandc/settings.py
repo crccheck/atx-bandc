@@ -109,10 +109,7 @@ if "RAVEN_DSN" in env:
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "root": {
-        "level": os.environ.get("LOGGING_LEVEL", "WARNING"),
-        "handlers": ["console"],
-    },
+    "root": {"level": os.environ.get("LOG_LEVEL", "WARNING"), "handlers": ["console"],},
     "filters": {
         "require_debug_false": {"()": "django.utils.log.RequireDebugFalse",},
         "require_debug_true": {"()": "django.utils.log.RequireDebugTrue",},
