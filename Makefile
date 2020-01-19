@@ -30,19 +30,6 @@ admin: ## Set up a local admin/admin developer account
 serve: ## Serve the wsgi application
 	waitress-serve --port=$(PORT) bandc.wsgi:application
 
-db: ## Start the dev database
-	docker run --name $(NAME)_db -d \
-	  -e POSTGRES_USER=bandc \
-	  -e POSTGRES_PASSWORD=bandcdevpassword \
-	  postgres:9.5 || docker start $(NAME)_db
-
-resetdb: ## Reset the dev database
-	docker rm -f $(NAME)_db
-	${MAKE} -s db
-
-check:
-	python manage.py check
-
 test: ## Run test suite
 test: clean check
 	python manage.py test --keepdb
