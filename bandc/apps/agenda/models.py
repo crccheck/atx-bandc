@@ -59,7 +59,11 @@ class BandC(models.Model):
         ).format
 
     def pull_details(self):
-        """Get details about a bandc you have to get from the homepage."""
+        """
+        Get details about a bandc you have to get from the homepage.
+
+        If scrapable, finds the internal identifier (e.g. 151)
+        """
         response = requests.get(self.homepage)
         assert response.ok
 

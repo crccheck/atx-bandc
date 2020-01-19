@@ -1,4 +1,5 @@
 import logging
+
 import requests
 from dateutil.parser import parse
 from lxml import etree
@@ -36,7 +37,10 @@ def populate_bandc_list():
         url = f"https://www.austintexas.gov{path}"
         slug = path.split("/")[-1]
 
-        print(BandC.objects.get_or_create(name=name.strip(), slug=slug, homepage=url,))
+        bandc, created = BandC.objects.get_or_create(
+            name=name.strip(), slug=slug, homepage=url,
+        )
+        logger.info("Found %s. Created? %s", bandc, created)
 
 
 class MeetingCancelled(Exception):
@@ -49,6 +53,7 @@ def parse_date(string):
     """
     if "cancel" in string.lower():
         raise MeetingCancelled("Meeting Cancelled")
+
     return parse(string).date()
 
 

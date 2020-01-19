@@ -14,7 +14,11 @@ class Command(BaseCommand):
             action="store_true",
             help="Initialize or update the list of BandCs.",
         )
-        parser.add_argument("identifier", nargs="*")
+        parser.add_argument(
+            "identifier",
+            nargs="*",
+            help="Only scrape these identifiers (e.g.: 151 3 7)",
+        )
 
     def handle(self, init_list, *args, **options):
         if init_list:
@@ -22,7 +26,7 @@ class Command(BaseCommand):
             populate_bandc_list()
 
             for bandc in BandC.objects.filter(identifier=None):
-                print(bandc)
+                self.stdout.write(f"Updating: {bandc}")
                 bandc.pull_details()
             return
 
