@@ -21,6 +21,12 @@ install: ## Install requirements
 requirements.txt: ## Regenerate requirements.txt
 	pip-compile --upgrade --output-file $@ requirements.in
 
+admin: ## Set up a local admin/admin developer account
+	echo "from django.contrib.auth import get_user_model; \
+		User = get_user_model(); \
+		User.objects.create_superuser('admin', 'admin@example.com', 'admin')" | \
+		python manage.py shell
+
 serve: ## Serve the wsgi application
 	waitress-serve --port=$(PORT) bandc.wsgi:application
 
