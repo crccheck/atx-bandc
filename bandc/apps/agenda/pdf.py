@@ -106,7 +106,7 @@ def process_pdf(document: Document):
 
     filepath = pdf_file_path(document)
     # Parse and save pdf text
-    with open(filepath) as f:
+    with open(filepath, "rb") as f:
         try:
             document.text = pdf_to_text(f).strip()
             document.scrape_status = "scraped"
