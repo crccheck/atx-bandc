@@ -41,20 +41,20 @@ def pdf_file_path(document: Document) -> str:
 
     We have to download the file to the disk because it's the easiest way to
     send the pdf to ImageMagick.
-
-    TODO force re-download pdf because sometimes they're corrupted
     """
     if not os.path.isdir(BASE_PATH):
         os.makedirs(BASE_PATH)
 
-    filename = document.edims_id + ".pdf"
-    filepath = os.path.join(BASE_PATH, filename)
-    print("{0.date}: {0.url}".format(document))
-    # Check if file was already downloaded
-    if not os.path.isfile(filepath):
-        # download pdf to temporary file
-        print(urlretrieve(document.url, filepath))  # TODO log
-    return filepath
+    filename = f"{document.edims_id}.pdf"
+    tmp_filepath = os.path.join(BASE_PATH, f"{filename}.tmp")
+    final_filepath = os.path.join(BASE_PATH, filename)
+    logger.info(f"Downloading {document.date}: {document.url}")
+    if not os.path.isfile(final_filepath):
+        # WISHLIST stop using deprecated `urlretrieve`, add user-agent
+        dest_filepath, http_message = urlretrieve(document.url, tmp_filepath)
+        logger.info("Downloaded to %s", dest_filepath)
+        os.rename(tmp_filepath, final_filepath)
+    return final_filepath
 
 
 def grab_pdf_thumbnail(filepath: str) -> bytes:
@@ -123,10 +123,12 @@ def process_pdf(document: Document):
             # File "/usr/local/lib/python2.7/site-packages/pdfminer/utils.py", line 46, in apply_png_predictor
             #   raise ValueError(ft)
             ValueError,
-        ):
+        ) as exc:
             document.text = ""
             document.scrape_status = "error"
-            logger.error("PDF scrape error on EDIMS %s", document.edims_id)
+            logger.error(
+                "PDF scrape error on EDIMS: %s Error: %s", document.edims_id, exc
+            )
 
     thumbnail = grab_pdf_thumbnail(filepath)
     document.thumbnail.save(
