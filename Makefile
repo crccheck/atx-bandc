@@ -45,12 +45,14 @@ docker/build: ## Build the Docker image
 docker/scrape: ## Scrape and process pdfs
 	docker run --rm --env-file=env-prod ${IMAGE} python manage.py scrape
 
+# This is a good ImageMagic PDF guide:
+# https://www.binarytides.com/convert-pdf-image-imagemagick-commandline/
 docker/converttest:
 	docker run --rm ${IMAGE} \
 	convert \
 	"./bandc/apps/agenda/tests/samples/document_559F43E9-A324-12E8-80CA01C0F02507A7.pdf" \
 	-thumbnail 400x400 \
-	-alpha remove \
+	-flatten \
 	jpg:/tmp/test.jpg
 
 docker/bash:

@@ -64,8 +64,7 @@ def grab_pdf_thumbnail(filepath):
         filepath + "[0]",  # force to only get 1st page
         "-thumbnail",
         "400x400",  # output size
-        "-alpha",
-        "remove",  # '-alpha remove' prevents black border
+        "-flatten",
         "jpg:-",  # output jpeg to stdout
     )
     return out.stdout
