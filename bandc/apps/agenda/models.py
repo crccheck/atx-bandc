@@ -36,7 +36,7 @@ class BandC(models.Model):
         verbose_name = "Board or Commission"
         verbose_name_plural = "Boards and Commissions"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
@@ -98,7 +98,7 @@ class Meeting(models.Model):
         ordering = ("-date",)
         unique_together = ("date", "bandc")
 
-    def __unicode__(self):
+    def __str__(self):
         return "{}".format(self.bandc, self.title or self.date)
 
 
@@ -144,7 +144,7 @@ class Document(models.Model):
     class Meta:
         ordering = ("-meeting__date",)
 
-    def __unicode__(self):
+    def __str__(self):
         return "{}".format(self.title or self.type)
 
     def get_absolute_url(self):

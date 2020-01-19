@@ -10,20 +10,21 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--bandc",
+            "--init-list",
             action="store_true",
             help="Initialize or update the list of BandCs.",
         )
         parser.add_argument("identifier", nargs="*")
 
-    def handle(self, *args, **options):
-        if options["bandc"]:
+    def handle(self, init_list, *args, **options):
+        if init_list:
             self.stdout.write("Updating list of BandCs")
             populate_bandc_list()
 
             for bandc in BandC.objects.filter(identifier=None):
-                print bandc
+                print(bandc)
                 bandc.pull_details()
+            return
 
         queryset = BandC.objects.filter(scrapable=True)
         if options["identifier"]:
@@ -33,7 +34,7 @@ class Command(BaseCommand):
 
         # TODO sort queryset
         # more frequently updated entries are first
-        # priority buckets so defunct BandCs aren't scraped
+        # prioritize buckets so defunct BandCs aren't scraped
 
         if count:
             self.stdout.write("Checking {} BandCs".format(queryset.count()))
@@ -41,8 +42,5 @@ class Command(BaseCommand):
             raise CommandError("No BandCs to scrape")
 
         for bandc in queryset:
-            if True:
-                pull.delay(bandc.pk)
-            else:
-                bandc.pull()
+            bandc.pull()
             self.stdout.write(self.style.SUCCESS('Scraped "%s"' % bandc))

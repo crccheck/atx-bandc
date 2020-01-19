@@ -11,7 +11,7 @@ from .tasks import get_details_from_pdf
 
 # CONSTANTS
 
-YEAR = 2015
+YEAR = 2020
 MEETING_DATE = "bcic_mtgdate"
 MEETING_TITLE = "bcic_mtgtype"
 DOCUMENT = "bcic_doc"
@@ -25,7 +25,7 @@ def populate_bandc_list():
     Populate the BandC table.
     """
     response = requests.get(
-        "http://www.austintexas.gov/department/boards-and-commissions"
+        "https://www.austintexas.gov/department/boards-and-commissions"
     )
     assert response.ok
     doc = document_fromstring(response.text)
@@ -33,7 +33,7 @@ def populate_bandc_list():
 
         name = option.text
         path = option.values()[0]
-        url = "http://www.austintexas.gov" + path
+        url = f"https://www.austintexas.gov{path}"
         slug = path.split("/")[-1]
 
         print(BandC.objects.get_or_create(name=name.strip(), slug=slug, homepage=url,))
