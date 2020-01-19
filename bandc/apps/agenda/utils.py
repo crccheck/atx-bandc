@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 import requests
 from dateutil.parser import parse
@@ -107,9 +108,13 @@ def process_page(html):
     return meeting_data, doc_data
 
 
-def save_page(meeting_data, doc_data, bandc):
+def save_page(meeting_data, doc_data, bandc: BandC) -> bool:
     """
     Save one page worth of data.
+
+    Returns
+    -------
+    TODO True if there's another page to process
     """
     logger.info("save_page %s", bandc)
 
@@ -149,7 +154,7 @@ def save_page(meeting_data, doc_data, bandc):
             get_details_from_pdf(doc.pk)
 
     # Look for stale documents
-    stale_documents = []
+    stale_documents: List[Meeting] = []
     for meeting in meetings.values():
         stale_documents.extend(meeting["docs"])
 
@@ -169,7 +174,7 @@ def get_number_of_pages(html):
     return int(last_page_link[0].strip())
 
 
-def pull_bandc(bandc):
+def pull_bandc(bandc: BandC) -> None:
     """
     Get info about all the meetings for the most recent year.
     """
