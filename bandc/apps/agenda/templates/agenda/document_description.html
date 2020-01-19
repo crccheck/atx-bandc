@@ -1,11 +1,11 @@
 {% if obj.thumbnail %}
-  <img src="{{ obj.thumbnail }}" alt="" style="float: left; margin-right: 5px">
+<img src="{{ obj.thumbnail.url }}" alt="" style="float: left; margin-right: 5px">
 {% endif %}
 <p>{{ obj.meeting.date }}</p>
 {% if obj.text %}
-  <p>
-    {{ obj.rss_text|truncatewords:100 }}
-  </p>
+<p>
+  {{ obj.rss_text|truncatewords:100 }}
+</p>
 {% else %}
-  <p>{{ obj.type }}</p>
+<p>{{ obj.type }}</p>
 {% endif %}
