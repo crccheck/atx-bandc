@@ -102,7 +102,7 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "media/"
+MEDIA_URL = "/media/"
 
 RAVEN_CONFIG = {
     # 'release': raven.fetch_git_sha(os.path.dirname(BASE_DIR)),

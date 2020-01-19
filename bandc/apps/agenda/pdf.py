@@ -7,6 +7,7 @@ import boto
 import boto.s3.connection
 import sh
 from boto.s3.connection import S3Connection
+from django.core.files.base import ContentFile
 from project_runpy import env
 from pdfminer.converter import TextConverter
 from pdfminer.pdfdocument import PDFDocument, PDFEncryptionError
@@ -14,13 +15,14 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage, PDFTextExtractionNotAllowed
 from pdfminer.pdfparser import PDFParser
 from pdfminer.psparser import PSException
+from .models import Document
 
 
 BASE_PATH = "/tmp/bandc_pdfs/"  # TODO settings
 logger = logging.getLogger(__name__)
 
 
-def pdf_to_text(fp):
+def pdf_to_text(fp) -> str:
     """Get the text from pdf file handle."""
     rsrcmgr = PDFResourceManager()
     outfp = StringIO()
@@ -33,7 +35,7 @@ def pdf_to_text(fp):
     return outfp.getvalue()
 
 
-def pdf_file_path(document):
+def pdf_file_path(document: Document) -> str:
     """
     Downloads the pdf locally and return the path it.
 
@@ -55,7 +57,7 @@ def pdf_file_path(document):
     return filepath
 
 
-def grab_pdf_thumbnail(filepath):
+def grab_pdf_thumbnail(filepath: str) -> bytes:
     """
     Returns jpeg image thumbnail of the input pdf.
     """
@@ -70,7 +72,7 @@ def grab_pdf_thumbnail(filepath):
     return out.stdout
 
 
-def upload_thumb(document, thumbnail):
+def upload_thumb(document: Document, thumbnail: bytes):
     """
     Upload the thumbnail for the document.
 
@@ -96,7 +98,7 @@ def upload_thumb(document, thumbnail):
     return s3_key
 
 
-def process_pdf(document):
+def process_pdf(document: Document):
     if not document.edims_id:
         document.scrape_status = "unscrapable"
         document.save()
@@ -127,7 +129,7 @@ def process_pdf(document):
             logger.error("PDF scrape error on EDIMS %s", document.edims_id)
 
     thumbnail = grab_pdf_thumbnail(filepath)
-    bucket_path = upload_thumb(document, thumbnail)
-    document.thumbnail = "http://atx-bandc-pdf.crccheck.com{}".format(bucket_path)
-
+    document.thumbnail.save(
+        f"{document.edims_id}.jpg", ContentFile(thumbnail), save=False
+    )
     document.save()
