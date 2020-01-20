@@ -2,11 +2,10 @@ from django.core.management.base import BaseCommand, CommandError
 
 from bandc.apps.agenda.models import BandC
 from bandc.apps.agenda.utils import populate_bandc_list
-from bandc.apps.agenda.tasks import pull
 
 
 class Command(BaseCommand):
-    help = "Scrape"
+    help = "Scrape meetings, optionally populate list of Boards and Commissions"
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -28,7 +27,6 @@ class Command(BaseCommand):
             for bandc in BandC.objects.filter(identifier=None):
                 self.stdout.write(f"Updating: {bandc}")
                 bandc.pull_details()
-            return
 
         queryset = BandC.objects.filter(scrapable=True).order_by("?")
         if options["identifier"]:
