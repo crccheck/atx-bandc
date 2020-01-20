@@ -73,7 +73,7 @@ Homepage <i class="fa fa-external-link"></i>
   {% if doc.thumbnail %}
   <div class="thumbnail-container">
     <a href="{% url 'document_detail' bandc_slug=doc.meeting.bandc.slug pk=doc.pk %}" class="thumbnail">
-      <img src="{{ doc.thumbnail }}" alt="">
+      <img src="{{ doc.thumbnail.url }}" alt="">
     </a>
   </div>
   {% endif %}

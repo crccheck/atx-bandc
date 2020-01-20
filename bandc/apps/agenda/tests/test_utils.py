@@ -1,7 +1,7 @@
 import datetime
 import os.path
-
 from unittest import mock
+
 from django.test import TestCase
 
 from ..factories import BandCFactory
@@ -57,7 +57,7 @@ class UtilsTests(TestCase):
         save_page(meeting_data, doc_data, bandc)
 
         self.assertEqual(bandc.latest_meeting.date.isoformat(), "2014-02-03")
-        self.assertTrue(mock_task.delay.called)
+        self.assertTrue(mock_task.called)
 
     def test_save_page_handles_no_data(self):
         meeting_data, doc_data = [], []

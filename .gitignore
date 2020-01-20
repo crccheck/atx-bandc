@@ -4,7 +4,8 @@ env-*
 *.db
 .ipynb_checkpoints/
 
-celerybeat-schedule
+# UGC
+media
 
 # ignore ipython notebook for now
 *.ipynb

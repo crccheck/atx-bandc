@@ -13,32 +13,27 @@ clean:
 	find . -name "*.pyc" -delete
 	find . -name ".DS_Store" -delete
 
+# On OSX, tested with ImageMagick 7.0.9-16 and Ghostscript 9.50
+# brew install imagemagick gs
+
+# sudo apt-get install -y imagemagick
 install: ## Install requirements
-	sudo apt-get install -y imagemagick
 	pip install -r requirements.txt
 
 .PHONY: requirements.txt
 requirements.txt: ## Regenerate requirements.txt
 	pip-compile --upgrade --output-file $@ requirements.in
 
+admin: ## Set up a local admin/admin developer account
+	echo "from django.contrib.auth import get_user_model; \
+		User = get_user_model(); \
+		User.objects.create_superuser('admin', 'admin@example.com', 'admin')" | \
+		python manage.py shell
+
 serve: ## Serve the wsgi application
 	waitress-serve --port=$(PORT) bandc.wsgi:application
 
-db: ## Start the dev database
-	docker run --name $(NAME)_db -d \
-	  -e POSTGRES_USER=bandc \
-	  -e POSTGRES_PASSWORD=bandcdevpassword \
-	  postgres:9.5 || docker start $(NAME)_db
-
-resetdb: ## Reset the dev database
-	docker rm -f $(NAME)_db
-	${MAKE} -s db
-
-check:
-	python manage.py check
-
 test: ## Run test suite
-test: clean check
 	python manage.py test --keepdb
 
 tdd: ## Run test watcher
@@ -50,12 +45,14 @@ docker/build: ## Build the Docker image
 docker/scrape: ## Scrape and process pdfs
 	docker run --rm --env-file=env-prod ${IMAGE} python manage.py scrape
 
+# This is a good ImageMagic PDF guide:
+# https://www.binarytides.com/convert-pdf-image-imagemagick-commandline/
 docker/converttest:
 	docker run --rm ${IMAGE} \
 	convert \
 	"./bandc/apps/agenda/tests/samples/document_559F43E9-A324-12E8-80CA01C0F02507A7.pdf" \
 	-thumbnail 400x400 \
-	-alpha remove \
+	-flatten \
 	jpg:/tmp/test.jpg
 
 docker/bash:

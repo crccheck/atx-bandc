@@ -1,5 +1,7 @@
+import datetime as dt
 import os.path
 import re
+from typing import Union
 
 import requests
 from django.urls import reverse
@@ -36,7 +38,7 @@ class BandC(models.Model):
         verbose_name = "Board or Commission"
         verbose_name_plural = "Boards and Commissions"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
@@ -46,7 +48,7 @@ class BandC(models.Model):
     def current_meeting_url_format(self):
         """Format with (page)."""
         return (
-            "http://www.austintexas.gov/cityclerk/boards_commissions/"
+            "https://www.austintexas.gov/cityclerk/boards_commissions/"
             "meetings/%s_{}.htm" % self.identifier
         ).format
 
@@ -54,12 +56,16 @@ class BandC(models.Model):
     def historical_meeting_url_format(self):
         """Format with (year, identifier, page)."""
         return (
-            "http://www.austintexas.gov/cityclerk/boards_commissions/"
+            "https://www.austintexas.gov/cityclerk/boards_commissions/"
             "meetings/{}_%s_{}.htm" % self.identifier
         ).format
 
     def pull_details(self):
-        """Get details about a bandc you have to get from the homepage."""
+        """
+        Get details about a bandc you have to get from the homepage.
+
+        If scrapable, finds the internal identifier (e.g. 151)
+        """
         response = requests.get(self.homepage)
         assert response.ok
 
@@ -80,10 +86,10 @@ class BandC(models.Model):
         self.identifier = identifier
         self.save()
 
-    def pull(self):
+    def pull(self) -> None:
         from .utils import pull_bandc
 
-        pull_bandc(self)
+        return pull_bandc(self)
 
 
 class Meeting(models.Model):
@@ -98,8 +104,8 @@ class Meeting(models.Model):
         ordering = ("-date",)
         unique_together = ("date", "bandc")
 
-    def __unicode__(self):
-        return "{}".format(self.bandc, self.title or self.date)
+    def __str__(self):
+        return "{} {}".format(self.bandc, self.title or self.date)
 
 
 class Document(models.Model):
@@ -135,8 +141,12 @@ class Document(models.Model):
     # Extracted fields
     ##################
 
-    thumbnail = models.URLField(null=True, blank=True)
-
+    thumbnail = models.ImageField(
+        upload_to="thumbs/%Y/%m",
+        null=True,
+        blank=True,
+        help_text="A jpeg of the first page",
+    )
     text = models.TextField(
         null=True, blank=True, help_text="The text extracted from the pdf"
     )
@@ -144,7 +154,7 @@ class Document(models.Model):
     class Meta:
         ordering = ("-meeting__date",)
 
-    def __unicode__(self):
+    def __str__(self) -> str:
         return "{}".format(self.title or self.type)
 
     def get_absolute_url(self):
@@ -154,19 +164,23 @@ class Document(models.Model):
         )
 
     @property
-    def edims_id(self):
-        """Get the EDIMS id associate with the document or None."""
-        if self.url.startswith("http://www.austintexas.gov/edims/document"):
+    def edims_id(self) -> Union[str, None]:
+        """Get the EDIMS id associate with the document or None.
+
+        For example, http://www.austintexas.gov/edims/document.cfm?id=333514
+        turns into "333514"
+        """
+        if "/edims/document.cfm" in self.url:
             return self.url.rsplit("=", 2)[-1]
 
         return None
 
     @property
-    def date(self):
+    def date(self) -> dt.datetime:
         return self.meeting.date
 
     @property
-    def rss_text(self):
+    def rss_text(self) -> str:
         """text field safe for xml"""
         if not self.text:
             return self.text

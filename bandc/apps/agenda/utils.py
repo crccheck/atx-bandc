@@ -1,4 +1,6 @@
 import logging
+from typing import List
+
 import requests
 from dateutil.parser import parse
 from lxml import etree
@@ -11,7 +13,7 @@ from .tasks import get_details_from_pdf
 
 # CONSTANTS
 
-YEAR = 2015
+YEAR = 2020
 MEETING_DATE = "bcic_mtgdate"
 MEETING_TITLE = "bcic_mtgtype"
 DOCUMENT = "bcic_doc"
@@ -25,7 +27,7 @@ def populate_bandc_list():
     Populate the BandC table.
     """
     response = requests.get(
-        "http://www.austintexas.gov/department/boards-and-commissions"
+        "https://www.austintexas.gov/department/boards-and-commissions"
     )
     assert response.ok
     doc = document_fromstring(response.text)
@@ -33,10 +35,13 @@ def populate_bandc_list():
 
         name = option.text
         path = option.values()[0]
-        url = "http://www.austintexas.gov" + path
+        url = f"https://www.austintexas.gov{path}"
         slug = path.split("/")[-1]
 
-        print(BandC.objects.get_or_create(name=name.strip(), slug=slug, homepage=url,))
+        bandc, created = BandC.objects.get_or_create(
+            name=name.strip(), slug=slug, homepage=url,
+        )
+        logger.info("Found %s. Created? %s", bandc, created)
 
 
 class MeetingCancelled(Exception):
@@ -49,22 +54,12 @@ def parse_date(string):
     """
     if "cancel" in string.lower():
         raise MeetingCancelled("Meeting Cancelled")
+
     return parse(string).date()
 
 
 def clean_text(text):
     return text.lstrip("- ")
-
-
-def inner_html(node):
-    """
-    Equivalent to doing node.innerHTML if this were JavaScript.
-
-    # http://stackoverflow.com/questions/6123351/equivalent-to-innerhtml-when-using-lxml-html-to-parse-html/6396097#6396097
-    """
-    return (node.text or "") + "".join(
-        [etree.tostring(child) for child in node.iterchildren()]
-    )
 
 
 def process_page(html):
@@ -80,6 +75,7 @@ def process_page(html):
     date = ""
     meeting_data = []
     doc_data = []
+    # WISHLIST do two-pass to group into meetings then parse contents
     for row in doc.xpath('//div[@id="bcic"]/h5'):
         row_class = row.attrib["class"]  # assume each has only one css class
         if row_class == MEETING_DATE:
@@ -89,22 +85,24 @@ def process_page(html):
                 date = None
         elif date and row_class == MEETING_TITLE:
             # XXX assume all meeting date rows are followed by meeting title
-            meeting_data.append(
-                {"date": date, "title": inner_html(row),}
-            )
+            meeting_data.append({"date": date, "title": row.text_content()})
         elif date and row_class == DOCUMENT:
             row_type = row.xpath("./a/b/text()")[0]
             url = row.xpath("./a/@href")[0]
             title = clean_text("".join(row.xpath("./text()")).strip())
             doc_data.append(
-                {"date": date, "type": row_type, "url": url, "title": title,}
+                {"date": date, "type": row_type, "url": url, "title": title}
             )
     return meeting_data, doc_data
 
 
-def save_page(meeting_data, doc_data, bandc):
+def save_page(meeting_data, doc_data, bandc: BandC) -> bool:
     """
     Save one page worth of data.
+
+    Returns
+    -------
+    TODO True if there's another page to process
     """
     logger.info("save_page %s", bandc)
 
@@ -141,10 +139,10 @@ def save_page(meeting_data, doc_data, bandc):
             except KeyError:
                 pass
         if True and doc.scrape_status == "toscrape":
-            get_details_from_pdf.delay(doc.pk)
+            get_details_from_pdf(doc.pk)
 
     # Look for stale documents
-    stale_documents = []
+    stale_documents: List[Meeting] = []
     for meeting in meetings.values():
         stale_documents.extend(meeting["docs"])
 
@@ -164,13 +162,13 @@ def get_number_of_pages(html):
     return int(last_page_link[0].strip())
 
 
-def pull_bandc(bandc):
+def pull_bandc(bandc: BandC) -> None:
     """
     Get info about all the meetings for the most recent year.
     """
     headers = {
         # TODO pull version from VERSION
-        "User-Agent": "atx_bandc/0.2.0 http://atx-bandc-feed.herokuapp.com/",
+        "User-Agent": "atx_bandc/v0.2.0 https://github.com/crccheck/atx-bandc",
     }
 
     page_number = 1

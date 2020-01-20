@@ -7,6 +7,7 @@ import boto
 import boto.s3.connection
 import sh
 from boto.s3.connection import S3Connection
+from django.core.files.base import ContentFile
 from project_runpy import env
 from pdfminer.converter import TextConverter
 from pdfminer.pdfdocument import PDFDocument, PDFEncryptionError
@@ -14,13 +15,14 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage, PDFTextExtractionNotAllowed
 from pdfminer.pdfparser import PDFParser
 from pdfminer.psparser import PSException
+from .models import Document
 
 
 BASE_PATH = "/tmp/bandc_pdfs/"  # TODO settings
 logger = logging.getLogger(__name__)
 
 
-def pdf_to_text(fp):
+def pdf_to_text(fp) -> str:
     """Get the text from pdf file handle."""
     rsrcmgr = PDFResourceManager()
     outfp = StringIO()
@@ -33,45 +35,44 @@ def pdf_to_text(fp):
     return outfp.getvalue()
 
 
-def pdf_file_path(document):
+def pdf_file_path(document: Document) -> str:
     """
     Downloads the pdf locally and return the path it.
 
     We have to download the file to the disk because it's the easiest way to
     send the pdf to ImageMagick.
-
-    TODO force re-download pdf because sometimes they're corrupted
     """
     if not os.path.isdir(BASE_PATH):
         os.makedirs(BASE_PATH)
 
-    filename = document.edims_id + ".pdf"
-    filepath = os.path.join(BASE_PATH, filename)
-    print("{0.date}: {0.url}".format(document))
-    # Check if file was already downloaded
-    if not os.path.isfile(filepath):
-        # download pdf to temporary file
-        print(urlretrieve(document.url, filepath))  # TODO log
-    return filepath
+    filename = f"{document.edims_id}.pdf"
+    tmp_filepath = os.path.join(BASE_PATH, f"{filename}.tmp")
+    final_filepath = os.path.join(BASE_PATH, filename)
+    logger.info(f"Downloading {document.date}: {document.url}")
+    if not os.path.isfile(final_filepath):
+        # WISHLIST stop using deprecated `urlretrieve`, add user-agent
+        local_filename, headers = urlretrieve(document.url, tmp_filepath)
+        logger.info("Downloaded to %s", local_filename)
+        os.rename(local_filename, final_filepath)
+    return final_filepath
 
 
-def grab_pdf_thumbnail(filepath):
+def grab_pdf_thumbnail(filepath: str) -> bytes:
     """
     Returns jpeg image thumbnail of the input pdf.
     """
-    print("converting pdf: {}".format(filepath))
+    logger.info("Converting pdf: %s", filepath)
     out = sh.convert(
         filepath + "[0]",  # force to only get 1st page
         "-thumbnail",
         "400x400",  # output size
-        "-alpha",
-        "remove",  # fix black border that appears
-        "jpg:-",  # force to output jpeg to stdout
+        "-flatten",
+        "jpg:-",  # output jpeg to stdout
     )
     return out.stdout
 
 
-def upload_thumb(document, thumbnail):
+def upload_thumb(document: Document, thumbnail: bytes):
     """
     Upload the thumbnail for the document.
 
@@ -97,7 +98,7 @@ def upload_thumb(document, thumbnail):
     return s3_key
 
 
-def process_pdf(document):
+def process_pdf(document: Document):
     if not document.edims_id:
         document.scrape_status = "unscrapable"
         document.save()
@@ -105,7 +106,7 @@ def process_pdf(document):
 
     filepath = pdf_file_path(document)
     # Parse and save pdf text
-    with open(filepath) as f:
+    with open(filepath, "rb") as f:
         try:
             document.text = pdf_to_text(f).strip()
             document.scrape_status = "scraped"
@@ -122,13 +123,15 @@ def process_pdf(document):
             # File "/usr/local/lib/python2.7/site-packages/pdfminer/utils.py", line 46, in apply_png_predictor
             #   raise ValueError(ft)
             ValueError,
-        ):
+        ) as exc:
             document.text = ""
             document.scrape_status = "error"
-            logger.error("PDF scrape error on EDIMS %s", document.edims_id)
+            logger.error(
+                "PDF scrape error on EDIMS: %s Error: %s", document.edims_id, exc
+            )
 
     thumbnail = grab_pdf_thumbnail(filepath)
-    bucket_path = upload_thumb(document, thumbnail)
-    document.thumbnail = "http://atx-bandc-pdf.crccheck.com{}".format(bucket_path)
-
+    document.thumbnail.save(
+        f"{document.edims_id}.jpg", ContentFile(thumbnail), save=False
+    )
     document.save()

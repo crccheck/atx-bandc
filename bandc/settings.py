@@ -5,7 +5,6 @@ BASE_DIR = os.path.dirname(__file__)
 
 import dj_database_url
 
-# import raven
 from project_runpy import env
 
 SECRET_KEY = env.get("SECRET_KEY", "Rotom")
@@ -83,6 +82,7 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
+                "django.template.context_processors.media",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
@@ -100,18 +100,19 @@ STATIC_URL = "/static/"
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
-RAVEN_CONFIG = {
-    # 'release': raven.fetch_git_sha(os.path.dirname(BASE_DIR)),
-}
-if "RAVEN_DSN" in env:
-    RAVEN_CONFIG["dsn"] = env.get("RAVEN_DSN")
+MEDIA_ROOT = os.path.join(BASE_DIR, "..", "media")
+MEDIA_URL = "/media/"
 
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "root": {
-        "level": os.environ.get("LOGGING_LEVEL", "WARNING"),
-        "handlers": ["console"],
+    "root": {"level": os.environ.get("LOG_LEVEL", "WARNING"), "handlers": ["console"],},
+    "formatters": {
+        "dev": {
+            "format": "%(levelname)s %(name)s %(message)s",
+            # 'datefmt': '%Y-%m-%dT%H:%M:%S%z',  # I want milliseconds but Python doesn't make it easy
+            # "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
+        },
     },
     "filters": {
         "require_debug_false": {"()": "django.utils.log.RequireDebugFalse",},
@@ -121,6 +122,7 @@ LOGGING = {
     "handlers": {
         "console": {
             "level": "DEBUG",
+            "formatter": "dev",
             "class": "project_runpy.ColorizingStreamHandler",
         },
     },
@@ -131,6 +133,7 @@ LOGGING = {
             "filters": ["require_debug_true", "readable_sql"],
             "propagate": False,
         },
+        "sh": {"level": "WARNING", "propagate": False},
         "factory": {"level": "ERROR", "propagate": False,},
     },
 }

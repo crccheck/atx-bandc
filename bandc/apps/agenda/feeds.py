@@ -18,7 +18,7 @@ class BandCDocumentFeed(Feed):
         return BandC.objects.get(slug=slug)
 
     def title(self, obj):
-        return unicode(obj) if obj else "City of Austin Boards and Commissions - All"
+        return str(obj) if obj else "City of Austin Boards and Commissions - All"
 
     def link(self, obj):
         return reverse("feed", kwargs={"slug": getattr(obj, "slug", "all")})
@@ -46,4 +46,4 @@ class BandCDocumentFeed(Feed):
         if self.slug == "all":
             return "{} - {}".format(item.meeting.bandc, item)
 
-        return unicode(item)
+        return str(item)
