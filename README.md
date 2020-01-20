@@ -9,12 +9,9 @@ Austin, TX Boards and Commissions
 Getting started
 ---------------
 
-Requires Unix and Docker
-_TODO: OSX instructions_
+In a Virtualenv:
 
 ```
-mkvirtualenv atx-bandc
-workon atx-bandc
 make install
 make db
 ```
@@ -36,5 +33,5 @@ websites and:
 Links
 -----
 
-* http://atxhackforchange.org/
-* http://www.austintexas.gov/department/boards-and-commissions-information-center
+* https://atxhackforchange.org/
+* https://www.austintexas.gov/department/boards-and-commissions-information-center
