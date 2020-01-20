@@ -14,6 +14,4 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns.append(path("admin/", admin.site.urls))
 
-urlpatterns.extend(
-    [path("", include("bandc.apps.agenda.urls")),]
-)
+urlpatterns.extend([path("", include("bandc.apps.agenda.urls"))])
