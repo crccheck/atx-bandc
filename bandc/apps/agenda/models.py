@@ -141,6 +141,9 @@ class Document(models.Model):
     # Extracted fields
     ##################
 
+    page_count = models.PositiveSmallIntegerField(
+        null=True, blank=True, help_text="Number of pages in a document if it's a PDF"
+    )
     thumbnail = models.ImageField(
         upload_to="thumbs/%Y/%m",
         null=True,
