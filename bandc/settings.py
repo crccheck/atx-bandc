@@ -109,7 +109,7 @@ LOGGING = {
     "root": {"level": os.environ.get("LOG_LEVEL", "WARNING"), "handlers": ["console"],},
     "formatters": {
         "dev": {
-            "format": "%(asctime)s %(levelname)s %(name)s %(message)s",
+            "format": "%(levelname)s %(name)s %(message)s",
             # 'datefmt': '%Y-%m-%dT%H:%M:%S%z',  # I want milliseconds but Python doesn't make it easy
             # "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
         },
@@ -133,6 +133,7 @@ LOGGING = {
             "filters": ["require_debug_true", "readable_sql"],
             "propagate": False,
         },
+        "sh": {"level": "WARNING", "propagate": False},
         "factory": {"level": "ERROR", "propagate": False,},
     },
 }
