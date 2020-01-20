@@ -5,7 +5,6 @@ BASE_DIR = os.path.dirname(__file__)
 
 import dj_database_url
 
-# import raven
 from project_runpy import env
 
 SECRET_KEY = env.get("SECRET_KEY", "Rotom")
@@ -103,12 +102,6 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "..", "media")
 MEDIA_URL = "/media/"
-
-RAVEN_CONFIG = {
-    # 'release': raven.fetch_git_sha(os.path.dirname(BASE_DIR)),
-}
-if "RAVEN_DSN" in env:
-    RAVEN_CONFIG["dsn"] = env.get("RAVEN_DSN")
 
 LOGGING = {
     "version": 1,
