@@ -35,8 +35,8 @@ websites and:
 Deploying
 ---------
 
-I used to store images in S3, but now I use the local filesystem for simplicity.
-To serve Django media in production, you'll need a rule like this in Nginx:
+I store images in the local filesystem for simplicity. To serve Django media in
+production, you'll need a rule like this in Nginx:
 
 ```
 location /media {
