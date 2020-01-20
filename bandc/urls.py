@@ -14,6 +14,7 @@ def favicon(request):
         image_data = open("static/favicon-dev.ico", "rb").read()
     else:
         image_data = open("static/favicon.ico", "rb").read()
+    # TODO add cache headers
     return HttpResponse(image_data, content_type="image/x-icon")
 
 
