@@ -7,6 +7,9 @@ from django.views.generic import TemplateView
 
 
 def favicon(request):
+    """
+    best by tezar tantular from the Noun Project
+    """
     image_data = open("static/favicon.ico", "rb").read()
     return HttpResponse(image_data, content_type="image/x-icon")
 
