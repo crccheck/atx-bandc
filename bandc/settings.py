@@ -107,6 +107,13 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "root": {"level": os.environ.get("LOG_LEVEL", "WARNING"), "handlers": ["console"],},
+    "formatters": {
+        "dev": {
+            "format": "%(asctime)s %(levelname)s %(name)s %(message)s",
+            # 'datefmt': '%Y-%m-%dT%H:%M:%S%z',  # I want milliseconds but Python doesn't make it easy
+            # "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
+        },
+    },
     "filters": {
         "require_debug_false": {"()": "django.utils.log.RequireDebugFalse",},
         "require_debug_true": {"()": "django.utils.log.RequireDebugTrue",},
@@ -115,6 +122,7 @@ LOGGING = {
     "handlers": {
         "console": {
             "level": "DEBUG",
+            "formatter": "dev",
             "class": "project_runpy.ColorizingStreamHandler",
         },
     },
