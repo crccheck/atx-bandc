@@ -3,10 +3,7 @@ import os
 from io import StringIO
 from urllib.request import urlretrieve
 
-import boto
-import boto.s3.connection
 import sh
-from boto.s3.connection import S3Connection
 from django.core.files.base import ContentFile
 from project_runpy import env
 from pdfminer.converter import TextConverter
@@ -70,32 +67,6 @@ def grab_pdf_thumbnail(filepath: str) -> bytes:
         "jpg:-",  # output jpeg to stdout
     )
     return out.stdout
-
-
-def upload_thumb(document: Document, thumbnail: bytes):
-    """
-    Upload the thumbnail for the document.
-
-    Returns the path (key name).
-    """
-    s3_key = "/thumbs/{}.jpg".format(document.edims_id)
-    conn = S3Connection(
-        aws_access_key_id=env.get("AWS_ACCESS_KEY_ID"),
-        aws_secret_access_key=env.get("AWS_SECRET_ACCESS_KEY"),
-        host=env.get("AWS_S3_HOST"),
-        calling_format=boto.s3.connection.OrdinaryCallingFormat(),
-    )
-    bucket = conn.get_bucket(env.get("AWS_BUCKET"))
-    k = bucket.new_key(s3_key)
-    k.set_contents_from_string(
-        thumbnail,
-        headers={
-            "Content-Type": "image/jpeg",
-            "Cache-Control": "public,max-age=15552000",  # 180 days
-        },
-    )
-    k.set_canned_acl("public-read")
-    return s3_key
 
 
 def process_pdf(document: Document):
