@@ -12,24 +12,12 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage, PDFTextExtractionNotAllowed
 from pdfminer.pdfparser import PDFParser
 from pdfminer.psparser import PSException
+from pdfminer.high_level import extract_text
 from .models import Document
 
 
 BASE_PATH = "/tmp/bandc_pdfs/"  # TODO settings
 logger = logging.getLogger(__name__)
-
-
-def pdf_to_text(fp) -> str:
-    """Get the text from pdf file handle."""
-    rsrcmgr = PDFResourceManager()
-    outfp = StringIO()
-    device = TextConverter(rsrcmgr, outfp, laparams=None, imagewriter=None)
-    interpreter = PDFPageInterpreter(rsrcmgr, device)
-    for page in PDFPage.get_pages(fp, set()):
-        interpreter.process_page(page)
-    device.close()
-    fp.close()
-    return outfp.getvalue()
 
 
 def pdf_file_path(document: Document) -> str:
@@ -77,29 +65,26 @@ def process_pdf(document: Document):
 
     filepath = pdf_file_path(document)
     # Parse and save pdf text
-    with open(filepath, "rb") as f:
-        try:
-            document.text = pdf_to_text(f).strip()
-            document.scrape_status = "scraped"
-        except (
-            PDFTextExtractionNotAllowed,
-            PDFEncryptionError,
-            PSException,
-            # int() argument must be a string or a number, not 'PSKeyword'
-            TypeError,
-            # File "/usr/local/lib/python2.7/dist-packages/pdfminer/pdfpage.py", line 52, in __init__
-            #     self.resources = resolve1(self.attrs['Resources'])
-            # KeyError: 'Resources'
-            KeyError,
-            # File "/usr/local/lib/python2.7/site-packages/pdfminer/utils.py", line 46, in apply_png_predictor
-            #   raise ValueError(ft)
-            ValueError,
-        ) as exc:
-            document.text = ""
-            document.scrape_status = "error"
-            logger.error(
-                "PDF scrape error on EDIMS: %s Error: %s", document.edims_id, exc
-            )
+    try:
+        document.text = extract_text(filepath).strip()
+        document.scrape_status = "scraped"
+    except (
+        PDFTextExtractionNotAllowed,
+        PDFEncryptionError,
+        PSException,
+        # int() argument must be a string or a number, not 'PSKeyword'
+        TypeError,
+        # File "/usr/local/lib/python2.7/dist-packages/pdfminer/pdfpage.py", line 52, in __init__
+        #     self.resources = resolve1(self.attrs['Resources'])
+        # KeyError: 'Resources'
+        KeyError,
+        # File "/usr/local/lib/python2.7/site-packages/pdfminer/utils.py", line 46, in apply_png_predictor
+        #   raise ValueError(ft)
+        ValueError,
+    ) as exc:
+        document.text = ""
+        document.scrape_status = "error"
+        logger.error("PDF scrape error on EDIMS: %s Error: %s", document.edims_id, exc)
 
     thumbnail = grab_pdf_thumbnail(filepath)
     document.thumbnail.save(
