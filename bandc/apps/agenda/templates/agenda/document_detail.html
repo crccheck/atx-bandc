@@ -22,7 +22,7 @@
   <h4>
     {{ object }}
     <small>
-      <a href="{{ object.url }}" target="_blank">
+      <a href="{{ object.url }}" target="_blank" rel="noopener noreferrer">
         (original
         {% if object.edims_id %}
         pdf <i class="fa fa-file-pdf-o"></i>)
@@ -37,11 +37,14 @@
   </h5>
   <time>{{ meeting.date }}</time>
   {% if object.thumbnail %}
-  <div class="thumbnail-container pull-left" style="margin: 0 0.5em 0.25em 0;">
-    <a href="{{ object.url }}" class="thumbnail" target="_blank">
-      <img src="{{ object.thumbnail.url }}" alt="">
+  <figure class="figure pull-left" style="margin: 0 0.5em 0.25em 0;">
+    <a href="{{ object.url }}" target="_blank" rel="noopener noreferrer">
+      <img src="{{ object.thumbnail.url }}" alt="Thumbnail of the first page of the PDF">
     </a>
-  </div>
+    <figcaption class="figure-caption">
+      Page 1 of {{ object.page_count }} page{{ object.page_count|pluralize }}
+    </figcaption>
+  </figure>
   {% endif %}
   {% if object.text %}
   <p>
