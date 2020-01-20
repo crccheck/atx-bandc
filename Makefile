@@ -18,11 +18,12 @@ clean:
 
 # sudo apt-get install -y imagemagick
 install: ## Install requirements
-	pip install -r requirements.txt
+	pip install -r requirements.txt -r dev-requirements.txt
 
 .PHONY: requirements.txt
 requirements.txt: ## Regenerate requirements.txt
-	pip-compile --upgrade --output-file $@ requirements.in
+	pip-compile requirements.in > $@
+	pip-compile dev-requirements.in
 
 admin: ## Set up a local admin/admin developer account
 	echo "from django.contrib.auth import get_user_model; \

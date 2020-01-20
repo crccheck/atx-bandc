@@ -1,0 +1,4 @@
+-c requirements.txt
+
+factory-boy
+pip-tools
