@@ -64,10 +64,10 @@ def process_pdf(document: Document):
         return
 
     filepath = pdf_file_path(document)
-    # Parse and save pdf text
     try:
         document.text = extract_text(filepath).strip()
         document.scrape_status = "scraped"
+        document.page_count = pdf_page_count(filepath)
     except (
         PDFTextExtractionNotAllowed,
         PDFEncryptionError,
