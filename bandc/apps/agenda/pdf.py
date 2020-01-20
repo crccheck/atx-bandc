@@ -42,6 +42,11 @@ def pdf_file_path(document: Document) -> str:
     return final_filepath
 
 
+def pdf_page_count(filepath: str) -> int:
+    with open(filepath, "rb") as fp:
+        return len(list(PDFPage.get_pages(fp, set())))
+
+
 def grab_pdf_thumbnail(filepath: str) -> bytes:
     """
     Returns jpeg image thumbnail of the input pdf.
