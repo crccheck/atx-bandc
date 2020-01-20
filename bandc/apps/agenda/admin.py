@@ -11,6 +11,7 @@ class BandCAdmin(admin.ModelAdmin):
     list_display = ("name", "scrapable", "identifier", "latest", "homepage_url")
     list_select_related = ("latest_meeting",)
     raw_id_fields = ("latest_meeting",)
+    readonly_fields = ("scraped_at",)
 
     def latest(self, obj):
         if not obj.latest_meeting:
@@ -26,14 +27,14 @@ class BandCAdmin(admin.ModelAdmin):
 
 @admin.register(Meeting)
 class MeetingAdmin(admin.ModelAdmin):
-    list_display = ("bandc", "date", "title")
+    list_display = ("title", "date", "bandc")
     list_filter = ("bandc",)
 
 
 @admin.register(Document)
 class DocumentAdmin(DjangoObjectActions, admin.ModelAdmin):
     list_display = ("__str__", "edims_id", "date", "scrape_status")
-    list_filter = ("scrape_status",)
+    list_filter = ("scrape_status", "type")
     raw_id_fields = ("meeting",)
 
     def pdf(self, request, obj: Document):

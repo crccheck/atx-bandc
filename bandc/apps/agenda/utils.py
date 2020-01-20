@@ -3,6 +3,7 @@ from typing import List
 
 import requests
 from dateutil.parser import parse
+from django.utils.timezone import now
 from lxml.html import document_fromstring
 from obj_update import obj_update_or_create
 
@@ -171,6 +172,8 @@ def pull_bandc(bandc: BandC) -> None:
     }
 
     page_number = 1
+    bandc.scraped_at = now()
+    bandc.save()
     process_next = True
     while process_next:
         response = requests.get(

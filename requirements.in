@@ -15,7 +15,7 @@ requests
 project-runpy
 
 # pdf
-pdfminer
+pdfminer.six
 sh
 
 # TODO
