@@ -25,6 +25,7 @@ pyga
 
 # Prod
 waitress
+whitenoise
 
 # Dev
 pip-tools
