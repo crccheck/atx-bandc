@@ -38,10 +38,10 @@ class BandC(models.Model):
         verbose_name = "Board or Commission"
         verbose_name_plural = "Boards and Commissions"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse("bandc_detail", kwargs={"slug": self.slug})
 
     @property
@@ -60,7 +60,7 @@ class BandC(models.Model):
             "meetings/{}_%s_{}.htm" % self.identifier
         ).format
 
-    def pull_details(self):
+    def pull_details(self) -> None:
         """
         Get details about a bandc you have to get from the homepage.
 
@@ -104,7 +104,7 @@ class Meeting(models.Model):
         ordering = ("-date",)
         unique_together = ("date", "bandc")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "{} {}".format(self.bandc, self.title or self.date)
 
 
@@ -157,7 +157,7 @@ class Document(models.Model):
     def __str__(self) -> str:
         return "{}".format(self.title or self.type)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse(
             "document_detail",
             kwargs={"bandc_slug": self.meeting.bandc.slug, "pk": self.pk},
