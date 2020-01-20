@@ -3,7 +3,6 @@ from typing import List
 
 import requests
 from dateutil.parser import parse
-from lxml import etree
 from lxml.html import document_fromstring
 from obj_update import obj_update_or_create
 

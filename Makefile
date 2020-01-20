@@ -18,20 +18,18 @@ clean:
 
 # sudo apt-get install -y imagemagick
 install: ## Install requirements
-	pip install -r requirements.txt
+	pip install -r requirements.txt -r dev-requirements.txt
 
 .PHONY: requirements.txt
 requirements.txt: ## Regenerate requirements.txt
-	pip-compile --upgrade --output-file $@ requirements.in
+	pip-compile requirements.in > $@
+	pip-compile dev-requirements.in
 
 admin: ## Set up a local admin/admin developer account
 	echo "from django.contrib.auth import get_user_model; \
 		User = get_user_model(); \
 		User.objects.create_superuser('admin', 'admin@example.com', 'admin')" | \
 		python manage.py shell
-
-serve: ## Serve the wsgi application
-	waitress-serve --port=$(PORT) bandc.wsgi:application
 
 test: ## Run test suite
 	python manage.py test --keepdb
@@ -43,11 +41,14 @@ docker/build: ## Build the Docker image
 	docker build -t ${IMAGE} .
 
 docker/scrape: ## Scrape and process pdfs
-	docker run --rm --env-file=env-prod ${IMAGE} python manage.py scrape
+	docker run --rm ${IMAGE} python manage.py scrape
+
+docker/run: ## Scrape and process pdfs
+	docker run --rm -it -p 8000:8000 ${IMAGE}
 
 # This is a good ImageMagic PDF guide:
 # https://www.binarytides.com/convert-pdf-image-imagemagick-commandline/
-docker/converttest:
+docker/converttest: ## Make sure we can create thumbnails from PDFs in production
 	docker run --rm ${IMAGE} \
 	convert \
 	"./bandc/apps/agenda/tests/samples/document_559F43E9-A324-12E8-80CA01C0F02507A7.pdf" \

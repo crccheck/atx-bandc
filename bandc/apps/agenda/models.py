@@ -160,7 +160,7 @@ class Document(models.Model):
     def get_absolute_url(self):
         return reverse(
             "document_detail",
-            kwargs={"bandc_slug": self.meeting.bandc.slug, "pk": self.pk,},
+            kwargs={"bandc_slug": self.meeting.bandc.slug, "pk": self.pk},
         )
 
     @property

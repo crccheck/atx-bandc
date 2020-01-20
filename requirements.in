@@ -1,12 +1,11 @@
 # shared
 Django
-psycopg2
+# psycopg2
 dj-database-url
 dj-obj-update
 django-bootstrap-pagination
 django-extensions
 django-object-actions
-factory-boy
 Pillow
 
 # scraper
@@ -16,15 +15,13 @@ requests
 project-runpy
 
 # pdf
-boto
 pdfminer
 sh
 
 # TODO
-pyga
+# pyga
 
 # Prod
 waitress
 
 # Dev
-pip-tools

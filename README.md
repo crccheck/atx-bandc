@@ -32,6 +32,19 @@ websites and:
 * the documents are put into an RSS feed
 
 
+Deploying
+---------
+
+I store images in the local filesystem for simplicity. To serve Django media in
+production, you'll need a rule like this in Nginx:
+
+```
+location /media {
+  root /data/bandc;
+}
+```
+
+
 Links
 -----
 
