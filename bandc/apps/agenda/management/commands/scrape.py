@@ -30,7 +30,7 @@ class Command(BaseCommand):
                 bandc.pull_details()
             return
 
-        queryset = BandC.objects.filter(scrapable=True)
+        queryset = BandC.objects.filter(scrapable=True).order_by("?")
         if options["identifier"]:
             queryset = queryset.filter(identifier__in=options["identifier"])
 
