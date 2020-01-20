@@ -2,10 +2,17 @@
 
 {% block head_title %}{{ object }} | {{ object.meeting.bandc }}{% endblock %}
 
+{% block extra_style %}
+<style>
+  article p {
+    white-space: pre-line;
+  }
+</style>
+{% endblock %}
+
 {% block breadcrumbs %}
 <li><a href="{% url 'bandc_detail' slug=object.meeting.bandc.slug %}">{{ object.meeting.bandc }}</a></li>
 {% endblock %}
-
 {% block content %}
 <article class="entry">
   <span class="label label-default">
