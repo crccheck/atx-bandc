@@ -11,13 +11,13 @@ RUN apt-get update -qq && \
   > /dev/null && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt /app/requirements.txt
+WORKDIR /app
+COPY requirements.txt requirements.txt
 ENV PIP_DISABLE_PIP_VERSION_CHECK 1
-RUN pip install -r /app/requirements.txt
+RUN pip install -r requirements.txt
 
 COPY . /app
-WORKDIR /app
 EXPOSE 8000
 HEALTHCHECK CMD nc -z localhost 8080
 
-CMD ["make", "serve"]
+CMD ["waitress-serve", "--port=8000", "bandc.wsgi:application"]
