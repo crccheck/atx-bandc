@@ -1,16 +1,11 @@
 import logging
 import os
-from io import StringIO
 from urllib.request import urlretrieve
 
 import sh
 from django.core.files.base import ContentFile
-from project_runpy import env
-from pdfminer.converter import TextConverter
-from pdfminer.pdfdocument import PDFDocument, PDFEncryptionError
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+from pdfminer.pdfdocument import PDFEncryptionError
 from pdfminer.pdfpage import PDFPage, PDFTextExtractionNotAllowed
-from pdfminer.pdfparser import PDFParser
 from pdfminer.psparser import PSException
 from pdfminer.high_level import extract_text
 from .models import Document
