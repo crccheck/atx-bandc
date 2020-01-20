@@ -133,6 +133,7 @@ LOGGING = {
             "propagate": False,
         },
         "sh": {"level": "WARNING", "propagate": False},
+        "pdfminer": {"level": "WARNING", "propagate": False},
         "factory": {"level": "ERROR", "propagate": False,},
     },
 }
