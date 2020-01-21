@@ -15,12 +15,16 @@ BASE_PATH = "/tmp/bandc_pdfs/"  # TODO settings
 logger = logging.getLogger(__name__)
 
 
-def pdf_file_path(document: Document) -> str:
+def _download_document_pdf(document: Document) -> str:
     """
     Downloads the pdf locally and return the path it.
 
     We have to download the file to the disk because it's the easiest way to
     send the pdf to ImageMagick.
+
+    Returns
+    -------
+    The path to the downloaded pdf
     """
     if not os.path.isdir(BASE_PATH):
         os.makedirs(BASE_PATH)
@@ -37,7 +41,7 @@ def pdf_file_path(document: Document) -> str:
     return final_filepath
 
 
-def pdf_page_count(filepath: str) -> int:
+def _get_pdf_page_count(filepath: str) -> int:
     with open(filepath, "rb") as fp:
         return len(list(PDFPage.get_pages(fp, set())))
 
@@ -63,11 +67,11 @@ def process_pdf(document: Document):
         document.save()
         return
 
-    filepath = pdf_file_path(document)
+    filepath = _download_document_pdf(document)
     try:
         document.text = extract_text(filepath).strip()
         document.scrape_status = "scraped"
-        document.page_count = pdf_page_count(filepath)
+        document.page_count = _get_pdf_page_count(filepath)
     except (
         PDFTextExtractionNotAllowed,
         PDFEncryptionError,

@@ -3,7 +3,6 @@ from django.utils.html import format_html
 from django_object_actions import DjangoObjectActions
 
 from .models import BandC, Meeting, Document
-from .tasks import get_details_from_pdf
 
 
 @admin.register(BandC)
@@ -38,6 +37,6 @@ class DocumentAdmin(DjangoObjectActions, admin.ModelAdmin):
     raw_id_fields = ("meeting",)
 
     def pdf(self, request, obj: Document):
-        get_details_from_pdf(obj.pk)
+        obj.refresh()
 
     objectactions = ("pdf",)
