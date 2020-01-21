@@ -16,7 +16,9 @@ class Command(BaseCommand):
         if qs.exists():
             doc = qs[0]
             doc.refresh()
-            self.stdout.write(f'Re-scraped "{doc}", {qs.count()} left')
+            self.stdout.write(
+                f'Re-scraped "{doc}" {doc.get_absolute_url()}, {qs.count()} left'
+            )
         else:
             self.stdout.write(
                 "No more missing Document.page_count we can delete the migration"
