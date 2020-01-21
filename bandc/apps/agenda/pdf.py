@@ -43,7 +43,7 @@ def _download_document_pdf(document: Document) -> str:
 
 def _get_pdf_page_count(filepath: str) -> int:
     with open(filepath, "rb") as fp:
-        return len(list(PDFPage.get_pages(fp, set())))
+        return len(list(PDFPage.get_pages(fp, set(), check_extractable=False)))
 
 
 def grab_pdf_thumbnail(filepath: str) -> bytes:
