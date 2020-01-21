@@ -86,7 +86,7 @@ def _get_pdf_page_count(filepath: str) -> int:
         return len(list(PDFPage.get_pages(fp, set(), check_extractable=False)))
 
 
-def grab_pdf_thumbnail(filepath: str) -> bytes:
+def _grab_pdf_thumbnail(filepath: str) -> bytes:
     """
     Returns jpeg image thumbnail of the input pdf.
     """
@@ -129,7 +129,7 @@ def process_pdf(document: Document):
         document.scrape_status = "error"
         logger.error("PDF scrape error on EDIMS: %s Error: %s", document.edims_id, exc)
 
-    thumbnail = grab_pdf_thumbnail(filepath)
+    thumbnail = _grab_pdf_thumbnail(filepath)
     document.thumbnail.save(
         f"{document.edims_id}.jpg", ContentFile(thumbnail), save=False
     )

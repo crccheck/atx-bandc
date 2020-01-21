@@ -20,9 +20,11 @@ class PdfTest(unittest.TestCase):
         filepath = os.path.join(BASE_DIR, "samples/edims_333704.pdf")
         self.assertEqual(_get_pdf_page_count(filepath), 1)
 
+    @patch("bandc.apps.agenda.pdf._grab_pdf_thumbnail")
     @patch("bandc.apps.agenda.pdf._download_document_pdf")
-    def test_extracts_extraction_not_allowed(self, mock_download):
+    def test_extracts_extraction_not_allowed(self, mock_download, mock_thumbnail):
         mock_download.return_value = os.path.join(BASE_DIR, "samples/edims_333704.pdf")
+        mock_thumbnail.return_value = b""
         doc = DocumentFactory(
             url="http://www.austintexas.gov/edims/document.cfm?id=333704"
         )
