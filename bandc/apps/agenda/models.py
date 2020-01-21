@@ -189,3 +189,7 @@ class Document(models.Model):
             return self.text
 
         return bad_chars.sub("", self.text)
+
+    def refresh(self) -> None:
+        """Re-download and regenerate thumbnail and data"""
+        pass

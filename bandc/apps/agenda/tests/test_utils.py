@@ -46,7 +46,7 @@ class UtilsTests(TestCase):
         html = open(os.path.join(BASE_DIR, "samples/parks.html")).read()
         self.assertEqual(get_number_of_pages(html), 2)
 
-    @mock.patch("bandc.apps.agenda.utils.get_details_from_pdf")
+    @mock.patch("bandc.apps.agenda.utils.process_pdf")
     def test_save_page_works(self, mock_task):
         html = open(os.path.join(BASE_DIR, "samples/music.html")).read()
         meeting_data, doc_data = process_page(html)
