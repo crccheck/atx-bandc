@@ -36,7 +36,7 @@ class DocumentAdmin(DjangoObjectActions, admin.ModelAdmin):
     list_filter = ("scrape_status", "type")
     raw_id_fields = ("meeting",)
 
-    # def pdf(self, request, obj: Document):
-    #     get_details_from_pdf(obj.pk)
+    def pdf(self, request, obj: Document):
+        obj.refresh()
 
     objectactions = ("pdf",)
