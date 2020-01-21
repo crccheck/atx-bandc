@@ -8,7 +8,6 @@ from lxml.html import document_fromstring
 from obj_update import obj_update_or_create
 
 from .models import BandC, Meeting, Document
-from .pdf import process_pdf
 
 
 # CONSTANTS
@@ -139,10 +138,10 @@ def save_page(meeting_data, doc_data, bandc: BandC) -> bool:
             except KeyError:
                 pass
         if True and doc.scrape_status == "toscrape":
-            process_pdf(doc)
+            doc.refresh()
 
     # Look for stale documents
-    stale_documents: List[Meeting] = []
+    stale_documents: List[str] = []
     for meeting in meetings.values():
         stale_documents.extend(meeting["docs"])
 

@@ -192,4 +192,6 @@ class Document(models.Model):
 
     def refresh(self) -> None:
         """Re-download and regenerate thumbnail and data"""
-        pass
+        from .pdf import process_pdf
+
+        process_pdf(self)
