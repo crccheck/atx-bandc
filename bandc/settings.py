@@ -1,11 +1,10 @@
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
-BASE_DIR = os.path.dirname(__file__)
-
 import dj_database_url
-
 from project_runpy import env
+
+BASE_DIR = os.path.dirname(__file__)
 
 SECRET_KEY = env.get("SECRET_KEY", "Rotom")
 DEBUG = env.get("DEBUG", False)
@@ -55,9 +54,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 # Internationalization
@@ -105,7 +104,7 @@ MEDIA_URL = "/media/"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "root": {"level": os.environ.get("LOG_LEVEL", "WARNING"), "handlers": ["console"],},
+    "root": {"level": os.environ.get("LOG_LEVEL", "WARNING"), "handlers": ["console"]},
     "formatters": {
         "dev": {
             "format": "%(levelname)s %(name)s %(message)s",
@@ -114,9 +113,9 @@ LOGGING = {
         },
     },
     "filters": {
-        "require_debug_false": {"()": "django.utils.log.RequireDebugFalse",},
-        "require_debug_true": {"()": "django.utils.log.RequireDebugTrue",},
-        "readable_sql": {"()": "project_runpy.ReadableSqlFilter",},
+        "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"},
+        "require_debug_true": {"()": "django.utils.log.RequireDebugTrue"},
+        "readable_sql": {"()": "project_runpy.ReadableSqlFilter"},
     },
     "handlers": {
         "console": {
@@ -134,6 +133,6 @@ LOGGING = {
         },
         "sh": {"level": "WARNING", "propagate": False},
         "pdfminer": {"level": "WARNING", "propagate": False},
-        "factory": {"level": "ERROR", "propagate": False,},
+        "factory": {"level": "ERROR", "propagate": False},
     },
 }
