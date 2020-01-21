@@ -1,18 +1,58 @@
 import logging
 import os
+from io import StringIO
 from urllib.request import urlretrieve
 
 import sh
 from django.core.files.base import ContentFile
+from pdfminer.converter import TextConverter
+from pdfminer.layout import LAParams
 from pdfminer.pdfdocument import PDFEncryptionError
+from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage, PDFTextExtractionNotAllowed
 from pdfminer.psparser import PSException
-from pdfminer.high_level import extract_text
 from .models import Document
 
 
 BASE_PATH = "/tmp/bandc_pdfs/"  # TODO settings
 logger = logging.getLogger(__name__)
+
+
+def extract_text(
+    pdf_file,
+    password="",
+    page_numbers=None,
+    maxpages=0,
+    caching=True,
+    codec="utf-8",
+    laparams=None,
+    check_extractable=True,
+):
+    """Parse and return the text contained in a PDF file.
+
+    Forked version of
+    https://github.com/pdfminer/pdfminer.six/blob/52da65d5eb0e8ca85a66dc728f06589ea160e172/pdfminer/high_level.py#L90-L91
+    to fix: https://github.com/pdfminer/pdfminer.six/issues/350
+    """
+    if laparams is None:
+        laparams = LAParams()
+
+    with open(pdf_file, "rb") as fp, StringIO() as output_string:
+        rsrcmgr = PDFResourceManager()
+        device = TextConverter(rsrcmgr, output_string, codec=codec, laparams=laparams)
+        interpreter = PDFPageInterpreter(rsrcmgr, device)
+
+        for page in PDFPage.get_pages(
+            fp,
+            page_numbers,
+            maxpages=maxpages,
+            password=password,
+            caching=caching,
+            check_extractable=check_extractable,
+        ):
+            interpreter.process_page(page)
+
+        return output_string.getvalue()
 
 
 def _download_document_pdf(document: Document) -> str:
@@ -69,11 +109,10 @@ def process_pdf(document: Document):
 
     filepath = _download_document_pdf(document)
     try:
-        document.text = extract_text(filepath).strip()
+        document.text = extract_text(filepath, check_extractable=False).strip()
         document.scrape_status = "scraped"
         document.page_count = _get_pdf_page_count(filepath)
     except (
-        PDFTextExtractionNotAllowed,
         PDFEncryptionError,
         PSException,
         # int() argument must be a string or a number, not 'PSKeyword'

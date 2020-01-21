@@ -21,8 +21,8 @@ class PdfTest(unittest.TestCase):
         self.assertEqual(_get_pdf_page_count(filepath), 1)
 
     @patch("bandc.apps.agenda.pdf._download_document_pdf")
-    def test_hmmm(self, mock_download):
-        mock_download.return_value = os.path.join(BASE_DIR,"samples/edims_333704.pdf")
+    def test_extracts_extraction_not_allowed(self, mock_download):
+        mock_download.return_value = os.path.join(BASE_DIR, "samples/edims_333704.pdf")
         doc = DocumentFactory(
             url="http://www.austintexas.gov/edims/document.cfm?id=333704"
         )
@@ -30,4 +30,5 @@ class PdfTest(unittest.TestCase):
         process_pdf(doc)
         doc.refresh_from_db()
 
-        print(doc.scrape_status)
+        self.assertEqual(doc.scrape_status, "scraped")
+        self.assertTrue(doc.text.startswith("Regular \nMeeting"))
