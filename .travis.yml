@@ -3,6 +3,8 @@ language: python
 python: "3.8"
 cache:
   - pip
+before_install:
+  - sudo apt-get -y install ghostscript imagemagick
 install: "make install"
 script: "make test"
 branches:
