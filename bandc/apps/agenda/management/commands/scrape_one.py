@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from bandc.apps.agenda.models import BandC, Document
+from bandc.apps.agenda.models import BandC
 
 
 class Command(BaseCommand):
