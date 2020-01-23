@@ -17,16 +17,23 @@
 </p>
 
 <section>
-  <h3>Upcoming meetings</h3>
+  <h4>Upcoming meetings</h4>
   {% for meeting in upcoming_meetings %}
   <div class="card">
-    {{ meeting.date }} -
-    {{ meeting.bandc }}
-    {{ meeting.title }}
-    {% for document in meeting.documents.all %}
-    <a href="{{ document.get_absolute_url }}">{{ document }}</a>
-    {% endfor %}
-
+    <div class="card-header">
+      {{ meeting.bandc }}
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">{{ meeting.title }}</h5>
+      <h6 class="card-subtitle">
+        {{ meeting.date }}
+      </h6>
+      <ul>
+        {% for document in meeting.documents.all %}
+        <li><a href="{{ document.get_absolute_url }}">{{ document }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
   </div>
   {% empty %}
   No upcoming meetings found
