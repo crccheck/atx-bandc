@@ -27,7 +27,7 @@ def extract_text(
     codec="utf-8",
     laparams=None,
     check_extractable=True,
-):
+) -> str:
     """Parse and return the text contained in a PDF file.
 
     Forked version of
@@ -101,7 +101,7 @@ def _grab_pdf_thumbnail(filepath: str) -> bytes:
     return out.stdout
 
 
-def process_pdf(document: Document):
+def process_pdf(document: Document) -> None:
     if not document.edims_id:
         document.scrape_status = "unscrapable"
         document.save()
