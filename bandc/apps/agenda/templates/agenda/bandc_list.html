@@ -16,6 +16,24 @@
   </a>
 </p>
 
+<section>
+  <h3>Upcoming meetings</h3>
+  {% for meeting in upcoming_meetings %}
+  <div class="card">
+    {{ meeting.date }} -
+    {{ meeting.bandc }}
+    {{ meeting.title }}
+    {% for document in meeting.documents.all %}
+    <a href="{{ document.get_absolute_url }}">{{ document }}</a>
+    {% endfor %}
+
+  </div>
+  {% empty %}
+  No upcoming meetings found
+  {% endfor %}
+</section>
+
+
 <table class="table">
   <thead>
     <tr>

@@ -1,7 +1,8 @@
-from django.views.generic import ListView
 from django.shortcuts import get_object_or_404
+from django.utils.timezone import now
+from django.views.generic import ListView
 
-from .models import BandC, Document
+from .models import BandC, Meeting, Document
 
 
 class BandCList(ListView):
@@ -9,6 +10,13 @@ class BandCList(ListView):
 
     def get_queryset(self):
         return super(BandCList, self).get_queryset().select_related("latest_meeting")
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data["upcoming_meetings"] = Meeting.objects.filter(date__gt=now()).order_by(
+            "date"
+        )
+        return data
 
 
 class BandCDetail(ListView):
@@ -27,6 +35,6 @@ class BandCDetail(ListView):
         return queryset
 
     def get_context_data(self, **kwargs):
-        data = super(BandCDetail, self).get_context_data(**kwargs)
+        data = super().get_context_data(**kwargs)
         data["bandc"] = self.bandc
         return data
