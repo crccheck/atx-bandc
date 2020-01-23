@@ -18,26 +18,29 @@
 
 <section>
   <h4>Upcoming meetings</h4>
-  {% for meeting in upcoming_meetings %}
-  <div class="card">
-    <div class="card-header">
-      {{ meeting.bandc }}
+  <div class="row">
+    {% for meeting in upcoming_meetings %}
+    <div class="col-sm-4">
+      <div class="card">
+        <div class="card-header">
+          <a href="{{ meeting.bandc.get_absolute_url }}">{{ meeting.bandc }}</a> &ndash; {{ meeting.date }}
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">{{ meeting.title }}</h5>
+          <h6 class="card-subtitle">
+          </h6>
+          <ul>
+            {% for document in meeting.documents.all %}
+            <li><a href="{{ document.get_absolute_url }}">{{ document }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
     </div>
-    <div class="card-body">
-      <h5 class="card-title">{{ meeting.title }}</h5>
-      <h6 class="card-subtitle">
-        {{ meeting.date }}
-      </h6>
-      <ul>
-        {% for document in meeting.documents.all %}
-        <li><a href="{{ document.get_absolute_url }}">{{ document }}</a></li>
-        {% endfor %}
-      </ul>
-    </div>
+    {% empty %}
+    No upcoming meetings found
+    {% endfor %}
   </div>
-  {% empty %}
-  No upcoming meetings found
-  {% endfor %}
 </section>
 
 
