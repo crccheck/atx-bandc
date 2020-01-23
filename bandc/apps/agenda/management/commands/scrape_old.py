@@ -13,10 +13,11 @@ class Command(BaseCommand):
                 "No more missing Document.page_count we can delete the migration"
             )
 
-        for doc in qs:
+        count = qs.count()
+        for idx, doc in enumerate(qs, start=1):
             self.stdout.write(f"Examining {doc.scrape_status} {doc}...")
             doc.refresh()
             self.stdout.write(
-                f'Re-scraped "{doc}" {doc.get_absolute_url()}, {qs.count()} left'
+                f'Re-scraped "{doc}" {doc.get_absolute_url()}, {count - idx} left'
             )
-            break
+            # break
