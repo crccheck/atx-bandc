@@ -4,9 +4,20 @@
 
 {% block extra_style %}
 <style>
-  /* TODO media query to reduce .card-columns column count */
   .meeting-card li {
     font-size: 0.8rem;
+  }
+
+  @media only screen and (max-width: 1000px) {
+    .card-columns {
+      column-count: 2;
+    }
+  }
+
+  @media only screen and (max-width: 680px) {
+    .card-columns {
+      column-count: 1;
+    }
   }
 </style>
 {% endblock %}
@@ -69,7 +80,6 @@
     {% for bandc in object_list %}
     <tr>
       <td>
-
         {% if bandc.latest_meeting %}
         <a href="{% url 'bandc_detail' slug=bandc.slug %}">{{ bandc }}</a>
         {% else %}
