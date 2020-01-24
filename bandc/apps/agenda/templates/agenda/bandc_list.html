@@ -2,6 +2,14 @@
 
 {% block head_title %}City of Austin Boards and Commissions{% endblock %}
 
+{% block extra_style %}
+<style>
+  .meeting-card li {
+    font-size: 0.8rem;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <p>
   Here are lists and RSS feeds for most <a href="https://www.austintexas.gov/department/boards-and-commissions"
@@ -28,7 +36,7 @@
   <div class="row">
     {% for meeting in upcoming_meetings %}
     <div class="col-sm-4">
-      <div class="card">
+      <div class="meeting-card card">
         <div class="card-header">
           <a href="{{ meeting.bandc.get_absolute_url }}">{{ meeting.bandc }}</a> &ndash; {{ meeting.date }}
         </div>
