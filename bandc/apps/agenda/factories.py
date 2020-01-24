@@ -7,6 +7,8 @@ class BandCFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.BandC
 
+    slug = factory.Faker("slug")
+
 
 class MeetingFactory(factory.django.DjangoModelFactory):
     class Meta:
