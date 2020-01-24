@@ -61,6 +61,7 @@
   <thead>
     <tr>
       <th>Board or Commission</th>
+      <th>Homepage</th>
       <th>Latest Data</th>
       <th>RSS</th>
   </thead>
@@ -68,10 +69,17 @@
     {% for bandc in object_list %}
     <tr>
       <td>
+
         {% if bandc.latest_meeting %}
         <a href="{% url 'bandc_detail' slug=bandc.slug %}">{{ bandc }}</a>
         {% else %}
         {{ bandc }}
+        {% endif %}
+      </td>
+      <td>
+        {% if bandc.homepage %}
+        <a href="{{ bandc.homepage }}" target="_blank" rel="noopener noreferrer">Homepage
+          <i class="fa fa-external-link"></i></a>
         {% endif %}
       </td>
       <td>{{ bandc.latest_meeting.date.isoformat }}</td>
