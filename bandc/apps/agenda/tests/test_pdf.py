@@ -34,3 +34,18 @@ class PdfTest(unittest.TestCase):
 
         self.assertEqual(doc.scrape_status, "scraped")
         self.assertTrue(doc.text.startswith("Regular \nMeeting"))
+
+    @patch("bandc.apps.agenda.pdf._grab_pdf_thumbnail")
+    @patch("bandc.apps.agenda.pdf._download_document_pdf")
+    def test_extract_text_type_error(self, mock_download, mock_thumbnail):
+        mock_download.return_value = os.path.join(BASE_DIR, "samples/edims_334453.pdf")
+        mock_thumbnail.return_value = b""
+        doc = DocumentFactory(
+            url="http://www.austintexas.gov/edims/document.cfm?id=334453"
+        )
+
+        process_pdf(doc)
+        doc.refresh_from_db()
+
+        self.assertEqual(doc.scrape_status, "error")
+        self.assertEqual(doc.text, "")
