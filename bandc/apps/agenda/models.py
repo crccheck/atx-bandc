@@ -137,7 +137,9 @@ class Document(models.Model):
     # Meta fields
     #############
 
-    active = models.BooleanField(default=True)
+    active = models.BooleanField(
+        default=True, help_text="Documents from cancelled meetings become inactive"
+    )
     scraped_at = models.DateTimeField(auto_now_add=True)
     scrape_status = models.CharField(
         choices=scrape_status_choices, default="toscrape", max_length=20,
@@ -146,6 +148,7 @@ class Document(models.Model):
     # Extracted fields
     ##################
 
+    edims_id = models.IntegerField(unique=True, null=True, blank=True)
     page_count = models.PositiveSmallIntegerField(
         null=True, blank=True, help_text="Number of pages in a document if it's a PDF"
     )
