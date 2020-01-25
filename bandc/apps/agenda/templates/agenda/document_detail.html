@@ -18,12 +18,17 @@
 <li class="breadcrumb-item">
   <a href="{% url 'bandc_detail' slug=object.meeting.bandc.slug %}">{{ object.meeting.bandc }}</a>
 </li>
+<li class="breadcrumb-item">
+  <a href="{{ object.meeting.get_absolute_url }}">{{ object.meeting.date }} Meeting</a>
+</li>
 {% endspaceless %}{% endblock %}
 {% block content %}
 <article class="entry">
   <span class="label label-default">
-    {{ object.meeting.bandc }} -
-    {{ object.meeting.date }}
+    <a href="{{ object.meeting.get_absolute_url }}">
+      {{ object.meeting.bandc }} -
+      {{ object.meeting.date }}
+    </a>
   </span>
   <h4>
     {{ object }}
