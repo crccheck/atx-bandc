@@ -14,9 +14,11 @@
 </style>
 {% endblock %}
 
-{% block breadcrumbs %}
-<li><a href="{% url 'bandc_detail' slug=object.meeting.bandc.slug %}">{{ object.meeting.bandc }}</a></li>
-{% endblock %}
+{% block breadcrumbs %}{% spaceless %}
+<li class="breadcrumb-item">
+  <a href="{% url 'bandc_detail' slug=object.meeting.bandc.slug %}">{{ object.meeting.bandc }}</a>
+</li>
+{% endspaceless %}{% endblock %}
 {% block content %}
 <article class="entry">
   <span class="label label-default">
@@ -25,13 +27,14 @@
   </span>
   <h4>
     {{ object }}
+    &mdash;
     <small>
       <a href="{{ object.url }}" target="_blank" rel="noopener noreferrer">
-        (original
+        original
         {% if object.edims_id %}
-        pdf <i class="fa fa-file-pdf-o"></i>)
+        pdf <i class="fa fa-file-pdf-o"></i>
         {% else %}
-        link <i class="fa fa-external-link"></i>)
+        link <i class="fa fa-external-link"></i>
         {% endif %}
       </a>
     </small>

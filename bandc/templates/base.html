@@ -15,7 +15,7 @@
 <body>
   <div class="container-fluid">
     <ol class="breadcrumb">
-      <li><a href="{% url 'bandc_list'%}">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'bandc_list'%}">Home</a></li class="breadcrumb-item">
       {% block breadcrumbs %}{% endblock %}
     </ol>
     {% block content %}{% endblock %}

@@ -58,24 +58,28 @@ Homepage <i class="fa fa-external-link"></i>
     <a href="{% url 'document_detail' bandc_slug=doc.meeting.bandc.slug pk=doc.pk %}">
       {{ doc }}
     </a>
+    &mdash;
     <small>
       <a href="{{ doc.url }}" target="_blank" rel="noopener noreferrer">
-        (original
+        original
         {% if doc.edims_id %}
-        pdf <i class="fa fa-file-pdf-o"></i>)
+        pdf <i class="fa fa-file-pdf-o"></i>
         {% else %}
-        link <i class="fa fa-external-link"></i>)
+        link <i class="fa fa-external-link"></i>
         {% endif %}
       </a>
     </small>
   </h4>
   <time>{{ meeting.date }}</time>
   {% if doc.thumbnail %}
-  <div class="thumbnail-container">
-    <a href="{% url 'document_detail' bandc_slug=doc.meeting.bandc.slug pk=doc.pk %}" class="thumbnail">
-      <img src="{{ doc.thumbnail.url }}" alt="">
+  <figure class="figure pull-left" style="margin: 0 0.5em 0.25em 0;">
+    <a href="{{ doc.get_absolute_url }}">
+      <img class="figure-img img-fluid" src="{{ doc.thumbnail.url }}" alt="Thumbnail of the first page of the PDF">
     </a>
-  </div>
+    <figcaption class="figure-caption text-center">
+      Page 1 of {{ doc.page_count }} page{{ doc.page_count|pluralize }}
+    </figcaption>
+  </figure>
   {% endif %}
   {% if doc.text %}
   <p>
