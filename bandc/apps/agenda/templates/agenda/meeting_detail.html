@@ -22,7 +22,7 @@
 {% endblock %}
 {% block breadcrumbs %}{% spaceless %}
 <li class=" breadcrumb-item">
-<a href="{% url 'bandc_detail' slug=object.bandc.slug %}">{{ object.bandc }}</a>
+<a href="{{ object.bandc.get_absolute_url }}">{{ object.bandc }}</a>
 </li>
 {% endspaceless %}{% endblock %}
 {% block content %}

@@ -16,7 +16,7 @@
 
 {% block breadcrumbs %}{% spaceless %}
 <li class="breadcrumb-item">
-  <a href="{% url 'bandc_detail' slug=object.meeting.bandc.slug %}">{{ object.meeting.bandc }}</a>
+  <a href="{{ object.meeting.bandc.get_absolute_url }}">{{ object.meeting.bandc }}</a>
 </li>
 <li class="breadcrumb-item">
   <a href="{{ object.meeting.get_absolute_url }}">{{ object.meeting.date }} Meeting</a>

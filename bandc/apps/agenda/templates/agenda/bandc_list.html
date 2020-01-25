@@ -81,7 +81,7 @@
     <tr>
       <td>
         {% if bandc.latest_meeting %}
-        <a href="{% url 'bandc_detail' slug=bandc.slug %}">{{ bandc }}</a>
+        <a href="{{ bandc.get_absolute_url }}">{{ bandc }}</a>
         {% else %}
         {{ bandc }}
         {% endif %}
