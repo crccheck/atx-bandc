@@ -49,10 +49,12 @@ Homepage <i class="fa fa-external-link"></i>
 {% for doc in object_list %}
 <article class="entry {{ bandc.slug|slugify }}">
   <span class="label label-default">
-    {% if not bandc %}
-    {{ doc.meeting.bandc }} -
-    {% endif %}
-    {{ doc.meeting.date }}
+    <a href="{{ doc.meeting.get_absolute_url }}">
+      {% if not bandc %}
+      {{ doc.meeting.bandc }} -
+      {% endif %}
+      {{ doc.meeting.date }}
+    </a>
   </span>
   <h4>
     <a href="{% url 'document_detail' bandc_slug=doc.meeting.bandc.slug pk=doc.pk %}">

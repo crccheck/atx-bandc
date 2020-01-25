@@ -107,6 +107,11 @@ class Meeting(models.Model):
     def __str__(self) -> str:
         return "{} {}".format(self.bandc, self.title or self.date)
 
+    def get_absolute_url(self) -> str:
+        return reverse(
+            "meeting_detail", kwargs={"bandc_slug": self.bandc.slug, "date": self.date},
+        )
+
 
 class Document(models.Model):
     """
