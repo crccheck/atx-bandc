@@ -2,8 +2,8 @@ from django.urls import path
 from django.views.generic import DetailView
 
 from .feeds import BandCDocumentFeed
-from .models import Document
-from .views import BandCList, BandCDetail
+from .models import Document, Meeting
+from .views import BandCList, BandCDetail, MeetingDetail
 
 
 urlpatterns = [
@@ -14,5 +14,8 @@ urlpatterns = [
         "<str:bandc_slug>/<int:pk>/",
         DetailView.as_view(model=Document),
         name="document_detail",
+    ),
+    path(
+        "<str:bandc_slug>/<str:date>/", MeetingDetail.as_view(), name="meeting_detail",
     ),
 ]

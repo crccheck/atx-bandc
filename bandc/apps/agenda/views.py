@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
-from django.views.generic import ListView
+from django.views.generic import DetailView, ListView
 
 from .models import BandC, Meeting, Document
 
@@ -38,3 +38,13 @@ class BandCDetail(ListView):
         data = super().get_context_data(**kwargs)
         data["bandc"] = self.bandc
         return data
+
+
+class MeetingDetail(DetailView):
+    model = Meeting
+
+    def get_object(self, **kwargs):
+        return get_object_or_404(
+            self.model, bandc__slug=self.kwargs["bandc_slug"], date=self.kwargs["date"]
+        )
+
