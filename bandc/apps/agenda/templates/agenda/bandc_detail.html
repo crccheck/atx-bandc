@@ -58,13 +58,14 @@ Homepage <i class="fa fa-external-link"></i>
     <a href="{% url 'document_detail' bandc_slug=doc.meeting.bandc.slug pk=doc.pk %}">
       {{ doc }}
     </a>
+    &mdash;
     <small>
       <a href="{{ doc.url }}" target="_blank" rel="noopener noreferrer">
-        (original
+        original
         {% if doc.edims_id %}
-        pdf <i class="fa fa-file-pdf-o"></i>)
+        pdf <i class="fa fa-file-pdf-o"></i>
         {% else %}
-        link <i class="fa fa-external-link"></i>)
+        link <i class="fa fa-external-link"></i>
         {% endif %}
       </a>
     </small>
