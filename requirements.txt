@@ -15,7 +15,7 @@ django-object-actions==2.0.0
 django==3.0.2
 idna==2.8                 # via requests
 lxml==4.4.2
-pdfminer.six==20200121
+pdfminer.six==20200124
 pillow==7.0.0
 project-runpy==1.0.1
 pycryptodome==3.9.4       # via pdfminer.six
