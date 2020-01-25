@@ -25,10 +25,8 @@
 {% block content %}
 <article class="entry">
   <span class="label label-default">
-    <a href="{{ object.meeting.get_absolute_url }}">
-      {{ object.meeting.bandc }} -
-      {{ object.meeting.date }}
-    </a>
+    <a href="{{ object.meeting.bandc.get_absolute_url }}">{{ object.meeting.bandc }}</a> &ndash;
+    <a href="{{ object.meeting.get_absolute_url }}">{{ object.meeting.date }}</a>
   </span>
   <h4>
     {{ object }}
