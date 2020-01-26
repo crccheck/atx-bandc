@@ -57,7 +57,7 @@ Homepage <i class="fa fa-external-link"></i>
     </a>
   </span>
   <h4>
-    <a href="{% url 'document_detail' bandc_slug=doc.meeting.bandc.slug pk=doc.pk %}">
+    <a href="{{ doc.get_absolute_url }}">
       {{ doc }}
     </a>
     &mdash;
