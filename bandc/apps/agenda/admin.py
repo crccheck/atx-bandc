@@ -32,7 +32,7 @@ class MeetingAdmin(admin.ModelAdmin):
 
 @admin.register(Document)
 class DocumentAdmin(DjangoObjectActions, admin.ModelAdmin):
-    list_display = ("__str__", "_edims_id", "date", "scrape_status")
+    list_display = ("__str__", "edims_id", "date", "scrape_status")
     list_filter = ("scrape_status", "type")
     raw_id_fields = ("meeting",)
 

@@ -175,18 +175,6 @@ class Document(models.Model):
         )
 
     @property
-    def _edims_id(self) -> Union[str, None]:
-        """Get the EDIMS id associate with the document or None.
-
-        For example, http://www.austintexas.gov/edims/document.cfm?id=333514
-        turns into "333514"
-        """
-        if "/edims/document.cfm" in self.url:
-            return self.url.rsplit("=", 2)[-1]
-
-        return None
-
-    @property
     def date(self) -> dt.datetime:
         return self.meeting.date
 
