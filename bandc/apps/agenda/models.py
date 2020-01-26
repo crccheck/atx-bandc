@@ -169,6 +169,16 @@ class Document(models.Model):
         return "{}".format(self.title or self.type)
 
     def get_absolute_url(self) -> str:
+        if self.edims_id:
+            return reverse(
+                "document_detail2",
+                kwargs={
+                    "bandc_slug": self.meeting.bandc.slug,
+                    "edims_id": self.edims_id,
+                    "fake_slug": "todo",
+                },
+            )
+
         return reverse(
             "document_detail",
             kwargs={"bandc_slug": self.meeting.bandc.slug, "pk": self.pk},

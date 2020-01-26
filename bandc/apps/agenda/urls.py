@@ -16,6 +16,13 @@ urlpatterns = [
         name="document_detail",
     ),
     path(
+        "<str:bandc_slug>/<int:edims_id>-<str:fake_slug>/",
+        DetailView.as_view(
+            model=Document, slug_field="edims_id", slug_url_kwarg="edims_id"
+        ),
+        name="document_detail2",
+    ),
+    path(
         "<str:bandc_slug>/<str:date>/", MeetingDetail.as_view(), name="meeting_detail",
     ),
 ]
