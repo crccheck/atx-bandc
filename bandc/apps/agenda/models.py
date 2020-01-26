@@ -5,6 +5,7 @@ from typing import Union
 
 import requests
 from django.urls import reverse
+from django.utils.text import slugify
 from django.db import models
 from lxml.html import document_fromstring
 
@@ -171,11 +172,11 @@ class Document(models.Model):
     def get_absolute_url(self) -> str:
         if self.edims_id:
             return reverse(
-                "document_detail2",
+                "document_slug_detail",
                 kwargs={
                     "bandc_slug": self.meeting.bandc.slug,
                     "edims_id": self.edims_id,
-                    "fake_slug": "todo",
+                    "fake_slug": slugify(self.title or self.type),
                 },
             )
 
