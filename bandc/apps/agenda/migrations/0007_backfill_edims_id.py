@@ -5,9 +5,9 @@ from django.db import migrations
 
 def backfill_edims_id(apps, schema_editor):
     Document = apps.get_model("agenda", "Document")
-    for doc in Document.objects.all():
-        if doc._edims_id:
-            doc.edims_id = doc._edims_id
+    for doc in Document.objects.filter(edims_id=None):
+        if "/edims/document.cfm" in doc.url:
+            doc.edims_id = doc.url.rsplit("=", 2)[-1]
             doc.save()
 
 
