@@ -5,6 +5,7 @@ from typing import Union
 
 import requests
 from django.urls import reverse
+from django.utils.text import slugify
 from django.db import models
 from lxml.html import document_fromstring
 
@@ -169,22 +170,20 @@ class Document(models.Model):
         return "{}".format(self.title or self.type)
 
     def get_absolute_url(self) -> str:
+        if self.edims_id:
+            return reverse(
+                "document_slug_detail",
+                kwargs={
+                    "bandc_slug": self.meeting.bandc.slug,
+                    "edims_id": self.edims_id,
+                    "fake_slug": slugify(self.title or self.type),
+                },
+            )
+
         return reverse(
             "document_detail",
             kwargs={"bandc_slug": self.meeting.bandc.slug, "pk": self.pk},
         )
-
-    @property
-    def _edims_id(self) -> Union[str, None]:
-        """Get the EDIMS id associate with the document or None.
-
-        For example, http://www.austintexas.gov/edims/document.cfm?id=333514
-        turns into "333514"
-        """
-        if "/edims/document.cfm" in self.url:
-            return self.url.rsplit("=", 2)[-1]
-
-        return None
 
     @property
     def date(self) -> dt.datetime:

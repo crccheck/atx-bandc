@@ -26,7 +26,8 @@ class PdfTest(unittest.TestCase):
         mock_download.return_value = os.path.join(BASE_DIR, "samples/edims_333704.pdf")
         mock_thumbnail.return_value = b""
         doc = DocumentFactory(
-            url="http://www.austintexas.gov/edims/document.cfm?id=333704"
+            url="http://www.austintexas.gov/edims/document.cfm?id=333704",
+            edims_id=333704,
         )
 
         process_pdf(doc)
@@ -41,7 +42,8 @@ class PdfTest(unittest.TestCase):
         mock_download.return_value = os.path.join(BASE_DIR, "samples/edims_334453.pdf")
         mock_thumbnail.return_value = b""
         doc = DocumentFactory(
-            url="http://www.austintexas.gov/edims/document.cfm?id=334453"
+            url="http://www.austintexas.gov/edims/document.cfm?id=334453",
+            edims_id=334453,
         )
 
         process_pdf(doc)
