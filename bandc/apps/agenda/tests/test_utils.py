@@ -57,6 +57,7 @@ class UtilsTests(TestCase):
         save_page(meeting_data, doc_data, bandc)
 
         self.assertEqual(bandc.latest_meeting.date.isoformat(), "2014-02-03")
+        self.assertEqual(bandc.latest_meeting.documents.all()[0].edims_id, 204789)
         self.assertTrue(mock_task.called)
 
     def test_save_page_handles_no_data(self):
