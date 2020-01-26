@@ -127,10 +127,11 @@ def save_page(meeting_data, doc_data, bandc: BandC) -> bool:
 
     # Populate documents
     for row in doc_data:
+        defaults = dict(title=row["title"], type=row["type"])
+        if "/edims/document.cfm" in row["url"]:
+            defaults["edims_id"] = row["url"].rsplit("=", 2)[-1]
         doc, created = Document.objects.get_or_create(
-            url=row["url"],
-            meeting=meetings[row["date"]]["meeting"],
-            defaults=dict(title=row["title"], type=row["type"],),
+            url=row["url"], meeting=meetings[row["date"]]["meeting"], defaults=defaults,
         )
         if not created:
             try:

@@ -69,7 +69,7 @@ def _download_document_pdf(document: Document) -> str:
     if not os.path.isdir(BASE_PATH):
         os.makedirs(BASE_PATH)
 
-    filename = f"{document.edims_id}.pdf"
+    filename = f"{document._edims_id}.pdf"
     tmp_filepath = os.path.join(BASE_PATH, f"{filename}.tmp")
     final_filepath = os.path.join(BASE_PATH, filename)
     logger.info(f"Downloading {document.date}: {document.url}")
@@ -102,7 +102,7 @@ def _grab_pdf_thumbnail(filepath: str) -> bytes:
 
 
 def process_pdf(document: Document) -> None:
-    if not document.edims_id:
+    if not document._edims_id:
         document.scrape_status = "unscrapable"
         document.save()
         return
@@ -127,10 +127,10 @@ def process_pdf(document: Document) -> None:
     ) as exc:
         document.text = ""
         document.scrape_status = "error"
-        logger.error("PDF scrape error on EDIMS: %s Error: %s", document.edims_id, exc)
+        logger.error("PDF scrape error on EDIMS: %s Error: %s", document._edims_id, exc)
 
     thumbnail = _grab_pdf_thumbnail(filepath)
     document.thumbnail.save(
-        f"{document.edims_id}.jpg", ContentFile(thumbnail), save=False
+        f"{document._edims_id}.jpg", ContentFile(thumbnail), save=False
     )
     document.save()
