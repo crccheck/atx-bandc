@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from django.views.generic import DetailView
 
 from .feeds import BandCDocumentFeed
@@ -15,14 +15,16 @@ urlpatterns = [
         DetailView.as_view(model=Document),
         name="document_detail",
     ),
+    re_path(
+        r"^(?P<bandc_slug>[^/]+)/(?P<date>\d{4}-\d{2}-\d{2})/$",
+        MeetingDetail.as_view(),
+        name="meeting_detail",
+    ),
     path(
         "<str:bandc_slug>/<int:edims_id>-<slug:fake_slug>/",
         DetailView.as_view(
             model=Document, slug_field="edims_id", slug_url_kwarg="edims_id"
         ),
         name="document_slug_detail",
-    ),
-    path(
-        "<str:bandc_slug>/<str:date>/", MeetingDetail.as_view(), name="meeting_detail",
     ),
 ]
