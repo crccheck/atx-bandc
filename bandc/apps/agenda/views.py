@@ -13,9 +13,12 @@ class BandCList(ListView):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data["upcoming_meetings"] = Meeting.objects.filter(
-            date__gte=now().date()
-        ).order_by("date")
+        data["upcoming_meetings"] = (
+            Meeting.objects.filter(date__gte=now().date())
+            .select_related("bandc")
+            .prefetch_related("documents")
+            .order_by("date")
+        )
         return data
 
 

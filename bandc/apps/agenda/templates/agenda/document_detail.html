@@ -16,7 +16,15 @@
 
 {% block extra_head %}
 {% comment %} Since Documents can have multiple URLs, set a link[rel=canonical] {% endcomment %}
-<link rel="canonical" href="{{ object.get_absolute_url }}">
+<link rel="canonical" href="{{ BASE_URL }}{{ object.get_absolute_url }}">
+<meta name="twitter:card" content="summary" />
+<meta property="og:title" content="{{ object | escape }}" />
+{% if object.text %}
+<meta property="og:description" content="{{ object.text | escape | truncatewords:100 }}" />
+{% endif %}
+{% if object.thumbnail %}
+<meta property="og:image" content="{{ BASE_URL }}{{ object.thumbnail.url }}" />
+{% endif %}
 {% endblock %}
 
 {% block breadcrumbs %}{% spaceless %}
@@ -27,6 +35,7 @@
   <a href="{{ object.meeting.get_absolute_url }}">{{ object.meeting.date }} Meeting</a>
 </li>
 {% endspaceless %}{% endblock %}
+
 {% block content %}
 <article class="entry">
   <span class="label label-default">
