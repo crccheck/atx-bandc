@@ -1,0 +1,34 @@
+<h4>
+  <a href="{{ object.get_absolute_url }}">{{ object }}</a>
+  &mdash;
+  <small>
+    <a href="{{ object.url }}" target="_blank" rel="noopener noreferrer">
+      original
+      {% if object.edims_id %}
+      pdf <i class="fa fa-file-pdf-o"></i>
+      {% else %}
+      link <i class="fa fa-external-link"></i>
+      {% endif %}
+    </a>
+  </small>
+</h4>
+{% if object.thumbnail %}
+<figure class="figure pull-left" style="margin: 0 0.5em 0.25em 0;">
+  <a href="{{ object.get_absolute_url }}">
+    <img class="figure-img img-fluid" src="{{ object.thumbnail.url }}" alt="Thumbnail of the first page of the PDF">
+  </a>
+  <figcaption class="figure-caption text-center">
+    Page 1 of {{ object.page_count }} page{{ object.page_count|pluralize }}
+  </figcaption>
+</figure>
+{% endif %}
+{% if object.text %}
+<p>
+  {{ object.text|truncatewords:"400" }}
+</p>
+{% else %}
+<p>{{ object.type }}</p>
+{% endif %}
+<footer>
+  <small>Scraped at: {{ object.scraped_at }}</small>
+</footer>
