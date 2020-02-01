@@ -42,35 +42,9 @@ Homepage <i class="fa fa-external-link"></i>
   </a>
 </p>
 
-
 {% if upcoming_meetings %}
-<section>
-  <h4>Upcoming meetings</h4>
-  <div class="card-columns">
-    {% for meeting in upcoming_meetings %}
-    <div class="meeting-card card">
-      <div class="card-header">
-        <a href="{{ meeting.bandc.get_absolute_url }}">{{ meeting.bandc }}</a> &ndash;
-        <a href="{{ meeting.get_absolute_url }}">{{ meeting.date }}</a>
-      </div>
-      <div class="card-body">
-        <h5 class="card-title">{{ meeting.title }}</h5>
-        <h6 class="card-subtitle">
-        </h6>
-        <ul>
-          {% for document in meeting.documents.all %}
-          <li><a href="{{ document.get_absolute_url }}">{{ document }}</a></li>
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
-    {% empty %}
-    <p>No upcoming meetings found</p>
-    {% endfor %}
-  </div>
-</section>
+  {% include "agenda/includes/upcoming_meetings.html" %}
 {% endif %}
-
 
 <div class="text-center">
   {% bootstrap_paginate page_obj range=10 show_first_last="true" %}

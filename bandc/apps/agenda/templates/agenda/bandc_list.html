@@ -43,31 +43,9 @@
   </a>
 </p>
 
-<section>
-  <h4>Upcoming meetings</h4>
-  <div class="card-columns">
-    {% for meeting in upcoming_meetings %}
-    <div class="meeting-card card">
-      <div class="card-header">
-        <a href="{{ meeting.bandc.get_absolute_url }}">{{ meeting.bandc }}</a> &ndash;
-        <a href="{{ meeting.get_absolute_url }}">{{ meeting.date }}</a>
-      </div>
-      <div class="card-body">
-        <h5 class="card-title">{{ meeting.title }}</h5>
-        <h6 class="card-subtitle">
-        </h6>
-        <ul>
-          {% for document in meeting.documents.all %}
-          <li><a href="{{ document.get_absolute_url }}">{{ document }}</a></li>
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
-    {% empty %}
-    <p>No upcoming meetings found</p>
-    {% endfor %}
-  </div>
-</section>
+{% if upcoming_meetings %}
+  {% include "agenda/includes/upcoming_meetings.html" %}
+{% endif %}
 
 <table class="table">
   <thead>
