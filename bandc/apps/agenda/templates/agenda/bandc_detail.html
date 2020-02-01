@@ -51,14 +51,12 @@ Homepage <i class="fa fa-external-link"></i>
 </div>
 
 {% for doc in object_list %}
-<article class="entry {{ bandc.slug|slugify }}">
+<article class="entry">
   <span class="label label-default">
-    <a href="{{ doc.meeting.get_absolute_url }}">
-      {% if not bandc %}
-      {{ doc.meeting.bandc }} -
-      {% endif %}
-      {{ doc.meeting.date }}
-    </a>
+    {% if not bandc %}
+      <a href="{{ doc.meeting.bandc.get_absolute_url }}">{{ doc.meeting.bandc }}</a> &ndash;
+    {% endif %}
+    <a href="{{ doc.meeting.get_absolute_url }}">{{ doc.meeting.date }}</a>
   </span>
   {% include "agenda/includes/document_summary.html" with object=doc %}
 </article>
