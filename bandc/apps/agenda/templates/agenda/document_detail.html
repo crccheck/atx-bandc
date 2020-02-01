@@ -17,6 +17,13 @@
 {% block extra_head %}
 {% comment %} Since Documents can have multiple URLs, set a link[rel=canonical] {% endcomment %}
 <link rel="canonical" href="{{ object.get_absolute_url }}">
+<meta property="og:title" content="{{ object | escape }}" />
+{% if object.text %}
+<meta property="og:description" content="{{ object.text | escape | truncatewords:100 }}" />
+{% endif %}
+{% if object.thumbnail %}
+<meta property="og:image" content="{{ object.thumbnail.url }}" />
+{% endif %}
 {% endblock %}
 
 {% block breadcrumbs %}{% spaceless %}
