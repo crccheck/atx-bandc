@@ -16,13 +16,13 @@
 
 {% block extra_head %}
 {% comment %} Since Documents can have multiple URLs, set a link[rel=canonical] {% endcomment %}
-<link rel="canonical" href="{{ object.get_absolute_url }}">
+<link rel="canonical" href="{{ BASE_URL }}{{ object.get_absolute_url }}">
 <meta property="og:title" content="{{ object | escape }}" />
 {% if object.text %}
 <meta property="og:description" content="{{ object.text | escape | truncatewords:100 }}" />
 {% endif %}
 {% if object.thumbnail %}
-<meta property="og:image" content="{{ object.thumbnail.url }}" />
+<meta property="og:image" content="{{ BASE_URL }}{{ object.thumbnail.url }}" />
 {% endif %}
 {% endblock %}
 
@@ -36,7 +36,6 @@
 {% endspaceless %}{% endblock %}
 
 {% block content %}
-{{ BASE_URL }}
 <article class="entry">
   <span class="label label-default">
     <a href="{{ object.meeting.bandc.get_absolute_url }}">{{ object.meeting.bandc }}</a> &ndash;
