@@ -44,5 +44,6 @@ class Command(BaseCommand):
             raise CommandError("No BandCs to scrape")
 
         for bandc in queryset:
+            self.stdout.write(f'Scraping "{bandc}" id #{bandc.identifier}')
             bandc.pull()
-            self.stdout.write(self.style.SUCCESS(f'Scraped "{bandc}"'))
+            self.stdout.write(self.style.SUCCESS(f' Scraped "{bandc}"'))
