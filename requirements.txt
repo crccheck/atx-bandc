@@ -10,15 +10,15 @@ chardet==3.0.4            # via pdfminer.six, requests
 dj-database-url==0.5.0
 dj-obj-update==0.5.1
 django-bootstrap-pagination==1.7.1
-django-extensions==2.2.6
+django-extensions==2.2.7
 django-object-actions==2.0.0
-django==3.0.2
+django==3.0.3
 idna==2.8                 # via requests
 lxml==4.5.0
 pdfminer.six==20200124
 pillow==7.0.0
 project-runpy==1.0.1
-pycryptodome==3.9.4       # via pdfminer.six
+pycryptodome==3.9.6       # via pdfminer.six
 python-dateutil==2.8.1
 pytz==2019.3              # via django
 requests==2.22.0
@@ -27,4 +27,4 @@ six==1.14.0               # via django-extensions, python-dateutil
 sortedcontainers==2.1.0   # via pdfminer.six
 sqlparse==0.3.0           # via django
 urllib3==1.25.8           # via requests
-waitress==1.4.2
+waitress==1.4.3
