@@ -172,7 +172,7 @@ def get_number_of_pages(html):
     return int(last_page_link[0].strip())
 
 
-def pull_bandc(bandc: BandC) -> None:
+def pull_bandc(bandc: BandC) -> SavePageCreated:
     """
     Get info about all the meetings for the most recent year.
     """
@@ -185,6 +185,7 @@ def pull_bandc(bandc: BandC) -> None:
     bandc.scraped_at = now()
     bandc.save()
     process_next = True
+    total_created = SavePageCreated([], [])
     while process_next:
         response = requests.get(
             bandc.current_meeting_url_format(page_number), headers=headers
@@ -194,6 +195,9 @@ def pull_bandc(bandc: BandC) -> None:
         n_pages = get_number_of_pages(response.text)  # TODO only do this once
         meeting_data, doc_data = process_page(response.text)
         page_number += 1
-        __, process_next = _save_page(meeting_data, doc_data, bandc=bandc) and (
+        created, process_next = _save_page(meeting_data, doc_data, bandc=bandc) and (
             page_number <= n_pages
         )
+        total_created.meetings.extend(created.meetings)
+        total_created.documents.extend(created.documents)
+    return total_created
