@@ -209,6 +209,9 @@ class ScrapeLog(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     num_documents_found = models.PositiveSmallIntegerField(null=True, blank=True)
-    documents_scraped = models.ManyToManyField(Document)
     bandc_scraped = models.ManyToManyField(BandC)
+    documents_scraped = models.ManyToManyField(Document)
     errors = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.created
