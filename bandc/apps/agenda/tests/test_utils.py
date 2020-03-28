@@ -66,6 +66,9 @@ class UtilsTests(TestCase):
         # Sanity check
         self.assertEqual(bandc.latest_meeting, None)
 
-        _save_page(meeting_data, doc_data, bandc)
+        created, process_next = _save_page(meeting_data, doc_data, bandc)
 
+        self.assertEqual(created.meetings, [])
+        self.assertEqual(created.documents, [])
+        self.assertFalse(process_next)
         self.assertEqual(bandc.latest_meeting, None)

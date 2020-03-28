@@ -1,5 +1,6 @@
 import logging
 from typing import List, Tuple
+from collections import namedtuple
 
 import requests
 from dateutil.parser import parse
@@ -95,9 +96,12 @@ def process_page(html: str) -> Tuple[List, List]:
     return meeting_data, doc_data
 
 
-def _save_page(
-    meeting_data, doc_data, bandc: BandC
-) -> Tuple[Tuple[List[Meeting], List[Document]], bool]:
+SavePageCreated: Tuple[List[Meeting], List[Document]] = namedtuple(
+    "SavePageCreated", ["meetings", "documents"]
+)
+
+
+def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[SavePageCreated, bool]:
     """
     Save one page worth of data, updating BandC, creating Meetings, and Documents.
 
@@ -108,7 +112,7 @@ def _save_page(
     logger.info("save_page %s", bandc)
 
     if not meeting_data:
-        return (([], []), False)
+        return (SavePageCreated([], []), False)
 
     # Populate meetings
     new_meetings = False
@@ -153,7 +157,7 @@ def _save_page(
         print("These docs are stale:", stale_documents)
         Document.objects.filter(url__in=stale_documents).update(active=False)
 
-    return (([], []), False and new_meetings)  # TODO
+    return (SavePageCreated([], []), False and new_meetings)  # TODO
 
 
 def get_number_of_pages(html):
