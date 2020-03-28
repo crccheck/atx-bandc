@@ -11,7 +11,7 @@ from ..utils import (
     clean_text,
     process_page,
     get_number_of_pages,
-    save_page,
+    _save_page,
 )
 
 
@@ -54,7 +54,7 @@ class UtilsTests(TestCase):
         # Sanity check
         self.assertEqual(bandc.latest_meeting, None)
 
-        save_page(meeting_data, doc_data, bandc)
+        _save_page(meeting_data, doc_data, bandc)
 
         self.assertEqual(bandc.latest_meeting.date.isoformat(), "2014-02-03")
         self.assertEqual(bandc.latest_meeting.documents.all()[0].edims_id, 204789)
@@ -66,6 +66,6 @@ class UtilsTests(TestCase):
         # Sanity check
         self.assertEqual(bandc.latest_meeting, None)
 
-        save_page(meeting_data, doc_data, bandc)
+        _save_page(meeting_data, doc_data, bandc)
 
         self.assertEqual(bandc.latest_meeting, None)

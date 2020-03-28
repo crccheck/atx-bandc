@@ -95,7 +95,7 @@ def process_page(html: str) -> Tuple[List, List]:
     return meeting_data, doc_data
 
 
-def save_page(meeting_data, doc_data, bandc: BandC) -> bool:
+def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[Tuple, bool]:
     """
     Save one page worth of data, updating BandC, creating Meetings, and Documents.
 
@@ -184,6 +184,6 @@ def pull_bandc(bandc: BandC) -> None:
         n_pages = get_number_of_pages(response.text)  # TODO only do this once
         meeting_data, doc_data = process_page(response.text)
         page_number += 1
-        process_next = save_page(meeting_data, doc_data, bandc=bandc) and (
+        process_next = _save_page(meeting_data, doc_data, bandc=bandc) and (
             page_number <= n_pages
         )
