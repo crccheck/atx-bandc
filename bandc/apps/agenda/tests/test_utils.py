@@ -55,8 +55,10 @@ class UtilsTests(TestCase):
         self.assertEqual(bandc.latest_meeting, None)
 
         created, process_next = _save_page(meeting_data, doc_data, bandc)
-        print(created, process_next)
 
+        self.assertEqual(len(created.meetings), 4)
+        self.assertEqual(len(created.documents), 9)
+        self.assertFalse(process_next)
         self.assertEqual(bandc.latest_meeting.date.isoformat(), "2014-02-03")
         self.assertEqual(bandc.latest_meeting.documents.all()[0].edims_id, 204789)
         self.assertTrue(mock_task.called)

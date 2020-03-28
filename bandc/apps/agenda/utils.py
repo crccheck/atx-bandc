@@ -115,7 +115,7 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[SavePageCreated, b
         return (SavePageCreated([], []), False)
 
     # Populate meetings
-    new_meetings = []
+    created_meetings = []
     meetings = {}
     for row in meeting_data:
         meeting, created = obj_update_or_create(
@@ -123,7 +123,7 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[SavePageCreated, b
         )
 
         if created:
-            new_meetings.append(meeting)
+            created_meetings.append(meeting)
         meetings[row["date"]] = {
             "meeting": meeting,
             "docs": set(meeting.documents.values_list("url", flat=True)),
@@ -133,6 +133,7 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[SavePageCreated, b
         bandc.save()
 
     # Populate documents
+    created_documents = []
     for row in doc_data:
         defaults = dict(title=row["title"], type=row["type"])
         if "/edims/document.cfm" in row["url"]:
@@ -140,12 +141,14 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[SavePageCreated, b
         doc, created = Document.objects.get_or_create(
             url=row["url"], meeting=meetings[row["date"]]["meeting"], defaults=defaults,
         )
-        if not created:
+        if created:
+            created_documents.append(doc)
+        else:
             try:
                 meetings[row["date"]]["docs"].remove(row["url"])
             except KeyError:
                 pass
-        if True and doc.scrape_status == "toscrape":
+        if doc.scrape_status == "toscrape":
             doc.refresh()
 
     # Look for stale documents
@@ -158,7 +161,7 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[SavePageCreated, b
         print("These docs are stale:", stale_documents)
         Document.objects.filter(url__in=stale_documents).update(active=False)
 
-    return (SavePageCreated(new_meetings, []), False)  # TODO
+    return (SavePageCreated(created_meetings, created_documents), False)  # TODO
 
 
 def get_number_of_pages(html):
