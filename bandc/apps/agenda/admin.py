@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django_object_actions import DjangoObjectActions
 
-from .models import BandC, Meeting, Document
+from .models import BandC, Meeting, Document, ScrapeLog
 
 
 @admin.register(BandC)
@@ -40,3 +40,9 @@ class DocumentAdmin(DjangoObjectActions, admin.ModelAdmin):
         obj.refresh()
 
     objectactions = ("pdf",)
+
+
+@admin.register(ScrapeLog)
+class ScrapeLogAdmin(admin.ModelAdmin):
+    list_display = ("created",)
+    raw_id_fields = ("bandc_scraped", "documents_scraped")
