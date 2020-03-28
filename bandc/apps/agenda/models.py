@@ -202,3 +202,13 @@ class Document(models.Model):
         from .pdf import process_pdf
 
         process_pdf(self)
+
+
+class ScrapeLog(models.Model):
+    """An audit log of what each scrape did"""
+
+    created = models.DateTimeField(auto_now_add=True)
+    num_documents_found = models.PositiveSmallIntegerField(null=True, blank=True)
+    documents_scraped = models.ManyToManyField(Document)
+    bandc_scraped = models.ManyToManyField(BandC)
+    errors = models.TextField(null=True, blank=True)
