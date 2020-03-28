@@ -115,14 +115,17 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[SavePageCreated, b
         return (SavePageCreated([], []), False)
 
     # Populate meetings
-    new_meetings = False
+    new_meeting_found = False
+    new_meetings = []
     meetings = {}
     for row in meeting_data:
         meeting, created = obj_update_or_create(
             Meeting, bandc=bandc, date=row["date"], defaults={"title": row["title"]}
         )
 
-        new_meetings = new_meetings and created
+        if created:
+            new_meetings.append(meeting)
+        new_meeting_found = new_meeting_found and created
         meetings[row["date"]] = {
             "meeting": meeting,
             "docs": set(meeting.documents.values_list("url", flat=True)),
@@ -157,7 +160,7 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[SavePageCreated, b
         print("These docs are stale:", stale_documents)
         Document.objects.filter(url__in=stale_documents).update(active=False)
 
-    return (SavePageCreated([], []), False and new_meetings)  # TODO
+    return (SavePageCreated(new_meetings, []), False and new_meeting_found)  # TODO
 
 
 def get_number_of_pages(html):

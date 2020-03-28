@@ -54,7 +54,8 @@ class UtilsTests(TestCase):
         # Sanity check
         self.assertEqual(bandc.latest_meeting, None)
 
-        _save_page(meeting_data, doc_data, bandc)
+        created, process_next = _save_page(meeting_data, doc_data, bandc)
+        print(created, process_next)
 
         self.assertEqual(bandc.latest_meeting.date.isoformat(), "2014-02-03")
         self.assertEqual(bandc.latest_meeting.documents.all()[0].edims_id, 204789)
