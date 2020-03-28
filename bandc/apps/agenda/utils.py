@@ -107,12 +107,13 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[SavePageCreated, b
 
     Returns
     -------
-    TODO True if there's another page to process
+        What meetings and documents were created
+        True if there's another page to process (always False for now)
     """
     logger.info("save_page %s", bandc)
 
     if not meeting_data:
-        return (SavePageCreated([], []), False)
+        return SavePageCreated([], []), False
 
     # Populate meetings
     created_meetings = []
@@ -161,7 +162,7 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[SavePageCreated, b
         print("These docs are stale:", stale_documents)
         Document.objects.filter(url__in=stale_documents).update(active=False)
 
-    return (SavePageCreated(created_meetings, created_documents), False)  # TODO
+    return SavePageCreated(created_meetings, created_documents), False  # TODO
 
 
 def get_number_of_pages(html):
@@ -195,9 +196,8 @@ def pull_bandc(bandc: BandC) -> SavePageCreated:
         n_pages = get_number_of_pages(response.text)  # TODO only do this once
         meeting_data, doc_data = process_page(response.text)
         page_number += 1
-        created, process_next = _save_page(meeting_data, doc_data, bandc=bandc) and (
-            page_number <= n_pages
-        )
+        created, should_process_next = _save_page(meeting_data, doc_data, bandc=bandc)
+        process_next = should_process_next and page_number <= n_pages
         total_created.meetings.extend(created.meetings)
         total_created.documents.extend(created.documents)
     return total_created

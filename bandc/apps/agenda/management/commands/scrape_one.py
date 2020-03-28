@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from bandc.apps.agenda.models import BandC
+from bandc.apps.agenda.models import BandC, ScrapeLog
 
 
 class Command(BaseCommand):
@@ -9,5 +9,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         queryset = BandC.objects.filter(scrapable=True).order_by("scraped_at")
         bandc = queryset[0]
-        bandc.pull()
+        created = bandc.pull()
+        print(created)
+        # log = ScrapeLog.objects.create()
+        # log.bandc_scraped.add(bandc)
         self.stdout.write(self.style.SUCCESS(f'Scraped "{bandc}"'))
