@@ -10,7 +10,9 @@ class Command(BaseCommand):
         queryset = BandC.objects.filter(scrapable=True).order_by("scraped_at")
         bandc = queryset[0]
         created = bandc.pull()
-        log = ScrapeLog.objects.create()
+
+        log = ScrapeLog.objects.create(num_documents_found=len(created.documents))
         log.bandc_scraped.add(bandc)
         log.documents_scraped.add(*created.documents)
+
         self.stdout.write(self.style.SUCCESS(f'Scraped "{bandc}"'))
