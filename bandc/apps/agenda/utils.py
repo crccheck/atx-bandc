@@ -95,7 +95,9 @@ def process_page(html: str) -> Tuple[List, List]:
     return meeting_data, doc_data
 
 
-def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[Tuple, bool]:
+def _save_page(
+    meeting_data, doc_data, bandc: BandC
+) -> Tuple[Tuple[List[Meeting], List[Document]], bool]:
     """
     Save one page worth of data, updating BandC, creating Meetings, and Documents.
 
@@ -106,7 +108,7 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[Tuple, bool]:
     logger.info("save_page %s", bandc)
 
     if not meeting_data:
-        return False
+        return (([], []), False)
 
     # Populate meetings
     new_meetings = False
@@ -151,7 +153,7 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[Tuple, bool]:
         print("These docs are stale:", stale_documents)
         Document.objects.filter(url__in=stale_documents).update(active=False)
 
-    return False and new_meetings  # TODO
+    return (([], []), False and new_meetings)  # TODO
 
 
 def get_number_of_pages(html):
@@ -184,6 +186,6 @@ def pull_bandc(bandc: BandC) -> None:
         n_pages = get_number_of_pages(response.text)  # TODO only do this once
         meeting_data, doc_data = process_page(response.text)
         page_number += 1
-        process_next = _save_page(meeting_data, doc_data, bandc=bandc) and (
+        __, process_next = _save_page(meeting_data, doc_data, bandc=bandc) and (
             page_number <= n_pages
         )
