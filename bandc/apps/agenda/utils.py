@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Tuple
 
 import requests
 from dateutil.parser import parse
@@ -61,7 +61,7 @@ def clean_text(text):
     return text.lstrip("- ")
 
 
-def process_page(html):
+def process_page(html: str) -> Tuple[List, List]:
     """
     Transform the raw html into semi-structured data.
 
@@ -97,7 +97,7 @@ def process_page(html):
 
 def save_page(meeting_data, doc_data, bandc: BandC) -> bool:
     """
-    Save one page worth of data.
+    Save one page worth of data, updating BandC, creating Meetings, and Documents.
 
     Returns
     -------
