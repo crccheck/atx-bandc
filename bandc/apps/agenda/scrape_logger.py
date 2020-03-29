@@ -1,7 +1,7 @@
 import threading
 from contextlib import contextmanager
 
-from .models import Document, Meeting, ScrapeLog
+from .models import BandC, Document, Meeting, ScrapeLog
 
 # For storing what happens during a scrape
 _storage = threading.local()
@@ -9,9 +9,11 @@ _storage = threading.local()
 
 @contextmanager
 def init():
+    _storage.bandcs = []
     _storage.documents = []
     _storage.meetings = []
     yield _storage
+    del _storage.bandcs
     del _storage.documents
     del _storage.meetings
 
@@ -24,10 +26,18 @@ def record_scrape():
         log = ScrapeLog.objects.create(
             num_documents_found=len(context.documents), errors="TODO",
         )
-        # scraped_bandc = context.bandcs
+        log.bandcs_scraped.add(*context.bandcs)
         created_documents = [x[0] for x in context.documents if x[1]]
         # log.bandc_scraped.add(bandc)
         log.documents_scraped.add(*created_documents)
+
+
+def log_bandc(bandc: BandC):
+    """Log that a `BandC` was scraped"""
+    if not hasattr(_storage, "bandcs"):
+        return
+
+    _storage.bandcs.append((bandc))
 
 
 def log_meeting(meeting: Meeting, created: bool):
