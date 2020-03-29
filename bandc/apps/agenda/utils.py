@@ -1,5 +1,4 @@
 import logging
-import threading
 from typing import List, Tuple
 from collections import namedtuple
 
@@ -10,6 +9,7 @@ from lxml.html import document_fromstring
 from obj_update import obj_update_or_create
 
 from .models import BandC, Meeting, Document
+from . import scrape_logger
 
 
 # CONSTANTS
@@ -21,9 +21,6 @@ DOCUMENT = "bcic_doc"
 
 
 logger = logging.getLogger(__name__)
-
-# For storing what happens during a scrape
-scrape_storage = threading.local()
 
 
 def populate_bandc_list():
@@ -146,6 +143,7 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[SavePageCreated, b
         doc, created = Document.objects.get_or_create(
             url=row["url"], meeting=meetings[row["date"]]["meeting"], defaults=defaults,
         )
+        scrape_logger.log_document(doc, created)
         if created:
             created_documents.append(doc)
         else:
