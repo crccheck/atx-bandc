@@ -1,7 +1,7 @@
 import threading
 from contextlib import contextmanager
 
-from .models import Document, Meeting
+from .models import Document, Meeting, ScrapeLog
 
 # For storing what happens during a scrape
 _storage = threading.local()
@@ -14,6 +14,19 @@ def init():
     yield _storage
     del _storage.documents
     del _storage.meetings
+
+
+@contextmanager
+def record_scrape():
+    """Create a `ScrapeLog` based on any scrapes that occur"""
+    with init() as context:
+        yield
+        log = ScrapeLog.objects.create(
+            num_documents_found=len(context.documents), errors="TODO",
+        )
+        created_documents = [x[0] for x in context.documents if x[1]]
+        # log.bandc_scraped.add(bandc)
+        log.documents_scraped.add(*created_documents)
 
 
 def log_meeting(meeting: Meeting, created: bool):
