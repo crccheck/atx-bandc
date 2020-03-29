@@ -208,10 +208,12 @@ class ScrapeLog(models.Model):
     """An audit log of what each scrape did"""
 
     created = models.DateTimeField(auto_now_add=True)
-    num_documents_found = models.PositiveSmallIntegerField(null=True, blank=True)
     bandcs_scraped = models.ManyToManyField(BandC)
+    num_documents_found = models.PositiveSmallIntegerField(null=True, blank=True)
     documents_scraped = models.ManyToManyField(Document)
-    errors = models.TextField(null=True, blank=True)
+    errors = models.TextField(
+        null=True, blank=True, help_text="Errors that occured while scraping"
+    )
 
     def __str__(self):
         return f"{self.created}"

@@ -45,4 +45,4 @@ class DocumentAdmin(DjangoObjectActions, admin.ModelAdmin):
 @admin.register(ScrapeLog)
 class ScrapeLogAdmin(admin.ModelAdmin):
     list_display = ("created",)
-    raw_id_fields = ("bandc_scraped", "documents_scraped")
+    raw_id_fields = ("bandcs_scraped", "documents_scraped")
