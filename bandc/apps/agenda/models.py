@@ -87,7 +87,7 @@ class BandC(models.Model):
         self.identifier = identifier
         self.save()
 
-    def pull(self):
+    def pull(self) -> None:
         from .utils import pull_bandc
 
         return pull_bandc(self)

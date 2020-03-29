@@ -30,7 +30,7 @@ def record_scrape():
         log = ScrapeLog.objects.create(
             num_documents_found=len(context.documents),
             errors="\n".join(context.errors),
-            duration=1000 * (dt.datetime.now() - start).microseconds / 1000,
+            duration=(dt.datetime.now() - start).microseconds / 1000,
         )
         log.bandcs_scraped.add(*context.bandcs)
         created_documents = [x[0] for x in context.documents if x[1]]
