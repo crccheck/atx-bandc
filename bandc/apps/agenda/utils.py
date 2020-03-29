@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Tuple
 
 import requests
 from dateutil.parser import parse
@@ -8,6 +8,7 @@ from lxml.html import document_fromstring
 from obj_update import obj_update_or_create
 
 from .models import BandC, Meeting, Document
+from . import scrape_logger
 
 
 # CONSTANTS
@@ -61,7 +62,7 @@ def clean_text(text):
     return text.lstrip("- ")
 
 
-def process_page(html):
+def process_page(html: str) -> Tuple[List, List]:
     """
     Transform the raw html into semi-structured data.
 
@@ -71,7 +72,7 @@ def process_page(html):
         Returns all the meeting data, and all the documents found.
     """
     doc = document_fromstring(html)
-    date = ""
+    date = None
     meeting_data = []
     doc_data = []
     # WISHLIST do two-pass to group into meetings then parse contents
@@ -95,13 +96,13 @@ def process_page(html):
     return meeting_data, doc_data
 
 
-def save_page(meeting_data, doc_data, bandc: BandC) -> bool:
+def _save_page(meeting_data, doc_data, bandc: BandC) -> bool:
     """
-    Save one page worth of data.
+    Save one page worth of data, updating BandC, creating Meetings, and Documents.
 
     Returns
     -------
-    TODO True if there's another page to process
+        True if there's another page to process (always False for now)
     """
     logger.info("save_page %s", bandc)
 
@@ -109,14 +110,13 @@ def save_page(meeting_data, doc_data, bandc: BandC) -> bool:
         return False
 
     # Populate meetings
-    new_meetings = False
     meetings = {}
     for row in meeting_data:
         meeting, created = obj_update_or_create(
             Meeting, bandc=bandc, date=row["date"], defaults={"title": row["title"]}
         )
 
-        new_meetings = new_meetings and created
+        scrape_logger.log_meeting(meeting, created)
         meetings[row["date"]] = {
             "meeting": meeting,
             "docs": set(meeting.documents.values_list("url", flat=True)),
@@ -133,12 +133,13 @@ def save_page(meeting_data, doc_data, bandc: BandC) -> bool:
         doc, created = Document.objects.get_or_create(
             url=row["url"], meeting=meetings[row["date"]]["meeting"], defaults=defaults,
         )
+        scrape_logger.log_document(doc, created)
         if not created:
             try:
                 meetings[row["date"]]["docs"].remove(row["url"])
             except KeyError:
                 pass
-        if True and doc.scrape_status == "toscrape":
+        if doc.scrape_status == "toscrape":
             doc.refresh()
 
     # Look for stale documents
@@ -151,7 +152,7 @@ def save_page(meeting_data, doc_data, bandc: BandC) -> bool:
         print("These docs are stale:", stale_documents)
         Document.objects.filter(url__in=stale_documents).update(active=False)
 
-    return False and new_meetings  # TODO
+    return False  # TODO
 
 
 def get_number_of_pages(html):
@@ -174,16 +175,18 @@ def pull_bandc(bandc: BandC) -> None:
     page_number = 1
     bandc.scraped_at = now()
     bandc.save()
+    scrape_logger.log_bandc(bandc)
     process_next = True
     while process_next:
         response = requests.get(
             bandc.current_meeting_url_format(page_number), headers=headers
         )
-        assert response.ok
+        if not response.ok:
+            scrape_logger.error(f"Response {response.status_code}")
+            continue
 
         n_pages = get_number_of_pages(response.text)  # TODO only do this once
         meeting_data, doc_data = process_page(response.text)
         page_number += 1
-        process_next = save_page(meeting_data, doc_data, bandc=bandc) and (
-            page_number <= n_pages
-        )
+        should_process_next = _save_page(meeting_data, doc_data, bandc=bandc)
+        process_next = should_process_next and page_number <= n_pages

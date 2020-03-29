@@ -202,3 +202,21 @@ class Document(models.Model):
         from .pdf import process_pdf
 
         process_pdf(self)
+
+
+class ScrapeLog(models.Model):
+    """An audit log of what each scrape did"""
+
+    created = models.DateTimeField(auto_now_add=True)
+    bandcs_scraped = models.ManyToManyField(BandC)
+    num_documents_found = models.PositiveSmallIntegerField(null=True, blank=True)
+    documents_scraped = models.ManyToManyField(Document)
+    errors = models.TextField(
+        null=True, blank=True, help_text="Errors that occured while scraping"
+    )
+    duration = models.PositiveSmallIntegerField(
+        null=True, blank=True, help_text="How long the scrape took (in milliseconds)"
+    )
+
+    def __str__(self):
+        return f"{self.created.isoformat()} took {self.duration / 1000}s"

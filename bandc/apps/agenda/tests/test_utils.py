@@ -11,9 +11,10 @@ from ..utils import (
     clean_text,
     process_page,
     get_number_of_pages,
-    save_page,
+    _save_page,
 )
 
+from .. import scrape_logger
 
 BASE_DIR = os.path.dirname(__file__)
 
@@ -54,8 +55,9 @@ class UtilsTests(TestCase):
         # Sanity check
         self.assertEqual(bandc.latest_meeting, None)
 
-        save_page(meeting_data, doc_data, bandc)
+        process_next = _save_page(meeting_data, doc_data, bandc)
 
+        self.assertFalse(process_next)
         self.assertEqual(bandc.latest_meeting.date.isoformat(), "2014-02-03")
         self.assertEqual(bandc.latest_meeting.documents.all()[0].edims_id, 204789)
         self.assertTrue(mock_task.called)
@@ -66,6 +68,21 @@ class UtilsTests(TestCase):
         # Sanity check
         self.assertEqual(bandc.latest_meeting, None)
 
-        save_page(meeting_data, doc_data, bandc)
+        process_next = _save_page(meeting_data, doc_data, bandc)
 
+        self.assertFalse(process_next)
         self.assertEqual(bandc.latest_meeting, None)
+
+    @mock.patch("bandc.apps.agenda.models.Document.refresh")
+    def test_save_page_logs_to_scrape_logger(self, mock_task):
+        html = open(os.path.join(BASE_DIR, "samples/music.html")).read()
+        meeting_data, doc_data = process_page(html)
+        bandc = BandCFactory()
+        # Sanity check
+        self.assertEqual(bandc.latest_meeting, None)
+
+        with scrape_logger.init() as context:
+            _save_page(meeting_data, doc_data, bandc)
+
+            self.assertEqual(len(context.meetings), 4)
+            self.assertEqual(len(context.documents), 9)
