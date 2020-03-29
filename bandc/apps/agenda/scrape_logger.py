@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from .models import BandC, Document, Meeting, ScrapeLog
 
 # For storing what happens during a scrape
+# I probably don't need to be using thread storage
 _storage = threading.local()
 
 
@@ -23,7 +24,18 @@ def init():
 
 @contextmanager
 def record_scrape():
-    """Create a `ScrapeLog` based on any scrapes that occur within"""
+    """
+    Create a `ScrapeLog` based on any scrapes that occur within.
+
+    Usage
+    -----
+
+    with record_scrape():
+        # Your code here
+
+    After your code executes, a `ScrapeLog` entry will be created. Any logs you
+    create using .log_bandc, .log_meeting, etc will get added.
+    """
     with init() as context:
         start = dt.datetime.now()
         yield
