@@ -1,6 +1,5 @@
 import logging
 from typing import List, Tuple
-from collections import namedtuple
 
 import requests
 from dateutil.parser import parse
@@ -97,27 +96,20 @@ def process_page(html: str) -> Tuple[List, List]:
     return meeting_data, doc_data
 
 
-SavePageCreated: Tuple[List[Meeting], List[Document]] = namedtuple(
-    "SavePageCreated", ["meetings", "documents"]
-)
-
-
-def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[SavePageCreated, bool]:
+def _save_page(meeting_data, doc_data, bandc: BandC) -> bool:
     """
     Save one page worth of data, updating BandC, creating Meetings, and Documents.
 
     Returns
     -------
-        What meetings and documents were created
         True if there's another page to process (always False for now)
     """
     logger.info("save_page %s", bandc)
 
     if not meeting_data:
-        return SavePageCreated([], []), False
+        return False
 
     # Populate meetings
-    created_meetings = []
     meetings = {}
     for row in meeting_data:
         meeting, created = obj_update_or_create(
@@ -125,8 +117,6 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[SavePageCreated, b
         )
 
         scrape_logger.log_meeting(meeting, created)
-        if created:
-            created_meetings.append(meeting)
         meetings[row["date"]] = {
             "meeting": meeting,
             "docs": set(meeting.documents.values_list("url", flat=True)),
@@ -136,7 +126,6 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[SavePageCreated, b
         bandc.save()
 
     # Populate documents
-    created_documents = []
     for row in doc_data:
         defaults = dict(title=row["title"], type=row["type"])
         if "/edims/document.cfm" in row["url"]:
@@ -145,9 +134,7 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[SavePageCreated, b
             url=row["url"], meeting=meetings[row["date"]]["meeting"], defaults=defaults,
         )
         scrape_logger.log_document(doc, created)
-        if created:
-            created_documents.append(doc)
-        else:
+        if not created:
             try:
                 meetings[row["date"]]["docs"].remove(row["url"])
             except KeyError:
@@ -165,7 +152,7 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[SavePageCreated, b
         print("These docs are stale:", stale_documents)
         Document.objects.filter(url__in=stale_documents).update(active=False)
 
-    return SavePageCreated(created_meetings, created_documents), False  # TODO
+    return False  # TODO
 
 
 def get_number_of_pages(html):
@@ -176,7 +163,7 @@ def get_number_of_pages(html):
     return int(last_page_link[0].strip())
 
 
-def pull_bandc(bandc: BandC) -> SavePageCreated:
+def pull_bandc(bandc: BandC) -> None:
     """
     Get info about all the meetings for the most recent year.
     """
@@ -190,7 +177,6 @@ def pull_bandc(bandc: BandC) -> SavePageCreated:
     bandc.save()
     scrape_logger.log_bandc(bandc)
     process_next = True
-    total_created = SavePageCreated([], [])
     while process_next:
         response = requests.get(
             bandc.current_meeting_url_format(page_number), headers=headers
@@ -202,8 +188,5 @@ def pull_bandc(bandc: BandC) -> SavePageCreated:
         n_pages = get_number_of_pages(response.text)  # TODO only do this once
         meeting_data, doc_data = process_page(response.text)
         page_number += 1
-        created, should_process_next = _save_page(meeting_data, doc_data, bandc=bandc)
+        should_process_next = _save_page(meeting_data, doc_data, bandc=bandc)
         process_next = should_process_next and page_number <= n_pages
-        total_created.meetings.extend(created.meetings)
-        total_created.documents.extend(created.documents)
-    return total_created

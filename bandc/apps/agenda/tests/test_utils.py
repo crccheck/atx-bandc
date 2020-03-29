@@ -55,10 +55,8 @@ class UtilsTests(TestCase):
         # Sanity check
         self.assertEqual(bandc.latest_meeting, None)
 
-        created, process_next = _save_page(meeting_data, doc_data, bandc)
+        process_next = _save_page(meeting_data, doc_data, bandc)
 
-        self.assertEqual(len(created.meetings), 4)
-        self.assertEqual(len(created.documents), 9)
         self.assertFalse(process_next)
         self.assertEqual(bandc.latest_meeting.date.isoformat(), "2014-02-03")
         self.assertEqual(bandc.latest_meeting.documents.all()[0].edims_id, 204789)
@@ -70,10 +68,8 @@ class UtilsTests(TestCase):
         # Sanity check
         self.assertEqual(bandc.latest_meeting, None)
 
-        created, process_next = _save_page(meeting_data, doc_data, bandc)
+        process_next = _save_page(meeting_data, doc_data, bandc)
 
-        self.assertEqual(created.meetings, [])
-        self.assertEqual(created.documents, [])
         self.assertFalse(process_next)
         self.assertEqual(bandc.latest_meeting, None)
 
