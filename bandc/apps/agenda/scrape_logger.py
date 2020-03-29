@@ -1,3 +1,4 @@
+import datetime as dt
 import threading
 from contextlib import contextmanager
 
@@ -24,10 +25,12 @@ def init():
 def record_scrape():
     """Create a `ScrapeLog` based on any scrapes that occur within"""
     with init() as context:
+        start = dt.datetime.now()
         yield
         log = ScrapeLog.objects.create(
             num_documents_found=len(context.documents),
             errors="\n".join(context.errors),
+            duration=(dt.datetime.now() - start).seconds,
         )
         log.bandcs_scraped.add(*context.bandcs)
         created_documents = [x[0] for x in context.documents if x[1]]

@@ -214,6 +214,9 @@ class ScrapeLog(models.Model):
     errors = models.TextField(
         null=True, blank=True, help_text="Errors that occured while scraping"
     )
+    duration = models.PositiveSmallIntegerField(
+        null=True, blank=True, help_text="How long the scrape took"
+    )
 
     def __str__(self):
         return f"{self.created}"
