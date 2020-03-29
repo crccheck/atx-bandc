@@ -219,4 +219,4 @@ class ScrapeLog(models.Model):
     )
 
     def __str__(self):
-        return f"{self.created}"
+        return f"{self.created.isoformat()} took {self.duration / 1000}s"

@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from .. import scrape_logger
+from ..models import ScrapeLog
 
 
 class ScrapeLoggerTests(TestCase):
@@ -15,3 +16,12 @@ class ScrapeLoggerTests(TestCase):
         self.assertFalse(hasattr(context, "documents"))
         self.assertFalse(hasattr(context, "meetings"))
         self.assertFalse(hasattr(context, "errors"))
+
+    def test_record_scrape_creates_record(self):
+        self.assertFalse(ScrapeLog.objects.exists())
+        with scrape_logger.record_scrape():
+            pass
+
+        log = ScrapeLog.objects.get()
+
+        self.assertTrue(str(log))
