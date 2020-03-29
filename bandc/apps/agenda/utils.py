@@ -72,7 +72,7 @@ def process_page(html: str) -> Tuple[List, List]:
         Returns all the meeting data, and all the documents found.
     """
     doc = document_fromstring(html)
-    date = ""
+    date = None
     meeting_data = []
     doc_data = []
     # WISHLIST do two-pass to group into meetings then parse contents
