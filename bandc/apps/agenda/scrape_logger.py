@@ -28,7 +28,6 @@ def record_scrape():
         )
         log.bandcs_scraped.add(*context.bandcs)
         created_documents = [x[0] for x in context.documents if x[1]]
-        # log.bandc_scraped.add(bandc)
         log.documents_scraped.add(*created_documents)
 
 

@@ -188,6 +188,7 @@ def pull_bandc(bandc: BandC) -> SavePageCreated:
     page_number = 1
     bandc.scraped_at = now()
     bandc.save()
+    scrape_logger.log_bandc(bandc)
     process_next = True
     total_created = SavePageCreated([], [])
     while process_next:
