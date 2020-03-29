@@ -1,4 +1,5 @@
 import logging
+import threading
 from typing import List, Tuple
 from collections import namedtuple
 
@@ -20,6 +21,9 @@ DOCUMENT = "bcic_doc"
 
 
 logger = logging.getLogger(__name__)
+
+# For storing what happens during a scrape
+scrape_storage = threading.local()
 
 
 def populate_bandc_list():
