@@ -12,10 +12,12 @@ def init():
     _storage.bandcs = []
     _storage.documents = []
     _storage.meetings = []
+    _storage.errors = []
     yield _storage
     del _storage.bandcs
     del _storage.documents
     del _storage.meetings
+    del _storage.errors
 
 
 @contextmanager
@@ -24,7 +26,8 @@ def record_scrape():
     with init() as context:
         yield
         log = ScrapeLog.objects.create(
-            num_documents_found=len(context.documents), errors="TODO",
+            num_documents_found=len(context.documents),
+            errors="\n".join(context.errors),
         )
         log.bandcs_scraped.add(*context.bandcs)
         created_documents = [x[0] for x in context.documents if x[1]]
@@ -48,7 +51,13 @@ def log_meeting(meeting: Meeting, created: bool):
 
 def log_document(doc: Document, created: bool):
     if not hasattr(_storage, "documents"):
-        # DELETEME, should skip if not initialized
         return
 
     _storage.documents.append((doc, created))
+
+
+def error(message: str):
+    if not hasattr(_storage, "errors"):
+        return
+
+    _storage.errors.append(message)

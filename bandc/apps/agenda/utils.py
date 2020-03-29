@@ -195,7 +195,9 @@ def pull_bandc(bandc: BandC) -> SavePageCreated:
         response = requests.get(
             bandc.current_meeting_url_format(page_number), headers=headers
         )
-        assert response.ok
+        if not response.ok:
+            scrape_logger.error(f"Response {response.status_code}")
+            continue
 
         n_pages = get_number_of_pages(response.text)  # TODO only do this once
         meeting_data, doc_data = process_page(response.text)
