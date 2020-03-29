@@ -124,6 +124,7 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> Tuple[SavePageCreated, b
             Meeting, bandc=bandc, date=row["date"], defaults={"title": row["title"]}
         )
 
+        scrape_logger.log_meeting(meeting, created)
         if created:
             created_meetings.append(meeting)
         meetings[row["date"]] = {
