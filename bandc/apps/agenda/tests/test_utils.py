@@ -14,6 +14,7 @@ from ..utils import (
     _save_page,
 )
 
+from .. import scrape_logger
 
 BASE_DIR = os.path.dirname(__file__)
 
@@ -75,3 +76,17 @@ class UtilsTests(TestCase):
         self.assertEqual(created.documents, [])
         self.assertFalse(process_next)
         self.assertEqual(bandc.latest_meeting, None)
+
+    @mock.patch("bandc.apps.agenda.models.Document.refresh")
+    def test_save_page_logs_to_scrape_logger(self, mock_task):
+        html = open(os.path.join(BASE_DIR, "samples/music.html")).read()
+        meeting_data, doc_data = process_page(html)
+        bandc = BandCFactory()
+        # Sanity check
+        self.assertEqual(bandc.latest_meeting, None)
+
+        with scrape_logger.init_storage():
+            _save_page(meeting_data, doc_data, bandc)
+
+            self.assertEqual(len(scrape_logger.scrape_storage.meetings), 4)
+            self.assertEqual(len(scrape_logger.scrape_storage.documents), 9)
