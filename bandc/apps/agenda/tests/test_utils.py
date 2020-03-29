@@ -85,8 +85,8 @@ class UtilsTests(TestCase):
         # Sanity check
         self.assertEqual(bandc.latest_meeting, None)
 
-        with scrape_logger.init_storage():
+        with scrape_logger.init() as context:
             _save_page(meeting_data, doc_data, bandc)
 
-            self.assertEqual(len(scrape_logger.scrape_storage.meetings), 4)
-            self.assertEqual(len(scrape_logger.scrape_storage.documents), 9)
+            self.assertEqual(len(context.meetings), 4)
+            self.assertEqual(len(context.documents), 9)
