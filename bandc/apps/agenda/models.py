@@ -215,7 +215,7 @@ class ScrapeLog(models.Model):
         null=True, blank=True, help_text="Errors that occured while scraping"
     )
     duration = models.PositiveSmallIntegerField(
-        null=True, blank=True, help_text="How long the scrape took"
+        null=True, blank=True, help_text="How long the scrape took (in milliseconds)"
     )
 
     def __str__(self):
