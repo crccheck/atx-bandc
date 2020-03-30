@@ -28,7 +28,7 @@ websites and:
 
 * grabs all the documents. Then the PDF documents:
   * have their text extracted
-  * a thumbnail generated and put on S3
+  * a thumbnail generated
 * the documents are put into an RSS feed
 
 

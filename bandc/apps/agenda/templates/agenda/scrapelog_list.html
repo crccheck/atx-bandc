@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load bootstrap_pagination %}
+
+{% block head_title %}Scrape history{% endblock %}
+
+{% block content %}
+<p>
+  The most recent scrapes.
+</p>
+<ul class="list-group">
+  {% for entry in object_list %}
+    <li class="list-group-item">
+      <div class="d-flex justify-content-between align-items-center">
+        {% for bandc in entry.bandcs_scraped.all %}
+          <a href="{{ bandc.get_absolute_url }}">{{ bandc }}</a>
+        {% endfor %}
+        <span class="badge badge-primary badge-pill" title="new / total documents found">
+          {{ entry.documents_scraped.count }} / {{ entry.num_documents_found }}
+        </span>
+      </div>
+      <ol>
+        {% for doc in entry.documents_scraped.all %}
+          <li><a href="{{ doc.get_absolute_url }}">{{ doc }}</a></li>
+        {% endfor %}
+      </ol>
+      {% if entry.errors %}
+        <div class="alert alert-danger">
+          {{ entry.errors }}
+        </div>
+      {% endif %}
+      <footer><small>
+        Fetched at {{ entry.created }},
+        took {{ entry.duration }}ms
+      </small></footer>
+    </li>
+  {% endfor %}
+</ul>
+<div class="text-center">
+  {% bootstrap_paginate page_obj range=10 show_first_last="true" %}
+</div>
+{% endblock %}

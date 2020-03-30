@@ -54,4 +54,3 @@ class MeetingDetail(DetailView):
         return get_object_or_404(
             self.model, bandc__slug=self.kwargs["bandc_slug"], date=self.kwargs["date"]
         )
-
