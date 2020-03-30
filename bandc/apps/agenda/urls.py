@@ -9,7 +9,7 @@ from .views import BandCList, BandCDetail, MeetingDetail
 urlpatterns = [
     path("", BandCList.as_view(), name="bandc_list"),
     path(
-        "logs/",
+        "history/",
         ListView.as_view(
             queryset=ScrapeLog.objects.all().prefetch_related(
                 "bandcs_scraped", "documents_scraped__meeting__bandc",
