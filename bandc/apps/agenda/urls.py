@@ -10,7 +10,7 @@ urlpatterns = [
     path("", BandCList.as_view(), name="bandc_list"),
     path(
         "logs/",
-        ListView.as_view(model=ScrapeLog, ordering="-created"),
+        ListView.as_view(model=ScrapeLog, ordering="-created", paginate_by=20),
         name="scrapelog_list",
     ),
     path("<str:slug>/", BandCDetail.as_view(), name="bandc_detail"),
