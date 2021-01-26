@@ -42,7 +42,8 @@ class BandCDetail(ListView):
         data["bandc"] = self.bandc
         if self.bandc:
             data["upcoming_meetings"] = Meeting.objects.filter(
-                bandc=self.bandc, date__gte=now().date(),
+                bandc=self.bandc,
+                date__gte=now().date(),
             ).order_by("date")
         return data
 
