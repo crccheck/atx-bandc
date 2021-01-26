@@ -110,7 +110,8 @@ class Meeting(models.Model):
 
     def get_absolute_url(self) -> str:
         return reverse(
-            "meeting_detail", kwargs={"bandc_slug": self.bandc.slug, "date": self.date},
+            "meeting_detail",
+            kwargs={"bandc_slug": self.bandc.slug, "date": self.date},
         )
 
 
@@ -143,7 +144,9 @@ class Document(models.Model):
     )
     scraped_at = models.DateTimeField(auto_now_add=True)
     scrape_status = models.CharField(
-        choices=scrape_status_choices, default="toscrape", max_length=20,
+        choices=scrape_status_choices,
+        default="toscrape",
+        max_length=20,
     )
 
     # Extracted fields

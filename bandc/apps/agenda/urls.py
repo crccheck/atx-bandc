@@ -12,7 +12,8 @@ urlpatterns = [
         "history/",
         ListView.as_view(
             queryset=ScrapeLog.objects.all().prefetch_related(
-                "bandcs_scraped", "documents_scraped__meeting__bandc",
+                "bandcs_scraped",
+                "documents_scraped__meeting__bandc",
             ),
             ordering="-created",
             paginate_by=20,

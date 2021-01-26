@@ -39,7 +39,9 @@ def populate_bandc_list():
         slug = path.split("/")[-1]
 
         bandc, created = BandC.objects.get_or_create(
-            name=name.strip(), slug=slug, homepage=url,
+            name=name.strip(),
+            slug=slug,
+            homepage=url,
         )
         logger.info("Found %s. Created? %s", bandc, created)
 
@@ -131,7 +133,9 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> bool:
         if "/edims/document.cfm" in row["url"]:
             defaults["edims_id"] = row["url"].rsplit("=", 2)[-1]
         doc, created = Document.objects.get_or_create(
-            url=row["url"], meeting=meetings[row["date"]]["meeting"], defaults=defaults,
+            url=row["url"],
+            meeting=meetings[row["date"]]["meeting"],
+            defaults=defaults,
         )
         scrape_logger.log_document(doc, created)
         if not created:

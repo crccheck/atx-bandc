@@ -6,20 +6,43 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('agenda', '0007_backfill_edims_id'),
+        ("agenda", "0007_backfill_edims_id"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ScrapeLog',
+            name="ScrapeLog",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('num_documents_found', models.PositiveSmallIntegerField(blank=True, null=True)),
-                ('errors', models.TextField(blank=True, help_text='Errors that occured while scraping', null=True)),
-                ('duration', models.PositiveSmallIntegerField(blank=True, help_text='How long the scrape took', null=True)),
-                ('bandcs_scraped', models.ManyToManyField(to='agenda.BandC')),
-                ('documents_scraped', models.ManyToManyField(to='agenda.Document')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                (
+                    "num_documents_found",
+                    models.PositiveSmallIntegerField(blank=True, null=True),
+                ),
+                (
+                    "errors",
+                    models.TextField(
+                        blank=True,
+                        help_text="Errors that occured while scraping",
+                        null=True,
+                    ),
+                ),
+                (
+                    "duration",
+                    models.PositiveSmallIntegerField(
+                        blank=True, help_text="How long the scrape took", null=True
+                    ),
+                ),
+                ("bandcs_scraped", models.ManyToManyField(to="agenda.BandC")),
+                ("documents_scraped", models.ManyToManyField(to="agenda.Document")),
             ],
         ),
     ]

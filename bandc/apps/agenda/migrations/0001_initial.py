@@ -98,7 +98,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ("-meeting__date",),},
+            options={
+                "ordering": ("-meeting__date",),
+            },
         ),
         migrations.CreateModel(
             name="Meeting",
@@ -124,7 +126,10 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ("-date",), "get_latest_by": "date",},
+            options={
+                "ordering": ("-date",),
+                "get_latest_by": "date",
+            },
         ),
         migrations.AddField(
             model_name="document",
@@ -136,6 +141,7 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AlterUniqueTogether(
-            name="meeting", unique_together=set([("date", "bandc")]),
+            name="meeting",
+            unique_together=set([("date", "bandc")]),
         ),
     ]

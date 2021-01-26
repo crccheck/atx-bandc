@@ -44,5 +44,5 @@ class DocumentAdmin(DjangoObjectActions, admin.ModelAdmin):
 
 @admin.register(ScrapeLog)
 class ScrapeLogAdmin(admin.ModelAdmin):
-    list_display = ("created","num_documents_found", "duration")
+    list_display = ("created", "num_documents_found", "duration")
     raw_id_fields = ("bandcs_scraped", "documents_scraped")
