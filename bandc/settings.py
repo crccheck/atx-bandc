@@ -13,7 +13,7 @@ ALLOWED_HOSTS = ["*"]
 
 
 INSTALLED_APPS = (
-    "bandc.apps.agenda",
+    "bandc.apps.agenda.apps.AgendaConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
