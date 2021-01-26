@@ -1,13 +1,8 @@
-ATX BandC
-=========
+# ATX BandC
 
 Austin, TX Boards and Commissions
 
-[![Build Status](https://travis-ci.org/crccheck/atx-bandc.svg?branch=develop)](https://travis-ci.org/crccheck/atx-bandc)
-
-
-Getting started
----------------
+## Getting started
 
 Prerequisites:
 
@@ -18,22 +13,18 @@ Installing:
 
     make install
 
-
-How it works
-------------
+## How it works
 
 This is a Django site, with models for Boards and Commissions, their meetings,
 and the documents for each meeting. There's a scraper that hits each of their
 websites and:
 
-* grabs all the documents. Then the PDF documents:
-  * have their text extracted
-  * a thumbnail generated
-* the documents are put into an RSS feed
+- grabs all the documents. Then the PDF documents:
+  - have their text extracted
+  - a thumbnail generated
+- the documents are put into an RSS feed
 
-
-Deploying
----------
+## Deploying
 
 I store images in the local filesystem for simplicity. To serve Django media in
 production, you'll need a rule like this in Nginx:
@@ -44,9 +35,7 @@ location /media {
 }
 ```
 
+## Links
 
-Links
------
-
-* https://atxhackforchange.org/
-* https://www.austintexas.gov/department/boards-and-commissions-information-center
+- https://atxhackforchange.org/
+- https://www.austintexas.gov/department/boards-and-commissions-information-center
