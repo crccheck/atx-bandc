@@ -16,6 +16,8 @@ clean:
 # brew install imagemagick gs
 
 # sudo apt-get install -y imagemagick
+install:
+	poetry install
 
 admin: ## Set up a local admin/admin developer account
 	echo "from django.contrib.auth import get_user_model; \
@@ -33,7 +35,7 @@ docker/build: ## Build the Docker image
 	docker build -t ${IMAGE} .
 
 docker/scrape: ## Scrape and process pdfs
-	docker run --rm ${IMAGE} python manage.py scrape
+	docker run --rm ${IMAGE} poetry run python manage.py scrape
 
 docker/run: ## Scrape and process pdfs
 	docker run --rm -it -p 8000:8000 ${IMAGE}

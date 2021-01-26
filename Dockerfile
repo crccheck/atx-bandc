@@ -19,6 +19,6 @@ RUN POETRY_VIRTUALENVS_IN_PROJECT=true poetry install --no-dev
 
 COPY . /app
 EXPOSE 8000
-HEALTHCHECK CMD nc -z localhost 8080
+HEALTHCHECK CMD nc -z localhost 8000
 
 CMD [".venv/bin/waitress-serve", "--port=8000", "bandc.wsgi:application"]
