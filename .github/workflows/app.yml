@@ -16,41 +16,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install black
           black --check .
-  lint-js:
-    name: Lint JavaScript
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 14.x
-      - name: Eslint check
-        run: |
-          npm install eslint
-          npm run lint
   test-py:
     name: Django tests
     runs-on: ubuntu-latest
-    services:
-      db:
-        image: postgis/postgis:12-3.0-alpine
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: github_actions
-        ports:
-          - 5432:5432
-        options: --mount type=tmpfs,destination=/var/lib/postgresql/data --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: 3.8
-      - run: sudo apt-get install -y libpq-dev libgeos-dev gdal-bin
       - run: |
           pip install poetry
           poetry install -v
       - name: Run tests
         run: poetry run make test
-        env:
-          DATABASE_URL: postgis://postgres:postgres@127.0.0.1/github_actions
