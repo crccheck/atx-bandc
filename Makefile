@@ -10,20 +10,14 @@ clean:
 	rm -rf build
 	rm -rf dist
 	rm -rf *.egg-info
-	find . -name "*.pyc" -delete
 	find . -name ".DS_Store" -delete
 
 # On OSX, tested with ImageMagick 7.0.9-16 and Ghostscript 9.50
 # brew install imagemagick gs
 
 # sudo apt-get install -y imagemagick
-install: ## Install requirements
-	pip install -r requirements.txt -r dev-requirements.txt
-
-.PHONY: requirements.txt
-requirements.txt: ## Regenerate requirements.txt
-	pip-compile requirements.in > $@
-	pip-compile dev-requirements.in
+install:
+	poetry install
 
 admin: ## Set up a local admin/admin developer account
 	echo "from django.contrib.auth import get_user_model; \
@@ -41,7 +35,7 @@ docker/build: ## Build the Docker image
 	docker build -t ${IMAGE} .
 
 docker/scrape: ## Scrape and process pdfs
-	docker run --rm ${IMAGE} python manage.py scrape
+	docker run --rm ${IMAGE} poetry run python manage.py scrape
 
 docker/run: ## Scrape and process pdfs
 	docker run --rm -it -p 8000:8000 ${IMAGE}

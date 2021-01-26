@@ -11,13 +11,14 @@ RUN apt-get update -qq && \
   > /dev/null && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
-COPY requirements.txt requirements.txt
 ENV PIP_DISABLE_PIP_VERSION_CHECK 1
-RUN pip install -r requirements.txt
+RUN pip install poetry
+WORKDIR /app
+COPY poetry.lock pyproject.toml ./
+RUN POETRY_VIRTUALENVS_IN_PROJECT=true poetry install --no-dev
 
 COPY . /app
 EXPOSE 8000
-HEALTHCHECK CMD nc -z localhost 8080
+HEALTHCHECK CMD nc -z localhost 8000
 
-CMD ["waitress-serve", "--port=8000", "bandc.wsgi:application"]
+CMD [".venv/bin/waitress-serve", "--port=8000", "bandc.wsgi:application"]
