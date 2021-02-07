@@ -12,7 +12,8 @@ RUN apt-get update -qq && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK 1
-RUN pip install poetry
+ENV POETRY_VERSION 1.1.4
+RUN pip install "poetry==$POETRY_VERSION"
 WORKDIR /app
 COPY poetry.lock pyproject.toml ./
 RUN POETRY_VIRTUALENVS_IN_PROJECT=true poetry install --no-dev
