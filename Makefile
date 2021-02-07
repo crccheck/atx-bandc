@@ -48,10 +48,10 @@ docker/run: ## Scrape and process pdfs
 docker/converttest: ## Make sure we can create thumbnails from PDFs in production
 	docker run --rm ${IMAGE} \
 	convert \
-	"./bandc/apps/agenda/tests/samples/document_559F43E9-A324-12E8-80CA01C0F02507A7.pdf" \
+	"./bandc/apps/agenda/tests/samples/edims_354309.pdf" \
 	-thumbnail 400x400 \
 	-flatten \
-	jpg:/tmp/test.jpg
+	jpg:- > docker-converttest.jpg
 
 docker/bash:
 	docker run --rm -it ${IMAGE} /bin/bash
