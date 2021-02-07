@@ -10,7 +10,8 @@ RUN apt-get update -qq && \
   libpq-dev \
   > /dev/null && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
-
+# Fix https://bugs.archlinux.org/task/60580
+RUN sed -i 's/.*code.*PDF.*//' /etc/ImageMagick-6/policy.xml
 ENV PIP_DISABLE_PIP_VERSION_CHECK 1
 ENV POETRY_VERSION 1.1.4
 RUN pip install "poetry==$POETRY_VERSION"
