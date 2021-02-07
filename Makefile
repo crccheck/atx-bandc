@@ -16,20 +16,23 @@ clean:
 # brew install imagemagick gs
 
 # sudo apt-get install -y imagemagick
-install:
+install: ## Install the project using 'poetry' to manage virtual environment and packages
 	poetry install
 
-admin: ## Set up a local admin/admin developer account
-	echo "from django.contrib.auth import get_user_model; \
+deps:
+	poetry update
+
+admin: ## Set up a local insecure admin developer account
+	-echo "from django.contrib.auth import get_user_model; \
 		User = get_user_model(); \
-		User.objects.create_superuser('admin', 'admin@example.com', 'admin')" | \
-		python manage.py shell
+		User.objects.create_superuser('admin@example.com', 'admin@example.com', 'admin')" | \
+		poetry run python manage.py shell
 
 test: ## Run test suite
-	python manage.py test --keepdb
+	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} poetry run python manage.py test
 
 tdd: ## Run test watcher
-	nodemon -e py -x "python manage.py test --failfast --keepdb ${SCOPE}"
+	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} nodemon -e py -x "python manage.py test --failfast --keepdb ${SCOPE}"
 
 docker/build: ## Build the Docker image
 	docker build -t ${IMAGE} .
