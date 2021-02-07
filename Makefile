@@ -16,20 +16,23 @@ clean:
 # brew install imagemagick gs
 
 # sudo apt-get install -y imagemagick
-install:
+install: ## Install the project using 'poetry' to manage virtual environment and packages
 	poetry install
 
-admin: ## Set up a local admin/admin developer account
-	echo "from django.contrib.auth import get_user_model; \
+deps:
+	poetry update
+
+admin: ## Set up a local insecure admin developer account
+	-echo "from django.contrib.auth import get_user_model; \
 		User = get_user_model(); \
-		User.objects.create_superuser('admin', 'admin@example.com', 'admin')" | \
-		python manage.py shell
+		User.objects.create_superuser('admin@example.com', 'admin@example.com', 'admin')" | \
+		poetry run python manage.py shell
 
 test: ## Run test suite
-	python manage.py test --keepdb
+	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} poetry run python manage.py test
 
 tdd: ## Run test watcher
-	nodemon -e py -x "python manage.py test --failfast --keepdb ${SCOPE}"
+	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} nodemon -e py -x "python manage.py test --failfast --keepdb ${SCOPE}"
 
 docker/build: ## Build the Docker image
 	docker build -t ${IMAGE} .
@@ -43,12 +46,14 @@ docker/run: ## Scrape and process pdfs
 # This is a good ImageMagic PDF guide:
 # https://www.binarytides.com/convert-pdf-image-imagemagick-commandline/
 docker/converttest: ## Make sure we can create thumbnails from PDFs in production
-	docker run --rm ${IMAGE} \
+	docker run --rm \
+	--volume $${PWD}/bandc/apps/agenda/tests/samples:/app/bandc/apps/agenda/tests/samples:ro \
+	${IMAGE} \
 	convert \
-	"./bandc/apps/agenda/tests/samples/document_559F43E9-A324-12E8-80CA01C0F02507A7.pdf" \
+	"./bandc/apps/agenda/tests/samples/edims_354309.pdf" \
 	-thumbnail 400x400 \
 	-flatten \
-	jpg:/tmp/test.jpg
+	jpg:- > docker-converttest.jpg
 
 docker/bash:
 	docker run --rm -it ${IMAGE} /bin/bash
