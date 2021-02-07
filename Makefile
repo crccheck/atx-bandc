@@ -46,7 +46,9 @@ docker/run: ## Scrape and process pdfs
 # This is a good ImageMagic PDF guide:
 # https://www.binarytides.com/convert-pdf-image-imagemagick-commandline/
 docker/converttest: ## Make sure we can create thumbnails from PDFs in production
-	docker run --rm ${IMAGE} \
+	docker run --rm \
+	--volume $${PWD}/bandc/apps/agenda/tests/samples:/app/bandc/apps/agenda/tests/samples:ro \
+	${IMAGE} \
 	convert \
 	"./bandc/apps/agenda/tests/samples/edims_354309.pdf" \
 	-thumbnail 400x400 \
