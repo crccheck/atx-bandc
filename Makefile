@@ -50,7 +50,7 @@ docker/converttest: ## Make sure we can create thumbnails from PDFs in productio
 	--volume $${PWD}/bandc/apps/agenda/tests/samples:/app/bandc/apps/agenda/tests/samples:ro \
 	${IMAGE} \
 	convert \
-	"./bandc/apps/agenda/tests/samples/edims_354309.pdf" \
+	"./bandc/apps/agenda/tests/samples/edims_354309.pdf[0]" \
 	-thumbnail 400x400 \
 	-flatten \
 	jpg:- > docker-converttest.jpg
