@@ -2,7 +2,7 @@ from django.urls import path, re_path
 from django.views.generic import DetailView, ListView
 
 from .feeds import BandCDocumentFeed
-from .models import Document, Meeting, ScrapeLog
+from .models import Document, ScrapeLog
 from .views import BandCList, BandCDetail, MeetingDetail
 
 
