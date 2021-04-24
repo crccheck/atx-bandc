@@ -1,7 +1,6 @@
 import datetime as dt
 import os.path
 import re
-from typing import Union
 
 import requests
 from django.urls import reverse

@@ -13,7 +13,6 @@ from . import scrape_logger
 
 # CONSTANTS
 
-YEAR = 2020
 MEETING_DATE = "bcic_mtgdate"
 MEETING_TITLE = "bcic_mtgtype"
 DOCUMENT = "bcic_doc"
