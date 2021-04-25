@@ -3,7 +3,6 @@
 {% block head_title %}{{ object }} | {{ object.bandc }}{% endblock %}
 
 {% block extra_style %}
-<link rel="alternate" type="application/rss+xml" href="{% url 'feed' slug=view.kwargs.slug %">
   <style>
     .entry {
       background: #EEE;
