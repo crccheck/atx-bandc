@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.10
 LABEL maintainer="Chris <c@crccheck.com>"
 
 RUN apt-get update -qq && \
@@ -13,7 +13,7 @@ RUN apt-get update -qq && \
 # Fix https://bugs.archlinux.org/task/60580
 RUN sed -i 's/.*code.*PDF.*//' /etc/ImageMagick-6/policy.xml
 ENV PIP_DISABLE_PIP_VERSION_CHECK 1
-ENV POETRY_VERSION 1.1.4
+ENV POETRY_VERSION 1.1.13
 RUN pip install "poetry==$POETRY_VERSION"
 WORKDIR /app
 COPY poetry.lock pyproject.toml ./
