@@ -1,5 +1,6 @@
 import logging
-from typing import List, Tuple
+from datetime import date
+from typing import List, Tuple, TypedDict
 
 import requests
 from dateutil.parser import parse
@@ -63,7 +64,12 @@ def clean_text(text):
     return text.lstrip("- ")
 
 
-def process_page(html: str) -> Tuple[List, List]:
+class MeetingData(TypedDict):
+    date: date
+    title: str
+
+
+def process_page(html: str) -> Tuple[list[MeetingData], list]:
     """
     Transform the raw html into semi-structured data.
 
@@ -76,8 +82,7 @@ def process_page(html: str) -> Tuple[List, List]:
     meeting_data = []
     doc_data = []
     # WISHLIST do two-pass to group into meetings then parse contents
-    for row in doc.xpath('//div[@id="bcic"]/h5'):
-        print("row", row)
+    for row in doc.xpath('//div[@id="bcic"]/div'):
         row_class = row.attrib["class"]  # assume each has only one css class
         if row_class == MEETING_DATE:
             try:
@@ -86,7 +91,8 @@ def process_page(html: str) -> Tuple[List, List]:
                 date = None
         elif date and row_class == MEETING_TITLE:
             # XXX assume all meeting date rows are followed by meeting title
-            meeting_data.append({"date": date, "title": row.text_content()})
+            meeting: MeetingData = {"date": date, "title": row.text_content()}
+            meeting_data.append(meeting)
         elif date and row_class == DOCUMENT:
             row_type = row.xpath("./a/b/text()")[0]
             url = row.xpath("./a/@href")[0]
