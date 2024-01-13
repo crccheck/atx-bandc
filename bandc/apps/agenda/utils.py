@@ -69,7 +69,6 @@ def process_page(html: str) -> Tuple[List, List]:
 
     Returns
     -------
-    tuple (dict, dict)
         Returns all the meeting data, and all the documents found.
     """
     doc = document_fromstring(html)
@@ -78,6 +77,7 @@ def process_page(html: str) -> Tuple[List, List]:
     doc_data = []
     # WISHLIST do two-pass to group into meetings then parse contents
     for row in doc.xpath('//div[@id="bcic"]/h5'):
+        print("row", row)
         row_class = row.attrib["class"]  # assume each has only one css class
         if row_class == MEETING_DATE:
             try:

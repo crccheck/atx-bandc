@@ -49,7 +49,7 @@ def record_scrape():
         log.documents_scraped.add(*created_documents)
 
 
-def log_bandc(bandc: BandC):
+def log_bandc(bandc: BandC) -> None:
     """Log that a `BandC` was scraped"""
     if not hasattr(_storage, "bandcs"):
         return
@@ -57,21 +57,21 @@ def log_bandc(bandc: BandC):
     _storage.bandcs.append((bandc))
 
 
-def log_meeting(meeting: Meeting, created: bool):
+def log_meeting(meeting: Meeting, created: bool) -> None:
     if not hasattr(_storage, "meetings"):
         return
 
     _storage.meetings.append((meeting, created))
 
 
-def log_document(doc: Document, created: bool):
+def log_document(doc: Document, created: bool) -> None:
     if not hasattr(_storage, "documents"):
         return
 
     _storage.documents.append((doc, created))
 
 
-def error(message: str):
+def error(message: str) -> None:
     if not hasattr(_storage, "errors"):
         return
 
