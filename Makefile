@@ -32,7 +32,7 @@ test: ## Run test suite
 	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} poetry run python manage.py test
 
 tdd: ## Run test watcher
-	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} nodemon -e py -x "python manage.py test --failfast --keepdb ${SCOPE}"
+	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} nodemon -e py -x "poetry run python manage.py test --failfast --keepdb ${SCOPE}"
 
 docker/build: ## Build the Docker image
 	docker build -t ${IMAGE} .

@@ -38,14 +38,15 @@ class UtilsTests(TestCase):
     def test_process_page_works(self):
         html = open(os.path.join(BASE_DIR, "samples/music.html")).read()
         meeting_data, doc_data = process_page(html)
-        self.assertEqual(len(doc_data), 9)
-        self.assertEqual(doc_data[0]["date"], datetime.date(2014, 6, 2))
+        self.assertEqual(len(meeting_data), 7)
+        self.assertEqual(len(doc_data), 28)
+        self.assertEqual(doc_data[0]["date"], datetime.date(2014, 12, 1))
 
     def test_get_number_of_pages_works(self):
         html = open(os.path.join(BASE_DIR, "samples/music.html")).read()
         self.assertEqual(get_number_of_pages(html), 1)
         html = open(os.path.join(BASE_DIR, "samples/parks.html")).read()
-        self.assertEqual(get_number_of_pages(html), 2)
+        self.assertEqual(get_number_of_pages(html), 5)
 
     @mock.patch("bandc.apps.agenda.models.Document.refresh")
     def test_save_page_works(self, mock_task):
@@ -84,5 +85,5 @@ class UtilsTests(TestCase):
         with scrape_logger.init() as context:
             _save_page(meeting_data, doc_data, bandc)
 
-            self.assertEqual(len(context.meetings), 4)
-            self.assertEqual(len(context.documents), 9)
+            self.assertEqual(len(context.meetings), 7)
+            self.assertEqual(len(context.documents), 28)
