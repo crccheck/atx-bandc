@@ -37,6 +37,9 @@ tdd: ## Run test watcher
 docker/build: ## Build the Docker image
 	docker buildx build --platform linux/amd64 -t ${IMAGE} .
 
+docker/publish: ## Build the Docker image
+	docker buildx build --platform linux/amd64 --push -t crccheck/atx-bandc .
+
 docker/scrape: ## Scrape and process pdfs
 	docker run --rm ${IMAGE} poetry run python manage.py scrape
 
