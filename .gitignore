@@ -8,3 +8,6 @@ media
 
 # ignore ipython notebook for now
 *.ipynb
+
+# Generated files
+docker-converttest.jpg

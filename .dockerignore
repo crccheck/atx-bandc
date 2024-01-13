@@ -1,5 +1,6 @@
 .git
 .mypy_cache
+.venv
 media
 *.db
 *.ipynb

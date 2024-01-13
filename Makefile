@@ -35,7 +35,10 @@ tdd: ## Run test watcher
 	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} nodemon -e py -x "poetry run python manage.py test --failfast --keepdb ${SCOPE}"
 
 docker/build: ## Build the Docker image
-	docker build -t ${IMAGE} .
+	docker buildx build --platform linux/amd64 -t ${IMAGE} .
+
+docker/publish: ## Build the Docker image
+	docker buildx build --platform linux/amd64 --push -t crccheck/atx-bandc .
 
 docker/scrape: ## Scrape and process pdfs
 	docker run --rm ${IMAGE} poetry run python manage.py scrape
