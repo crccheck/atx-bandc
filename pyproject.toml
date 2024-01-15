@@ -36,5 +36,6 @@ build-backend = "poetry.masonry.api"
 extend-select = [
   "I",  # isort
   "UP", # pyupgrade
-  "N",
+  "N",  # pep8-naming
+  "G",  # flake8-logging-format
 ]
