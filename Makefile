@@ -29,6 +29,7 @@ admin: ## Set up a local insecure admin developer account
 		poetry run python manage.py shell
 
 lint: ## Check project linting rules
+	poetry run black --check .
 	poetry run ruff check .
 
 delint: ## Fix fixable linting errors
