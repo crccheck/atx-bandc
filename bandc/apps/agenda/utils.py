@@ -31,7 +31,6 @@ def populate_bandc_list():
     assert response.ok
     doc = document_fromstring(response.text)
     for option in doc.xpath('//form[@id="bc_form"]' '//select[@name="board"]/option'):
-
         name = option.text
         path = option.values()[0]
         url = f"https://www.austintexas.gov{path}"

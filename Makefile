@@ -33,6 +33,7 @@ lint: ## Check project linting rules
 	poetry run ruff check .
 
 delint: ## Fix fixable linting errors
+	poetry run black .
 	poetry run ruff check . --fix
 
 test: ## Run test suite
