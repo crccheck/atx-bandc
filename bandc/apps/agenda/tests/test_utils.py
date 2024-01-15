@@ -4,17 +4,16 @@ from unittest import mock
 
 from django.test import TestCase
 
+from .. import scrape_logger
 from ..factories import BandCFactory
 from ..utils import (
     MeetingCancelled,
-    parse_date,
-    clean_text,
-    process_page,
-    get_number_of_pages,
     _save_page,
+    clean_text,
+    get_number_of_pages,
+    parse_date,
+    process_page,
 )
-
-from .. import scrape_logger
 
 BASE_DIR = os.path.dirname(__file__)
 

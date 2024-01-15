@@ -3,8 +3,7 @@ from django.views.generic import DetailView, ListView
 
 from .feeds import BandCDocumentFeed
 from .models import Document, ScrapeLog
-from .views import BandCList, BandCDetail, MeetingDetail
-
+from .views import BandCDetail, BandCList, MeetingDetail
 
 urlpatterns = [
     path("", BandCList.as_view(), name="bandc_list"),

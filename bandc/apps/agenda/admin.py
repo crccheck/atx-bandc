@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django_object_actions import DjangoObjectActions
 
-from .models import BandC, Meeting, Document, ScrapeLog
+from .models import BandC, Document, Meeting, ScrapeLog
 
 
 @admin.register(BandC)

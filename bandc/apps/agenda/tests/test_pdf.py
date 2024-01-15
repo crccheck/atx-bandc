@@ -2,9 +2,8 @@ import os
 import unittest
 from unittest.mock import patch
 
-from ..pdf import _get_pdf_page_count, process_pdf
 from ..factories import DocumentFactory
-
+from ..pdf import _get_pdf_page_count, process_pdf
 
 BASE_DIR = os.path.dirname(__file__)
 

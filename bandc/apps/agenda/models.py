@@ -3,11 +3,10 @@ import os.path
 import re
 
 import requests
+from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
-from django.db import models
 from lxml.html import document_fromstring
-
 
 bad_chars = re.compile(r"[\x00-\x08\x0B-\x0C\x0E-\x1F]")
 

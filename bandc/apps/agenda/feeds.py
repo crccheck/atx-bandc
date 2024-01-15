@@ -3,7 +3,6 @@ from django.urls import reverse
 
 from .models import BandC, Document
 
-
 RSS_SIZE = 100
 
 

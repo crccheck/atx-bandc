@@ -1,8 +1,7 @@
 import os
 
 from bottle import request
-from pyga.requests import Tracker, Page, Session, Visitor
-
+from pyga.requests import Page, Session, Tracker, Visitor
 
 ga_account = os.environ.get("GA_ACCOUNT")
 ga_domain = os.environ.get("GA_DOMAIN")

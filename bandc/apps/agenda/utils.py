@@ -8,9 +8,8 @@ from django.utils.timezone import now
 from lxml.html import document_fromstring
 from obj_update import obj_update_or_create
 
-from .models import BandC, Meeting, Document
 from . import scrape_logger
-
+from .models import BandC, Document, Meeting
 
 # CONSTANTS
 
