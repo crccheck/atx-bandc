@@ -104,7 +104,7 @@ class Meeting(models.Model):
         unique_together = ("date", "bandc")
 
     def __str__(self) -> str:
-        return "{} {}".format(self.bandc, self.title or self.date)
+        return f"{self.bandc} {self.title or self.date}"
 
     def get_absolute_url(self) -> str:
         return reverse(
@@ -168,7 +168,7 @@ class Document(models.Model):
         ordering = ("-meeting__date",)
 
     def __str__(self) -> str:
-        return "{}".format(self.title or self.type)
+        return f"{self.title or self.type}"
 
     def get_absolute_url(self) -> str:
         if self.edims_id:

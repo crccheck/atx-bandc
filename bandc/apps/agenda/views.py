@@ -9,7 +9,7 @@ class BandCList(ListView):
     model = BandC
 
     def get_queryset(self):
-        return super(BandCList, self).get_queryset().select_related("latest_meeting")
+        return super().get_queryset().select_related("latest_meeting")
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)

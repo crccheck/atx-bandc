@@ -35,5 +35,6 @@ build-backend = "poetry.masonry.api"
 
 [tool.ruff]
 extend-select = [
-  "I", # isort
+  "I",  # isort
+  "UP", # pyupgrade
 ]
