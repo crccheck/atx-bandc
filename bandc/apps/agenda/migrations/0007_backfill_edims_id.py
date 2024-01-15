@@ -12,7 +12,6 @@ def backfill_edims_id(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("agenda", "0006_add_edims_id"),
     ]

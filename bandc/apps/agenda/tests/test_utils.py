@@ -4,17 +4,16 @@ from unittest import mock
 
 from django.test import TestCase
 
+from .. import scrape_logger
 from ..factories import BandCFactory
 from ..utils import (
-    MeetingCancelled,
-    parse_date,
-    clean_text,
-    process_page,
-    get_number_of_pages,
+    MeetingCancelledError,
     _save_page,
+    clean_text,
+    get_number_of_pages,
+    parse_date,
+    process_page,
 )
-
-from .. import scrape_logger
 
 BASE_DIR = os.path.dirname(__file__)
 
@@ -23,7 +22,7 @@ class UtilsTests(TestCase):
     def test_parse_date_works(self):
         date = parse_date("January 13, 2014")
         self.assertEqual(date, datetime.date(2014, 1, 13))
-        with self.assertRaises(MeetingCancelled):
+        with self.assertRaises(MeetingCancelledError):
             date = parse_date("January 28, 2014 (Cancelled)")
 
     def test_clean_test(self):

@@ -54,7 +54,7 @@ def log_bandc(bandc: BandC) -> None:
     if not hasattr(_storage, "bandcs"):
         return
 
-    _storage.bandcs.append((bandc))
+    _storage.bandcs.append(bandc)
 
 
 def log_meeting(meeting: Meeting, created: bool) -> None:

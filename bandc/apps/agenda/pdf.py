@@ -8,11 +8,11 @@ from django.core.files.base import ContentFile
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from pdfminer.pdfdocument import PDFEncryptionError
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
 from pdfminer.pdfpage import PDFPage
 from pdfminer.psparser import PSException
-from .models import Document
 
+from .models import Document
 
 BASE_PATH = "/tmp/bandc_pdfs/"  # TODO settings
 logger = logging.getLogger(__name__)

@@ -2,14 +2,14 @@ from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 from django.views.generic import DetailView, ListView
 
-from .models import BandC, Meeting, Document
+from .models import BandC, Document, Meeting
 
 
 class BandCList(ListView):
     model = BandC
 
     def get_queryset(self):
-        return super(BandCList, self).get_queryset().select_related("latest_meeting")
+        return super().get_queryset().select_related("latest_meeting")
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)

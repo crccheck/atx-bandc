@@ -20,14 +20,21 @@ project-runpy = "^1.0.1"
 "pdfminer.six" = "^20201018"
 sh = "^1.14.1"
 waitress = "^1.4.4"
-sentry-sdk = {extras = ["django"], version = "^1.39.2"}
+sentry-sdk = { extras = ["django"], version = "^1.39.2" }
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
+black = "23.x.x"
 factory-boy = "^3.2.0"
-flake8 = "^3.9.1"
 mypy = "^0.931"
-black = "^22.1.0"
+ruff = "0.1.x"
 
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+
+[tool.ruff]
+extend-select = [
+  "I",  # isort
+  "UP", # pyupgrade
+  "N",
+]

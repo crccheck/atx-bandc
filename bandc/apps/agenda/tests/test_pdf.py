@@ -2,9 +2,8 @@ import os
 import unittest
 from unittest.mock import patch
 
-from ..pdf import _get_pdf_page_count, process_pdf
 from ..factories import DocumentFactory
-
+from ..pdf import _get_pdf_page_count, process_pdf
 
 BASE_DIR = os.path.dirname(__file__)
 
@@ -16,7 +15,7 @@ class PdfTest(unittest.TestCase):
         )
         self.assertEqual(_get_pdf_page_count(filepath), 5)
 
-    def test_get_pdf_page_count_handles_PDFTextExtractionNotAllowed(self):
+    def test_get_pdf_page_count_handles_pdftextextractionnotallowed(self):
         filepath = os.path.join(BASE_DIR, "samples/edims_333704.pdf")
         self.assertEqual(_get_pdf_page_count(filepath), 1)
 

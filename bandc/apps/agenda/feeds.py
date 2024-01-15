@@ -3,7 +3,6 @@ from django.urls import reverse
 
 from .models import BandC, Document
 
-
 RSS_SIZE = 100
 
 
@@ -44,6 +43,6 @@ class BandCDocumentFeed(Feed):
 
     def item_title(self, item):
         if self.slug == "all":
-            return "{} - {}".format(item.meeting.bandc, item)
+            return f"{item.meeting.bandc} - {item}"
 
         return str(item)

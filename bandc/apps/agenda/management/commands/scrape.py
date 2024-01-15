@@ -39,7 +39,7 @@ class Command(BaseCommand):
         # prioritize buckets so defunct BandCs aren't scraped
 
         if count:
-            self.stdout.write("Checking {} BandCs".format(queryset.count()))
+            self.stdout.write(f"Checking {queryset.count()} BandCs")
         else:
             raise CommandError("No BandCs to scrape")
 
