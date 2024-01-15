@@ -28,6 +28,12 @@ admin: ## Set up a local insecure admin developer account
 		User.objects.create_superuser('admin@example.com', 'admin@example.com', 'admin')" | \
 		poetry run python manage.py shell
 
+lint: ## Check project linting rules
+	poetry run ruff check .
+
+delint: ## Fix fixable linting errors
+	poetry run ruff check . --fix
+
 test: ## Run test suite
 	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} poetry run python manage.py test
 

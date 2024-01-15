@@ -32,3 +32,8 @@ ruff = "^0.1.13"
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+
+[tool.ruff]
+extend-select = [
+  "I", # isort
+]
