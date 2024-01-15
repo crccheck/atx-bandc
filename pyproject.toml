@@ -20,6 +20,7 @@ project-runpy = "^1.0.1"
 "pdfminer.six" = "^20201018"
 sh = "^1.14.1"
 waitress = "^1.4.4"
+sentry-sdk = {extras = ["django"], version = "^1.39.2"}
 
 [tool.poetry.dev-dependencies]
 factory-boy = "^3.2.0"
