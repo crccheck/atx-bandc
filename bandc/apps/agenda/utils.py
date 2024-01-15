@@ -45,7 +45,7 @@ def populate_bandc_list():
         logger.info("Found %s. Created? %s", bandc, created)
 
 
-class MeetingCancelled(Exception):
+class MeetingCancelledError(Exception):
     pass
 
 
@@ -54,7 +54,7 @@ def parse_date(string):
     Turn a date row into a datetime.date instance.
     """
     if "cancel" in string.lower():
-        raise MeetingCancelled("Meeting Cancelled")
+        raise MeetingCancelledError("Meeting Cancelled")
 
     return parse(string).date()
 
@@ -86,7 +86,7 @@ def process_page(html: str) -> Tuple[list[MeetingData], list]:
         if row_class == MEETING_DATE:
             try:
                 date = parse_date(row.text)
-            except MeetingCancelled:
+            except MeetingCancelledError:
                 date = None
         elif date and row_class == MEETING_TITLE:
             # XXX assume all meeting date rows are followed by meeting title
