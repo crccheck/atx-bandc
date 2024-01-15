@@ -2,6 +2,7 @@
 import os
 
 import dj_database_url
+import sentry_sdk
 from project_runpy import env
 
 BASE_DIR = os.path.dirname(__file__)
@@ -137,3 +138,9 @@ LOGGING = {
         "factory": {"level": "ERROR", "propagate": False},
     },
 }
+
+if env.get("SENTRY_DSN"):
+    sentry_sdk.init(
+        dsn=env.get("SENTRY_DSN"),
+        enable_tracing=True,
+    )
