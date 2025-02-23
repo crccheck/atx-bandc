@@ -1,7 +1,9 @@
 .env
 env-*
 *.db
+*.egg-info
 .ipynb_checkpoints/
+.venv
 
 # UGC
 media
@@ -11,3 +13,8 @@ media
 
 # Generated files
 docker-converttest.jpg
+
+# Extra for .dockerignore
+.ruff_cache/
+.vscode/
+build/

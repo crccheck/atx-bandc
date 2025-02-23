@@ -1,6 +1,6 @@
 import logging
 from datetime import date
-from typing import List, Tuple, TypedDict
+from typing import TypedDict
 
 import requests
 from dateutil.parser import parse
@@ -30,7 +30,7 @@ def populate_bandc_list():
     )
     assert response.ok
     doc = document_fromstring(response.text)
-    for option in doc.xpath('//form[@id="bc_form"]' '//select[@name="board"]/option'):
+    for option in doc.xpath('//form[@id="bc_form"]//select[@name="board"]/option'):
         name = option.text
         path = option.values()[0]
         url = f"https://www.austintexas.gov{path}"
@@ -67,7 +67,7 @@ class MeetingData(TypedDict):
     title: str
 
 
-def process_page(html: str) -> Tuple[list[MeetingData], list]:
+def process_page(html: str) -> tuple[list[MeetingData], list]:
     """
     Transform the raw html into semi-structured data.
 
@@ -151,7 +151,7 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> bool:
             doc.refresh()
 
     # Look for stale documents
-    stale_documents: List[str] = []
+    stale_documents: list[str] = []
     for meeting in meetings.values():
         stale_documents.extend(meeting["docs"])
 

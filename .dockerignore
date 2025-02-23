@@ -1,6 +1,19 @@
-.git
-.mypy_cache
-.venv
-media
+.env
+env-*
 *.db
+.ipynb_checkpoints/
+.venv
+
+# UGC
+media
+
+# ignore ipython notebook for now
 *.ipynb
+
+# Generated files
+docker-converttest.jpg
+
+# Extra for .dockerignore
+.ruff_cache/
+.vscode/
+build/
