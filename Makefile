@@ -16,31 +16,28 @@ clean:
 # brew install imagemagick gs
 
 # sudo apt-get install -y imagemagick
-install: ## Install the project using 'poetry' to manage virtual environment and packages
-	poetry install
-
-deps:
-	poetry update
+install: ## Install the project
+	pip install '.[dev]'
 
 admin: ## Set up a local insecure admin developer account
 	-echo "from django.contrib.auth import get_user_model; \
 		User = get_user_model(); \
 		User.objects.create_superuser('admin@example.com', 'admin@example.com', 'admin')" | \
-		poetry run python manage.py shell
+		python manage.py shell
 
 lint: ## Check project linting rules
-	poetry run black --check .
-	poetry run ruff check .
+	black --check .
+	ruff check .
 
 delint: ## Fix fixable linting errors
-	poetry run black .
-	poetry run ruff check . --fix
+	black .
+	ruff check . --fix
 
 test: ## Run test suite
-	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} poetry run python manage.py test
+	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} python manage.py test
 
 tdd: ## Run test watcher
-	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} nodemon -e py -x "poetry run python manage.py test --failfast --keepdb ${SCOPE}"
+	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} nodemon -e py -x "python manage.py test --failfast --keepdb ${SCOPE}"
 
 docker/build: ## Build the Docker image
 	docker buildx build --platform linux/amd64 -t ${IMAGE} .
@@ -49,7 +46,7 @@ docker/publish: ## Build the Docker image
 	docker buildx build --platform linux/amd64 --push -t crccheck/atx-bandc .
 
 docker/scrape: ## Scrape and process pdfs
-	docker run --rm ${IMAGE} poetry run python manage.py scrape
+	docker run --rm ${IMAGE} python manage.py scrape
 
 docker/run: ## Scrape and process pdfs
 	docker run --rm -it -p 8000:8000 ${IMAGE}
