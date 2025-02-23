@@ -33,6 +33,9 @@ delint: ## Fix fixable linting errors
 	black .
 	ruff check . --fix
 
+dev: ## Run the development server
+	LOG_LEVEL=$${LOG_LEVEL:-DEBUG} python manage.py runserver 0.0.0.0:8000
+
 test: ## Run test suite
 	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} python manage.py test
 
@@ -40,7 +43,9 @@ tdd: ## Run test watcher
 	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} nodemon -e py -x "python manage.py test --failfast --keepdb ${SCOPE}"
 
 docker/build: ## Build the Docker image
+	cp .gitignore .dockerignore
 	docker buildx build --platform linux/amd64 -t ${IMAGE} .
+	docker buildx build -t ${IMAGE} .
 
 docker/publish: ## Build the Docker image
 	docker buildx build --platform linux/amd64 --push -t crccheck/atx-bandc .
@@ -49,7 +54,8 @@ docker/scrape: ## Scrape and process pdfs
 	docker run --rm ${IMAGE} python manage.py scrape
 
 docker/run: ## Scrape and process pdfs
-	docker run --rm -it -p 8000:8000 ${IMAGE}
+	docker run --rm -it -p 8000:8000 -e DATABASE_URL="sqlite:///data/bandc.db" \
+	-v bandc.db:/data/bandc.db ${IMAGE}
 
 # This is a good ImageMagic PDF guide:
 # https://www.binarytides.com/convert-pdf-image-imagemagick-commandline/

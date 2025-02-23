@@ -12,12 +12,14 @@ RUN apt-get update -qq && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 # Fix https://bugs.archlinux.org/task/60580
 RUN sed -i 's/.*code.*PDF.*//' /etc/ImageMagick-6/policy.xml
-ENV PIP_DISABLE_PIP_VERSION_CHECK 1
-ENV POETRY_VERSION 1.6.1
-RUN pip install "poetry==$POETRY_VERSION"
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 WORKDIR /app
-COPY poetry.lock pyproject.toml ./
-RUN POETRY_VIRTUALENVS_IN_PROJECT=true poetry install --no-dev
+# HACK for pyproject.toml "packages" error: package directory 'bandc' does not exist
+RUN mkdir bandc
+COPY pyproject.toml ./
+RUN python3 -m venv ".venv"
+RUN /app/.venv/bin/pip install --upgrade pip setuptools wheel
+RUN /app/.venv/bin/pip install -e .
 
 COPY . /app
 EXPOSE 8000
