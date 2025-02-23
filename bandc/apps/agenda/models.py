@@ -48,7 +48,7 @@ class BandC(models.Model):
         """Format with (page)."""
         return (
             "https://www.austintexas.gov/cityclerk/boards_commissions/"
-            "meetings/%s_{}.htm" % self.identifier
+            f"meetings/{self.identifier}_{{}}.htm"
         ).format
 
     @property
@@ -56,7 +56,7 @@ class BandC(models.Model):
         """Format with (year, identifier, page)."""
         return (
             "https://www.austintexas.gov/cityclerk/boards_commissions/"
-            "meetings/{}_%s_{}.htm" % self.identifier
+            f"meetings/{{}}_{self.identifier}_{{}}.htm"
         ).format
 
     def pull_details(self) -> None:
@@ -72,7 +72,7 @@ class BandC(models.Model):
 
         # TODO description
         agenda_links = doc.xpath(
-            '//a/@href[contains(.,"cityclerk/' 'boards_commissions/meetings/")]'
+            '//a/@href[contains(.,"cityclerk/boards_commissions/meetings/")]'
         )
         if not agenda_links:
             self.scrapable = False
