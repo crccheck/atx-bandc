@@ -1,6 +1,7 @@
 .env
 env-*
 *.db
+*.egg-info
 .ipynb_checkpoints/
 .venv
 
