@@ -52,8 +52,9 @@ docker/scrape: ## Scrape and process pdfs
 	docker run --rm ${IMAGE} python manage.py scrape
 
 docker/run: ## Scrape and process pdfs
-	docker run --rm -it -p 8000:8000 -e DATABASE_URL="sqlite:///data/bandc.db" \
-	-v bandc.db:/data/bandc.db ${IMAGE}
+	docker run --rm -it -p 8000:8000 -e DATABASE_URL="sqlite:////data/bandc.db" \
+	-v $$PWD/bandc:/app/bandc:ro \
+	-v $$PWD/bandc.db:/data/bandc.db:rw ${IMAGE}
 
 # This is a good ImageMagic PDF guide:
 # https://www.binarytides.com/convert-pdf-image-imagemagick-commandline/
