@@ -43,8 +43,7 @@ tdd: ## Run test watcher
 
 docker/build: ## Build the Docker image
 	cp .gitignore .dockerignore
-	docker buildx build --platform linux/amd64 -t ${IMAGE} .
-	docker buildx build -t ${IMAGE} .
+	docker buildx build --platform linux/amd64,linux/arm64 -t ${IMAGE} .
 
 docker/publish: ## Build the Docker image
 	docker buildx build --platform linux/amd64 --push -t crccheck/atx-bandc .
