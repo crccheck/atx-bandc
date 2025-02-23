@@ -23,12 +23,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["black", "factory-boy==3.2.0", "mypy", "ruff"]
+dev = ["factory-boy==3.2.0", "mypy", "ruff"]
 
 [tool.setuptools]
 packages = ["bandc"]
 
-[tool.ruff]
+[tool.ruff.lint]
 extend-select = [
   "I",  # isort
   "UP", # pyupgrade

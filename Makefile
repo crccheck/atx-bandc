@@ -1,6 +1,5 @@
 NAME = bandc
 IMAGE = crccheck/atx-bandc:develop
-PORT ?= 8000
 
 help: ## Shows this help
 	@echo "$$(grep -h '#\{2\}' $(MAKEFILE_LIST) | sed 's/: #\{2\} /	/' | column -t -s '	')"
@@ -26,11 +25,11 @@ admin: ## Set up a local insecure admin developer account
 		python manage.py shell
 
 lint: ## Check project linting rules
-	black --check .
+	ruff format --check .
 	ruff check .
 
 delint: ## Fix fixable linting errors
-	black .
+	ruff format .
 	ruff check . --fix
 
 dev: ## Run the development server
