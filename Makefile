@@ -16,7 +16,8 @@ clean:
 
 # sudo apt-get install -y imagemagick
 install: ## Install the project for local dev
-	pip install '.[dev]'
+	uv pip install --upgrade '.[dev]'
+	uv pip compile --upgrade pyproject.toml -o requirements.txt
 
 admin: ## Set up a local insecure admin developer account
 	-echo "from django.contrib.auth import get_user_model; \
@@ -43,7 +44,7 @@ tdd: ## Run test watcher
 
 docker/build: ## Build the Docker image
 	cp .gitignore .dockerignore
-	uv pip compile pyproject.toml -o requirements.txt
+	uv pip compile --upgrade pyproject.toml -o requirements.txt
 	docker buildx build --platform linux/amd64,linux/arm64 -t ${IMAGE} .
 
 docker/publish: ## Build the Docker image
