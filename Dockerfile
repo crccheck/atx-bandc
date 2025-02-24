@@ -14,12 +14,9 @@ RUN apt-get update -qq && \
 RUN sed -i 's/.*code.*PDF.*//' /etc/ImageMagick-6/policy.xml
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 WORKDIR /app
-# HACK for pyproject.toml "packages" error: package directory 'bandc' does not exist
-RUN mkdir bandc
-COPY pyproject.toml ./
+COPY requirements.txt ./
 RUN python3 -m venv ".venv"
-RUN /app/.venv/bin/pip install --upgrade pip setuptools wheel
-RUN /app/.venv/bin/pip install -e .
+RUN /app/.venv/bin/pip install -r requirements.txt
 
 COPY . /app
 EXPOSE 8000

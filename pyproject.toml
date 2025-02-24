@@ -19,7 +19,7 @@ dependencies = [
   "pdfminer.six==20201018",
   "sh==1.14.1",
   "waitress==1.4.4",
-  "sentry-sdk[django]==1.39.2",
+  "sentry-sdk[django]",
 ]
 
 [project.optional-dependencies]
