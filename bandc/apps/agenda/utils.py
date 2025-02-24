@@ -92,7 +92,7 @@ def process_page(html: str) -> tuple[list[MeetingData], list]:
             meeting: MeetingData = {"date": date, "title": row.text_content()}
             meeting_data.append(meeting)
         elif date and row_class == DOCUMENT:
-            row_type = row.xpath("./a/b/text()")[0]
+            row_type = row.xpath("./a/b/text() | ./a/strong/text()")[0]
             url = row.xpath("./a/@href")[0]
             title = clean_text("".join(row.xpath("./text()")).strip())
             doc_data.append(

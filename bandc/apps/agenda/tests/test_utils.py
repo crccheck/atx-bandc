@@ -41,6 +41,13 @@ class UtilsTests(TestCase):
         self.assertEqual(len(doc_data), 28)
         self.assertEqual(doc_data[0]["date"], datetime.date(2014, 12, 1))
 
+    def test_process_page_works_with_strong_elem(self):
+        html = open(os.path.join(BASE_DIR, "samples/2016_134_1.htm")).read()
+        meeting_data, doc_data = process_page(html)
+        self.assertEqual(len(meeting_data), 5)
+        self.assertEqual(len(doc_data), 16)
+        self.assertEqual(doc_data[0]["date"], datetime.date(2016, 5, 19))
+
     def test_get_number_of_pages_works(self):
         html = open(os.path.join(BASE_DIR, "samples/music.html")).read()
         self.assertEqual(get_number_of_pages(html), 1)
