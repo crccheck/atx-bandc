@@ -44,10 +44,10 @@ tdd: ## Run test watcher
 docker/build: ## Build the Docker image
 	cp .gitignore .dockerignore
 	uv pip compile --upgrade pyproject.toml -o requirements.txt
-	docker buildx build --platform linux/amd64,linux/arm64 -t ${IMAGE} .
+	docker buildx build --platform linux/amd64,linux/arm64 -t ${IMAGE} --build-arg GIT_SHA=$(shell git rev-parse HEAD) .
 
 docker/publish: ## Build the Docker image
-	docker buildx build --platform linux/amd64 --push -t crccheck/atx-bandc .
+	docker buildx build --platform linux/amd64 --push -t crccheck/atx-bandc --build-arg GIT_SHA=$(shell git rev-parse HEAD) .
 
 docker/scrape: ## Scrape and process pdfs
 	docker run --rm ${IMAGE} python manage.py scrape

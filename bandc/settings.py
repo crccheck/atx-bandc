@@ -139,9 +139,11 @@ LOGGING = {
     },
 }
 
+RELEASE = env.get("GIT_SHA", "dev")
+
 if sentry_dsn := env.get("SENTRY_DSN"):
     sentry_sdk.init(
         dsn=str(sentry_dsn),
         enable_tracing=True,
-        # release=  # TODO get this from Git SHA
+        release=str(RELEASE),
     )
