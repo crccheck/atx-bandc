@@ -1,6 +1,8 @@
 FROM python:3.10-bullseye
 LABEL maintainer="Chris <c@crccheck.com>"
 
+ARG GIT_SHA
+
 RUN apt-get update -qq && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y \
   # For pdfs
@@ -21,5 +23,5 @@ RUN /app/.venv/bin/pip install -r requirements.txt
 COPY . /app
 EXPOSE 8000
 HEALTHCHECK CMD nc -z localhost 8000
-
+ENV GIT_SHA=${GIT_SHA}
 CMD [".venv/bin/waitress-serve", "--port=8000", "bandc.wsgi:application"]

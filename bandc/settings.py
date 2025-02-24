@@ -139,7 +139,7 @@ LOGGING = {
     },
 }
 
-RELEASE = env.get("GIT_SHA", "dev")
+RELEASE = env.get("GIT_SHA", "dev unknown")
 
 if sentry_dsn := env.get("SENTRY_DSN"):
     sentry_sdk.init(

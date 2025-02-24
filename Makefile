@@ -41,10 +41,10 @@ test: ## Run test suite
 tdd: ## Run test watcher
 	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} nodemon -e py -x "python manage.py test --failfast --keepdb ${SCOPE}"
 
-docker/build: ## Build the Docker image
+docker/build: ## Build a local dev Docker image
 	cp .gitignore .dockerignore
 	uv pip compile --upgrade pyproject.toml -o requirements.txt
-	docker buildx build --platform linux/amd64,linux/arm64 -t ${IMAGE} --build-arg GIT_SHA=$(shell git rev-parse HEAD) .
+	docker buildx build --load -t ${IMAGE} --build-arg GIT_SHA=$(shell git rev-parse HEAD) .
 
 docker/publish: ## Build the Docker image
 	docker buildx build --platform linux/amd64 --push -t crccheck/atx-bandc --build-arg GIT_SHA=$(shell git rev-parse HEAD) .
