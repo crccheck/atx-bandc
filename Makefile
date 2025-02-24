@@ -15,7 +15,7 @@ clean:
 # brew install imagemagick gs
 
 # sudo apt-get install -y imagemagick
-install: ## Install the project
+install: ## Install the project for local dev
 	pip install '.[dev]'
 
 admin: ## Set up a local insecure admin developer account
@@ -43,6 +43,7 @@ tdd: ## Run test watcher
 
 docker/build: ## Build the Docker image
 	cp .gitignore .dockerignore
+	uv pip compile pyproject.toml -o requirements.txt
 	docker buildx build --platform linux/amd64,linux/arm64 -t ${IMAGE} .
 
 docker/publish: ## Build the Docker image
