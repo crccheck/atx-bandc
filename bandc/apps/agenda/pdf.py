@@ -1,6 +1,7 @@
 import logging
 import os
 from io import StringIO
+from pathlib import Path
 from urllib.request import urlretrieve
 
 import sh
@@ -81,7 +82,7 @@ def _download_document_pdf(document: Document) -> str:
     return final_filepath
 
 
-def _get_pdf_page_count(filepath: str) -> int:
+def _get_pdf_page_count(filepath: str | Path) -> int:
     with open(filepath, "rb") as fp:
         return len(list(PDFPage.get_pages(fp, set(), check_extractable=False)))
 

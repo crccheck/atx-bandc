@@ -1,28 +1,26 @@
-import os
+import pathlib
 import unittest
 from unittest.mock import patch
 
 from ..factories import DocumentFactory
-from ..pdf import _get_pdf_page_count, process_pdf
+from ..pdf import _get_pdf_page_count, _grab_pdf_thumbnail, process_pdf
 
-BASE_DIR = os.path.dirname(__file__)
+BASE_DIR = pathlib.Path(__file__).parent
 
 
 class PdfTest(unittest.TestCase):
     def test_get_pdf_page_count(self):
-        filepath = os.path.join(
-            BASE_DIR, "samples/document_53B86715-0261-C36F-8C2F847EF15AD639.pdf"
-        )
+        filepath = BASE_DIR / "samples/document_53B86715-0261-C36F-8C2F847EF15AD639.pdf"
         self.assertEqual(_get_pdf_page_count(filepath), 5)
 
     def test_get_pdf_page_count_handles_pdftextextractionnotallowed(self):
-        filepath = os.path.join(BASE_DIR, "samples/edims_333704.pdf")
+        filepath = BASE_DIR / "samples/edims_333704.pdf"
         self.assertEqual(_get_pdf_page_count(filepath), 1)
 
     @patch("bandc.apps.agenda.pdf._grab_pdf_thumbnail")
     @patch("bandc.apps.agenda.pdf._download_document_pdf")
     def test_extracts_extraction_not_allowed(self, mock_download, mock_thumbnail):
-        mock_download.return_value = os.path.join(BASE_DIR, "samples/edims_333704.pdf")
+        mock_download.return_value = str(BASE_DIR / "samples/edims_333704.pdf")
         mock_thumbnail.return_value = b""
         doc = DocumentFactory(
             url="http://www.austintexas.gov/edims/document.cfm?id=333704",
@@ -38,7 +36,7 @@ class PdfTest(unittest.TestCase):
     @patch("bandc.apps.agenda.pdf._grab_pdf_thumbnail")
     @patch("bandc.apps.agenda.pdf._download_document_pdf")
     def test_extract_text_type_error(self, mock_download, mock_thumbnail):
-        mock_download.return_value = os.path.join(BASE_DIR, "samples/edims_334453.pdf")
+        mock_download.return_value = str(BASE_DIR / "samples/edims_334453.pdf")
         mock_thumbnail.return_value = b""
         doc = DocumentFactory(
             url="http://www.austintexas.gov/edims/document.cfm?id=334453",
@@ -50,3 +48,6 @@ class PdfTest(unittest.TestCase):
 
         self.assertEqual(doc.scrape_status, "error")
         self.assertEqual(doc.text, "")
+
+    # def test_grab_pdf_thumbnail(self):
+    #     _grab_pdf_thumbnail
