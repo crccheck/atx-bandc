@@ -27,6 +27,9 @@ dev = ["factory-boy==3.2.0", "mypy", "ruff"]
 [tool.setuptools]
 packages = ["bandc"]
 
+[tool.ruff]
+exclude = ["bandc/apps/bootstrap_pagination"]
+
 [tool.ruff.lint]
 extend-select = [
   "I",  # isort

@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('agenda', '0008_scrapelog'),
+        ("agenda", "0008_scrapelog"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='scrapelog',
-            name='duration',
-            field=models.PositiveSmallIntegerField(blank=True, help_text='How long the scrape took (in milliseconds)', null=True),
+            model_name="scrapelog",
+            name="duration",
+            field=models.PositiveSmallIntegerField(
+                blank=True,
+                help_text="How long the scrape took (in milliseconds)",
+                null=True,
+            ),
         ),
     ]
