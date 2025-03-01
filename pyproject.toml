@@ -34,3 +34,4 @@ extend-select = [
   "N",  # pep8-naming
   "G",  # flake8-logging-format
 ]
+exclude = ["bandc/apps/bootstrap_pagination"]
