@@ -24,7 +24,7 @@ INSTALLED_APPS = (
     # support
     "django_extensions",
     "django_object_actions",
-    "bootstrap_pagination",
+    "bandc.apps.bootstrap_pagination",
 )
 
 MIDDLEWARE = (
