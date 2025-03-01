@@ -14,7 +14,7 @@ dependencies = [
   "lxml==5.*",
   "python-dateutil==2.8.1",
   "requests==2.25.1",
-  "project-runpy==1.0.1",
+  "project-runpy==1.1.2",
   "pdfminer.six==20201018",
   "sh==1.14.1",
   "waitress==1.4.4",
