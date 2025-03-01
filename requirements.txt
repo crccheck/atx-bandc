@@ -45,7 +45,7 @@ requests==2.25.1
     # via atx-bandc (pyproject.toml)
 sentry-sdk==2.22.0
     # via atx-bandc (pyproject.toml)
-sh==1.14.1
+sh==2.2.2
     # via atx-bandc (pyproject.toml)
 six==1.17.0
     # via python-dateutil
