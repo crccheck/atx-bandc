@@ -5,7 +5,7 @@ description = ""
 authors = [{ name = "crccheck", email = "c@crccheck.com" }]
 
 dependencies = [
-  "django==4.1.*",
+  "django==4.2.*",
   "dj-database-url==0.5.*",
   "dj-obj-update==0.6.*",
   "django-extensions==3.1.*",
