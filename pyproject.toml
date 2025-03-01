@@ -22,7 +22,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["factory-boy==3.2.0", "mypy", "ruff"]
+dev = ["factory-boy==3.3.3", "mypy", "ruff"]
 
 [tool.setuptools]
 packages = ["bandc"]
