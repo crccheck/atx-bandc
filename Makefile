@@ -47,6 +47,8 @@ docker/build: ## Build a local dev Docker image
 	docker buildx build --load -t ${IMAGE} --build-arg GIT_SHA=$(shell git rev-parse HEAD) .
 
 docker/publish: ## Build the Docker image
+	cp .gitignore .dockerignore
+	uv pip compile --upgrade pyproject.toml -o requirements.txt
 	docker buildx build --platform linux/amd64 --push -t crccheck/atx-bandc --build-arg GIT_SHA=$(shell git rev-parse HEAD) .
 
 docker/scrape: ## Scrape and process pdfs
