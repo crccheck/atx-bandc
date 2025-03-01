@@ -69,8 +69,6 @@ TIME_ZONE = "America/Chicago"
 
 USE_I18N = False
 
-USE_L10N = False
-
 USE_TZ = True
 
 
@@ -144,6 +142,6 @@ RELEASE = env.get("GIT_SHA", "dev unknown")
 if sentry_dsn := env.get("SENTRY_DSN"):
     sentry_sdk.init(
         dsn=str(sentry_dsn),
-        enable_tracing=True,
         release=str(RELEASE),
+        traces_sample_rate=0.1,
     )
