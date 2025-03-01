@@ -53,8 +53,6 @@ sortedcontainers==2.4.0
     # via pdfminer-six
 sqlparse==0.5.3
     # via django
-typing-extensions==4.12.2
-    # via asgiref
 urllib3==1.26.20
     # via
     #   requests

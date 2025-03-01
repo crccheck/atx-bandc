@@ -1,4 +1,4 @@
-FROM python:3.10-bullseye
+FROM python:3.12-bullseye
 LABEL maintainer="Chris <c@crccheck.com>"
 
 ARG GIT_SHA
