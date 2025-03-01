@@ -5,10 +5,9 @@ description = ""
 authors = [{ name = "crccheck", email = "c@crccheck.com" }]
 
 dependencies = [
-  "django==3.2.*",
+  "django==4.0.*",
   "dj-database-url==0.5.*",
   "dj-obj-update==0.6.*",
-  "django-bootstrap-pagination==1.7.*",
   "django-extensions==3.1.*",
   "django-object-actions==4.*",
   "pillow==10.2.*",
@@ -28,6 +27,9 @@ dev = ["factory-boy==3.2.0", "mypy", "ruff"]
 [tool.setuptools]
 packages = ["bandc"]
 
+[tool.ruff]
+exclude = ["bandc/apps/bootstrap_pagination"]
+
 [tool.ruff.lint]
 extend-select = [
   "I",  # isort
@@ -35,3 +37,4 @@ extend-select = [
   "N",  # pep8-naming
   "G",  # flake8-logging-format
 ]
+exclude = ["bandc/apps/bootstrap_pagination"]
