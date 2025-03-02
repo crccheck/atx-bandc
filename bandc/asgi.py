@@ -21,12 +21,15 @@ django_application = get_asgi_application()
 logger = logging.getLogger(__name__)
 
 
-async def hello_task():
+async def periodic_scrape():
     from django.core.management import call_command
 
     @sync_to_async
     def acall_scrape():
-        call_command("scrape")
+        try:
+            call_command("scrape")
+        except Exception as exc:
+            logger.exception(str(exc))
 
     while True:
         await acall_scrape()
@@ -43,8 +46,8 @@ def ensure_background_task_started():
 
     with _startup_lock:
         if not _task_started:
-            asyncio.create_task(hello_task())
-            logger.info("Background task started")
+            asyncio.create_task(periodic_scrape())
+            logger.info("Background periodic scraper started")
             _task_started = True
 
 
