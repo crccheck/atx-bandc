@@ -43,13 +43,15 @@ class PdfTest(unittest.TestCase):
             edims_id=334453,
         )
 
-        process_pdf(doc)
+        with self.assertLogs("bandc.apps.agenda.pdf", level="ERROR"):
+            process_pdf(doc)
         doc.refresh_from_db()
 
         self.assertEqual(doc.scrape_status, "error")
         self.assertEqual(doc.text, "")
 
     def test_grab_pdf_thumbnail(self):
-        out = _grab_pdf_thumbnail(BASE_DIR / "samples/edims_334453.pdf")
+        with self.assertLogs("bandc.apps.agenda.pdf", level="INFO"):
+            out = _grab_pdf_thumbnail(BASE_DIR / "samples/edims_334453.pdf")
         self.assertIn(b"JFIF", out[:10])
         self.assertTrue(len(out) > 20_000)

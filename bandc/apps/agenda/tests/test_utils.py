@@ -68,7 +68,8 @@ class UtilsTests(TestCase):
         # Sanity check
         self.assertEqual(bandc.latest_meeting, None)
 
-        process_next = _save_page(meeting_data, doc_data, bandc)
+        with self.assertLogs("bandc.apps.agenda.utils", level="INFO"):
+            process_next = _save_page(meeting_data, doc_data, bandc)
 
         self.assertFalse(process_next)
         self.assertEqual(bandc.latest_meeting.date.isoformat(), "2014-02-03")
@@ -81,7 +82,8 @@ class UtilsTests(TestCase):
         # Sanity check
         self.assertEqual(bandc.latest_meeting, None)
 
-        process_next = _save_page(meeting_data, doc_data, bandc)
+        with self.assertLogs("bandc.apps.agenda.utils", level="INFO"):
+            process_next = _save_page(meeting_data, doc_data, bandc)
 
         self.assertFalse(process_next)
         self.assertEqual(bandc.latest_meeting, None)
@@ -96,7 +98,8 @@ class UtilsTests(TestCase):
         self.assertEqual(bandc.latest_meeting, None)
 
         with scrape_logger.init() as context:
-            _save_page(meeting_data, doc_data, bandc)
+            with self.assertLogs("bandc.apps.agenda.utils", level="INFO"):
+                _save_page(meeting_data, doc_data, bandc)
 
             self.assertEqual(len(context.meetings), 7)
             self.assertEqual(len(context.documents), 28)
