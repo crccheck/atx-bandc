@@ -89,6 +89,24 @@ class UtilsTests(TestCase):
         self.assertEqual(bandc.latest_meeting, None)
 
     @mock.patch("bandc.apps.agenda.models.Document.refresh")
+    def test_save_page_handles_duplicate_urls(self, mock_task):
+        """Over time, we may see the same document posted in an old URL."""
+        with open(os.path.join(BASE_DIR, "samples/parks.html")) as fh:
+            html = fh.read()
+        meeting_data, doc_data = process_page(html)
+        bandc = BandCFactory()
+        with self.assertLogs("bandc.apps.agenda.utils", level="INFO"):
+            _save_page(meeting_data, doc_data, bandc)
+
+        for row in doc_data:
+            row["url"] = row["url"].replace(
+                "services.austintexas.gov", "www.austintexas.gov"
+            )
+
+        with self.assertLogs("bandc.apps.agenda.utils", level="INFO"):
+            _save_page(meeting_data, doc_data, bandc)
+
+    @mock.patch("bandc.apps.agenda.models.Document.refresh")
     def test_save_page_logs_to_scrape_logger(self, mock_task):
         with open(os.path.join(BASE_DIR, "samples/music.html")) as fh:
             html = fh.read()
