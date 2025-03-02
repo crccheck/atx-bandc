@@ -49,5 +49,7 @@ class PdfTest(unittest.TestCase):
         self.assertEqual(doc.scrape_status, "error")
         self.assertEqual(doc.text, "")
 
-    # def test_grab_pdf_thumbnail(self):
-    #     _grab_pdf_thumbnail
+    def test_grab_pdf_thumbnail(self):
+        out = _grab_pdf_thumbnail(BASE_DIR / "samples/edims_334453.pdf")
+        self.assertIn(b"JFIF", out[:10])
+        self.assertEqual(len(out), 25531)
