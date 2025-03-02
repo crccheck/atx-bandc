@@ -24,7 +24,8 @@ urlpatterns = [
         "robots.txt",
         TemplateView.as_view(content_type="text/plain", template_name="robots.txt"),
     ),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
+]
 
 if settings.DEBUG:
     urlpatterns.append(path("admin/", admin.site.urls))

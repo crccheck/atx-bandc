@@ -32,8 +32,8 @@ class UtilsTests(TestCase):
             ("test", "test"),
             ("- May 27, 2014 PARB Agenda", "May 27, 2014 PARB Agenda"),
         )
-        for input, expected in fixture:
-            self.assertEqual(clean_text(input), expected)
+        for input_text, expected in fixture:
+            self.assertEqual(clean_text(input_text), expected)
 
     def test_process_page_works(self):
         with open(os.path.join(BASE_DIR, "samples/music.html")) as fh:
