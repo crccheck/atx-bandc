@@ -22,20 +22,19 @@ logger = logging.getLogger(__name__)
 
 
 async def periodic_scrape():
-    from django.conf import settings
     from django.core.management import call_command
 
     @sync_to_async
     def acall_scrape():
+        call_command("scrape_one")
+
+    while True:
         try:
-            call_command("scrape")
+            await acall_scrape()
         except Exception as exc:
             logger.exception(str(exc))
-
-    if settings.DEBUG:
-        while True:
-            await acall_scrape()
-            await asyncio.sleep(60 * 60)  # Sleep for 60 minutes
+        finally:
+            await asyncio.sleep(15 * 60)  # Sleep for 15 minutes
 
 
 # Track if the task is already running
