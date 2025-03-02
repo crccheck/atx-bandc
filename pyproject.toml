@@ -10,6 +10,7 @@ dependencies = [
   "dj-obj-update==0.6.*",
   "django-extensions==3.2.*",
   "django-object-actions==4.*",
+  "granian",
   "pillow==10.2.*",
   "lxml==5.*",
   "python-dateutil==2.8.1",

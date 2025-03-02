@@ -12,7 +12,9 @@ chardet==4.0.0
     # via
     #   pdfminer-six
     #   requests
-cryptography==44.0.1
+click==8.1.8
+    # via granian
+cryptography==44.0.2
     # via pdfminer-six
 dj-database-url==0.5.0
     # via atx-bandc (pyproject.toml)
@@ -26,6 +28,8 @@ django==5.1.6
 django-extensions==3.2.3
     # via atx-bandc (pyproject.toml)
 django-object-actions==4.3.0
+    # via atx-bandc (pyproject.toml)
+granian==1.7.6
     # via atx-bandc (pyproject.toml)
 idna==2.10
     # via requests
@@ -57,5 +61,7 @@ urllib3==1.26.20
     # via
     #   requests
     #   sentry-sdk
+uvloop==0.21.0
+    # via granian
 waitress==1.4.4
     # via atx-bandc (pyproject.toml)
