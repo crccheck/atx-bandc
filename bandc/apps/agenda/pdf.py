@@ -3,7 +3,6 @@ import os
 from io import StringIO
 from pathlib import Path
 from urllib.request import urlretrieve
-from pathlib import Path
 
 from django.core.files.base import ContentFile
 from pdfminer.converter import TextConverter
