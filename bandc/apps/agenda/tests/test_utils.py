@@ -35,34 +35,41 @@ class UtilsTests(TestCase):
             self.assertEqual(clean_text(input), expected)
 
     def test_process_page_works(self):
-        html = open(os.path.join(BASE_DIR, "samples/music.html")).read()
+        with open(os.path.join(BASE_DIR, "samples/music.html")) as fh:
+            html = fh.read()
         meeting_data, doc_data = process_page(html)
         self.assertEqual(len(meeting_data), 7)
         self.assertEqual(len(doc_data), 28)
         self.assertEqual(doc_data[0]["date"], datetime.date(2014, 12, 1))
 
     def test_process_page_works_with_strong_elem(self):
-        html = open(os.path.join(BASE_DIR, "samples/2016_134_1.htm")).read()
+        with open(os.path.join(BASE_DIR, "samples/2016_134_1.htm")) as fh:
+            html = fh.read()
         meeting_data, doc_data = process_page(html)
         self.assertEqual(len(meeting_data), 5)
         self.assertEqual(len(doc_data), 16)
         self.assertEqual(doc_data[0]["date"], datetime.date(2016, 5, 19))
 
     def test_get_number_of_pages_works(self):
-        html = open(os.path.join(BASE_DIR, "samples/music.html")).read()
+        with open(os.path.join(BASE_DIR, "samples/music.html")) as fh:
+            html = fh.read()
         self.assertEqual(get_number_of_pages(html), 1)
-        html = open(os.path.join(BASE_DIR, "samples/parks.html")).read()
+
+        with open(os.path.join(BASE_DIR, "samples/parks.html")) as fh:
+            html = fh.read()
         self.assertEqual(get_number_of_pages(html), 5)
 
     @mock.patch("bandc.apps.agenda.models.Document.refresh")
     def test_save_page_works(self, mock_task):
-        html = open(os.path.join(BASE_DIR, "samples/music.html")).read()
+        with open(os.path.join(BASE_DIR, "samples/music.html")) as fh:
+            html = fh.read()
         meeting_data, doc_data = process_page(html)
         bandc = BandCFactory()
         # Sanity check
         self.assertEqual(bandc.latest_meeting, None)
 
-        process_next = _save_page(meeting_data, doc_data, bandc)
+        with self.assertLogs("bandc.apps.agenda.utils", level="INFO"):
+            process_next = _save_page(meeting_data, doc_data, bandc)
 
         self.assertFalse(process_next)
         self.assertEqual(bandc.latest_meeting.date.isoformat(), "2014-02-03")
@@ -75,21 +82,24 @@ class UtilsTests(TestCase):
         # Sanity check
         self.assertEqual(bandc.latest_meeting, None)
 
-        process_next = _save_page(meeting_data, doc_data, bandc)
+        with self.assertLogs("bandc.apps.agenda.utils", level="INFO"):
+            process_next = _save_page(meeting_data, doc_data, bandc)
 
         self.assertFalse(process_next)
         self.assertEqual(bandc.latest_meeting, None)
 
     @mock.patch("bandc.apps.agenda.models.Document.refresh")
     def test_save_page_logs_to_scrape_logger(self, mock_task):
-        html = open(os.path.join(BASE_DIR, "samples/music.html")).read()
+        with open(os.path.join(BASE_DIR, "samples/music.html")) as fh:
+            html = fh.read()
         meeting_data, doc_data = process_page(html)
         bandc = BandCFactory()
         # Sanity check
         self.assertEqual(bandc.latest_meeting, None)
 
         with scrape_logger.init() as context:
-            _save_page(meeting_data, doc_data, bandc)
+            with self.assertLogs("bandc.apps.agenda.utils", level="INFO"):
+                _save_page(meeting_data, doc_data, bandc)
 
             self.assertEqual(len(context.meetings), 7)
             self.assertEqual(len(context.documents), 28)

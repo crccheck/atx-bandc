@@ -1,6 +1,9 @@
 import pathlib
 import unittest
+import warnings
 from unittest.mock import patch
+
+from pdfminer.pdfpage import PDFTextExtractionNotAllowedWarning
 
 from ..factories import DocumentFactory
 from ..pdf import _get_pdf_page_count, _grab_pdf_thumbnail, process_pdf
@@ -15,7 +18,9 @@ class PdfTest(unittest.TestCase):
 
     def test_get_pdf_page_count_handles_pdftextextractionnotallowed(self):
         filepath = BASE_DIR / "samples/edims_333704.pdf"
-        self.assertEqual(_get_pdf_page_count(filepath), 1)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", PDFTextExtractionNotAllowedWarning)
+            self.assertEqual(_get_pdf_page_count(filepath), 1)
 
     @patch("bandc.apps.agenda.pdf._grab_pdf_thumbnail")
     @patch("bandc.apps.agenda.pdf._download_document_pdf")
@@ -27,7 +32,9 @@ class PdfTest(unittest.TestCase):
             edims_id=333704,
         )
 
-        process_pdf(doc)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", PDFTextExtractionNotAllowedWarning)
+            process_pdf(doc)
         doc.refresh_from_db()
 
         self.assertEqual(doc.scrape_status, "scraped")
@@ -43,13 +50,15 @@ class PdfTest(unittest.TestCase):
             edims_id=334453,
         )
 
-        process_pdf(doc)
+        with self.assertLogs("bandc.apps.agenda.pdf", level="ERROR"):
+            process_pdf(doc)
         doc.refresh_from_db()
 
         self.assertEqual(doc.scrape_status, "error")
         self.assertEqual(doc.text, "")
 
     def test_grab_pdf_thumbnail(self):
-        out = _grab_pdf_thumbnail(BASE_DIR / "samples/edims_334453.pdf")
+        with self.assertLogs("bandc.apps.agenda.pdf", level="INFO"):
+            out = _grab_pdf_thumbnail(BASE_DIR / "samples/edims_334453.pdf")
         self.assertIn(b"JFIF", out[:10])
         self.assertTrue(len(out) > 20_000)
