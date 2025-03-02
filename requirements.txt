@@ -63,5 +63,3 @@ urllib3==1.26.20
     #   sentry-sdk
 uvloop==0.21.0
     # via granian
-waitress==1.4.4
-    # via atx-bandc (pyproject.toml)
