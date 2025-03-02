@@ -1,9 +1,9 @@
 import logging
 import os
 from io import StringIO
+from pathlib import Path
 from urllib.request import urlretrieve
 
-import sh
 from django.core.files.base import ContentFile
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -11,6 +11,7 @@ from pdfminer.pdfdocument import PDFEncryptionError
 from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
 from pdfminer.pdfpage import PDFPage
 from pdfminer.psparser import PSException
+from sh import convert
 
 from .models import Document
 
@@ -81,24 +82,24 @@ def _download_document_pdf(document: Document) -> str:
     return final_filepath
 
 
-def _get_pdf_page_count(filepath: str) -> int:
+def _get_pdf_page_count(filepath: str | Path) -> int:
     with open(filepath, "rb") as fp:
         return len(list(PDFPage.get_pages(fp, set(), check_extractable=False)))
 
 
-def _grab_pdf_thumbnail(filepath: str) -> bytes:
+def _grab_pdf_thumbnail(filepath: str | Path) -> bytes:
     """
     Returns jpeg image thumbnail of the input pdf.
     """
     logger.info("Converting pdf: %s", filepath)
-    out = sh.convert(
-        filepath + "[0]",  # force to only get 1st page
+    return convert(
+        f"{filepath}[0]",  # force to only get 1st page
         "-thumbnail",
         "400x400",  # output size
         "-flatten",
         "jpg:-",  # output jpeg to stdout
-    )
-    return out.stdout
+        _return_cmd=True,
+    ).stdout
 
 
 def process_pdf(document: Document) -> None:
