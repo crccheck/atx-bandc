@@ -24,7 +24,7 @@ ARG GIT_SHA
 EXPOSE 8000
 HEALTHCHECK CMD nc -z localhost 8000
 ENV GIT_SHA=${GIT_SHA}
-CMD [".venv/bin/waitress-serve", "--port=8000", "bandc.wsgi:application"]
+CMD [".venv/bin/granian", "--interface", "asginl", "--host", "0.0.0.0", "--port", "8000", "bandc.asgi:application"]
 
 FROM base AS test
 RUN /app/.venv/bin/pip install '.[dev]'

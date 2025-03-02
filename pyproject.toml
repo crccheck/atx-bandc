@@ -10,6 +10,7 @@ dependencies = [
   "dj-obj-update==0.6.*",
   "django-extensions==3.2.*",
   "django-object-actions==4.*",
+  "granian",
   "pillow==10.2.*",
   "lxml==5.*",
   "python-dateutil==2.8.1",
@@ -17,7 +18,6 @@ dependencies = [
   "project-runpy==1.1.2",
   "pdfminer.six==20201018",
   "sh==2.2.2",
-  "waitress==1.4.4",
   "sentry-sdk[django]",
 ]
 
