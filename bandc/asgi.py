@@ -47,7 +47,7 @@ def ensure_background_task_started():
 
     with _startup_lock:
         if not _task_started:
-            asyncio.create_task(periodic_scrape())
+            asyncio.create_task(periodic_scrape())  # noqa: RUF006
             logger.info("Background periodic scraper started")
             _task_started = True
 
