@@ -21,10 +21,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-      - uses: actions/setup-python@v5
-        with:
-          python-version-file: ".python-version"
-      - run: sudo apt update && sudo apt install -y imagemagick
-      - run: uv sync --all-extras --dev
-      - run: uv run make test
+      - run: docker build --target test -t crccheck/atx-bandc:test .
+      - run: make docker/test

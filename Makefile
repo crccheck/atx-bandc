@@ -44,15 +44,16 @@ test: ## Run test suite
 tdd: ## Run test watcher
 	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} nodemon -e py -x "python manage.py test --failfast --keepdb ${SCOPE}"
 
-docker/build: ## Build a local dev Docker image
+docker/build: ## Build a local dev Docker images
 docker/build: requirements.txt
 	cp .gitignore .dockerignore
-	docker buildx build --load -t ${IMAGE} --build-arg GIT_SHA=$(shell git rev-parse HEAD) .
+	docker buildx build --load --target production -t ${IMAGE} --build-arg GIT_SHA=$(shell git rev-parse HEAD) .
+	docker buildx build --load --target test -t crccheck/atx-bandc:test .
 
 docker/publish: ## Build the Docker image
 docker/publish: requirements.txt
 	cp .gitignore .dockerignore
-	docker buildx build --platform linux/amd64 --build-arg GIT_SHA=$(shell git rev-parse HEAD) --push -t crccheck/atx-bandc --build-arg GIT_SHA=$(shell git rev-parse HEAD) .
+	docker buildx build --platform --target production linux/amd64 --build-arg GIT_SHA=$(shell git rev-parse HEAD) --push -t crccheck/atx-bandc --build-arg GIT_SHA=$(shell git rev-parse HEAD) .
 
 docker/scrape: ## Scrape and process pdfs
 	docker run --rm ${IMAGE} python manage.py scrape
@@ -69,10 +70,13 @@ docker/converttest: ## Make sure we can create thumbnails from PDFs in productio
 	--volume $${PWD}/bandc/apps/agenda/tests/samples:/app/bandc/apps/agenda/tests/samples:ro \
 	${IMAGE} \
 	convert \
-	"./bandc/apps/agenda/tests/samples/edims_354309.pdf[0]" \
+	"./bandc/apps/agenda/tests/samples/document_559F43E9-A324-12E8-80CA01C0F02507A7.pdf[0]" \
 	-thumbnail 400x400 \
 	-flatten \
 	jpg:- > docker-converttest.jpg
+
+docker/test: ## Run tests in our Docker container
+	docker run --rm crccheck/atx-bandc:test .venv/bin/python manage.py test
 
 docker/bash:
 	docker run --rm -it ${IMAGE} /bin/bash
