@@ -4,6 +4,7 @@ from typing import TypedDict
 
 import requests
 from dateutil.parser import parse
+from django.db.utils import IntegrityError
 from django.utils.timezone import now
 from lxml.html import document_fromstring
 from obj_update import obj_update_or_create
@@ -140,7 +141,13 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> bool:
         )
         if "/edims/document.cfm" in row["url"]:
             kwargs["edims_id"] = row["url"].rsplit("=", 2)[-1]
-        doc, created = Document.objects.get_or_create(**kwargs)
+        try:
+            doc, created = Document.objects.get_or_create(**kwargs)
+        except IntegrityError:
+            # Update Document url
+            old_url = kwargs.pop("url")
+            kwargs["defaults"]["url"] = old_url
+            doc, created = obj_update_or_create(Document, **kwargs)
         scrape_logger.log_document(doc, created)
         if not created:
             try:
