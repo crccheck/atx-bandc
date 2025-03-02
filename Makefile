@@ -47,7 +47,8 @@ tdd: ## Run test watcher
 docker/build: ## Build a local dev Docker image
 docker/build: requirements.txt
 	cp .gitignore .dockerignore
-	docker buildx build --load -t ${IMAGE} --build-arg GIT_SHA=$(shell git rev-parse HEAD) .
+	docker buildx build --load --target production -t ${IMAGE} --build-arg GIT_SHA=$(shell git rev-parse HEAD) .
+	docker buildx build --load --target test -t crccheck/atx-bandc:test .
 
 docker/publish: ## Build the Docker image
 docker/publish: requirements.txt
@@ -73,6 +74,9 @@ docker/converttest: ## Make sure we can create thumbnails from PDFs in productio
 	-thumbnail 400x400 \
 	-flatten \
 	jpg:- > docker-converttest.jpg
+
+docker/test:
+	docker run --rm crccheck/atx-bandc:test .venv/bin/python manage.py test
 
 docker/bash:
 	docker run --rm -it ${IMAGE} /bin/bash
