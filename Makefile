@@ -53,7 +53,7 @@ docker/build: requirements.txt
 docker/publish: ## Build the Docker image
 docker/publish: requirements.txt
 	cp .gitignore .dockerignore
-	docker buildx build --platform --target production linux/amd64 --build-arg GIT_SHA=$(shell git rev-parse HEAD) --push -t crccheck/atx-bandc --build-arg GIT_SHA=$(shell git rev-parse HEAD) .
+	docker buildx build --target production --platform linux/amd64 --build-arg GIT_SHA=$(shell git rev-parse HEAD) --push -t crccheck/atx-bandc --build-arg GIT_SHA=$(shell git rev-parse HEAD) .
 
 docker/scrape: ## Scrape and process pdfs
 	docker run --rm ${IMAGE} python manage.py scrape

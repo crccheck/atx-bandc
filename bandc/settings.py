@@ -13,7 +13,7 @@ DEBUG = env.get("DEBUG", False)
 ALLOWED_HOSTS = ["*"]
 
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     "bandc.apps.agenda.apps.AgendaConfig",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -25,7 +25,11 @@ INSTALLED_APPS = (
     "django_extensions",
     "django_object_actions",
     "bandc.apps.bootstrap_pagination",
-)
+]
+if DEBUG:
+    # Daphne is needed in local dev for a runserver that supports ASGI
+    INSTALLED_APPS.insert(0, "daphne")
+    ASGI_APPLICATION = "bandc.asgi.application"
 
 MIDDLEWARE = (
     "django.middleware.security.SecurityMiddleware",
