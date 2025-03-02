@@ -32,9 +32,11 @@ exclude = ["bandc/apps/bootstrap_pagination"]
 
 [tool.ruff.lint]
 extend-select = [
-  "I",  # isort
-  "UP", # pyupgrade
-  "N",  # pep8-naming
   "G",  # flake8-logging-format
+  "I",  # isort
+  "N",  # pep8-naming
+  "UP", # pyupgrade
+  "B",
+  "A",
 ]
 exclude = ["bandc/apps/bootstrap_pagination"]
