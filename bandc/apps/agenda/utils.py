@@ -157,14 +157,16 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> bool:
         if doc.scrape_status == "toscrape":
             doc.refresh()
 
-    # Look for stale documents
+    # Archive documents from previously scraped meetings not found in this scrape
     stale_documents: list[str] = []
     for meeting in meetings.values():
         stale_documents.extend(meeting["docs"])
 
     # Deal with stale documents
     if stale_documents:
-        print("These docs are stale:", stale_documents)
+        logger.info(
+            "These %s docs are stale: %s", len(stale_documents), stale_documents
+        )
         Document.objects.filter(url__in=stale_documents).update(active=False)
 
     return False  # TODO

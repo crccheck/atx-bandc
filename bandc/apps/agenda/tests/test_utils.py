@@ -6,6 +6,7 @@ from django.test import TestCase
 
 from .. import scrape_logger
 from ..factories import BandCFactory
+from ..models import Document
 from ..utils import (
     MeetingCancelledError,
     _save_page,
@@ -97,6 +98,7 @@ class UtilsTests(TestCase):
         bandc = BandCFactory()
         with self.assertLogs("bandc.apps.agenda.utils", level="INFO"):
             _save_page(meeting_data, doc_data, bandc)
+        self.assertEqual(Document.objects.filter(active=True).count(), 100)
 
         for row in doc_data:
             row["url"] = row["url"].replace(
@@ -105,6 +107,8 @@ class UtilsTests(TestCase):
 
         with self.assertLogs("bandc.apps.agenda.utils", level="INFO"):
             _save_page(meeting_data, doc_data, bandc)
+        # Assert stale_documents did not actually change anything
+        self.assertEqual(Document.objects.filter(active=True).count(), 100)
 
     @mock.patch("bandc.apps.agenda.models.Document.refresh")
     def test_save_page_logs_to_scrape_logger(self, mock_task):
