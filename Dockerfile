@@ -7,7 +7,7 @@ RUN apt-get update -qq && \
   ghostscript imagemagick \
   # For lxml
   libxml2-dev libxslt1-dev \
-  libpq-dev \
+  libpq-dev sqlite3 \
   > /dev/null && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 # Fix https://bugs.archlinux.org/task/60580
