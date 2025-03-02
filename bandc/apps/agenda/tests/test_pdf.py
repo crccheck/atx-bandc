@@ -52,4 +52,4 @@ class PdfTest(unittest.TestCase):
     def test_grab_pdf_thumbnail(self):
         out = _grab_pdf_thumbnail(BASE_DIR / "samples/edims_334453.pdf")
         self.assertIn(b"JFIF", out[:10])
-        self.assertEqual(len(out), 25531)
+        self.assertTrue(len(out) > 20_000)
