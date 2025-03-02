@@ -99,6 +99,7 @@ def _grab_pdf_thumbnail(filepath: str | Path) -> bytes:
         "400x400",  # output size
         "-flatten",
         "jpg:-",  # output jpeg to stdout
+        _return_cmd=True,
     ).stdout
 
 
