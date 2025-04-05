@@ -3,7 +3,7 @@ import unittest
 import warnings
 from unittest.mock import patch
 
-from pdfminer.pdfpage import PDFTextExtractionNotAllowedWarning
+from pdfminer.pdfdocument import PDFTextExtractionNotAllowedWarning
 
 from ..factories import DocumentFactory
 from ..pdf import _get_pdf_page_count, _grab_pdf_thumbnail, process_pdf
@@ -42,7 +42,8 @@ class PdfTest(unittest.TestCase):
 
     @patch("bandc.apps.agenda.pdf._grab_pdf_thumbnail")
     @patch("bandc.apps.agenda.pdf._download_document_pdf")
-    def test_extract_text_type_error(self, mock_download, mock_thumbnail):
+    def test_extract_text_type_error_fixed(self, mock_download, mock_thumbnail):
+        """This used to error, but a pdfminer upgrade fixed this."""
         mock_download.return_value = str(BASE_DIR / "samples/edims_334453.pdf")
         mock_thumbnail.return_value = b""
         doc = DocumentFactory(
@@ -50,12 +51,11 @@ class PdfTest(unittest.TestCase):
             edims_id=334453,
         )
 
-        with self.assertLogs("bandc.apps.agenda.pdf", level="ERROR"):
-            process_pdf(doc)
-        doc.refresh_from_db()
+        process_pdf(doc)
 
-        self.assertEqual(doc.scrape_status, "error")
-        self.assertEqual(doc.text, "")
+        doc.refresh_from_db()
+        self.assertIn("All of the items above were recommendations by the", doc.text)
+        self.assertEqual(doc.scrape_status, "scraped")
 
     def test_grab_pdf_thumbnail(self):
         with self.assertLogs("bandc.apps.agenda.pdf", level="INFO"):
