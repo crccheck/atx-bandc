@@ -1,5 +1,4 @@
 NAME = bandc
-IMAGE = crccheck/atx-bandc:develop
 
 help: ## Shows this help
 	@echo "$$(grep -h '#\{2\}' $(MAKEFILE_LIST) | sed 's/: #\{2\} /	/' | column -t -s '	')"
@@ -47,28 +46,34 @@ tdd: ## Run test watcher
 docker/build: ## Build a local dev Docker images
 docker/build: requirements.txt
 	cp .gitignore .dockerignore
-	docker buildx build --load --target production -t ${IMAGE} --build-arg GIT_SHA=$(shell git rev-parse HEAD) .
+	docker buildx build --load --target production \
+	  --build-arg GIT_SHA=$(shell git rev-parse HEAD) \
+	  -t crccheck/atx-bandc:develop \
+	  .
 	docker buildx build --load --target test -t crccheck/atx-bandc:test .
 
 docker/publish: ## Build the Docker image
 docker/publish: requirements.txt
 	cp .gitignore .dockerignore
-	docker buildx build --target production --platform linux/amd64 --build-arg GIT_SHA=$(shell git rev-parse HEAD) --push -t crccheck/atx-bandc --build-arg GIT_SHA=$(shell git rev-parse HEAD) .
+	docker buildx build --target production --platform linux/amd64 \
+	  --build-arg GIT_SHA=$(shell git rev-parse HEAD) \
+	  --push -t crccheck/atx-bandc \
+	  .
 
 docker/scrape: ## Scrape and process pdfs
-	docker run --rm ${IMAGE} python manage.py scrape
+	docker run --rm crccheck/atx-bandc:develop python manage.py scrape
 
 docker/run: ## Scrape and process pdfs
 	docker run --rm -it -p 8000:8000 -e DATABASE_URL="sqlite:////data/bandc.db" \
 	-v $$PWD/bandc:/app/bandc:ro \
-	-v $$PWD/bandc.db:/data/bandc.db:rw ${IMAGE}
+	-v $$PWD/bandc.db:/data/bandc.db:rw crccheck/atx-bandc:develop
 
 # This is a good ImageMagic PDF guide:
 # https://www.binarytides.com/convert-pdf-image-imagemagick-commandline/
 docker/converttest: ## Make sure we can create thumbnails from PDFs in production
 	docker run --rm \
 	--volume $${PWD}/bandc/apps/agenda/tests/samples:/app/bandc/apps/agenda/tests/samples:ro \
-	${IMAGE} \
+	crccheck/atx-bandc:develop \
 	convert \
 	"./bandc/apps/agenda/tests/samples/document_559F43E9-A324-12E8-80CA01C0F02507A7.pdf[0]" \
 	-thumbnail 400x400 \
@@ -79,4 +84,4 @@ docker/test: ## Run tests in our Docker container
 	docker run --rm crccheck/atx-bandc:test .venv/bin/python manage.py test
 
 docker/bash:
-	docker run --rm -it ${IMAGE} /bin/bash
+	docker run --rm -it crccheck/atx-bandc:develop /bin/bash

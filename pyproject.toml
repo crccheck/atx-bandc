@@ -17,7 +17,7 @@ dependencies = [
   "python-dateutil",
   "requests",
   "project-runpy",
-  "pdfminer.six==20201018",
+  "pdfminer.six",
   "sh",
   "sentry-sdk[django]",
 ]

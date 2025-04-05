@@ -8,10 +8,10 @@ certifi==2025.1.31
     #   sentry-sdk
 cffi==1.17.1
     # via cryptography
-chardet==5.2.0
-    # via pdfminer-six
 charset-normalizer==3.4.1
-    # via requests
+    # via
+    #   pdfminer-six
+    #   requests
 click==8.1.8
     # via granian
 cryptography==44.0.2
@@ -36,7 +36,7 @@ idna==3.10
     # via requests
 lxml==5.3.1
     # via atx-bandc (pyproject.toml)
-pdfminer-six==20201018
+pdfminer-six==20250327
     # via atx-bandc (pyproject.toml)
 pillow==11.1.0
     # via atx-bandc (pyproject.toml)
@@ -54,8 +54,6 @@ sh==2.2.2
     # via atx-bandc (pyproject.toml)
 six==1.17.0
     # via python-dateutil
-sortedcontainers==2.4.0
-    # via pdfminer-six
 sqlparse==0.5.3
     # via django
 typing-extensions==4.13.1
