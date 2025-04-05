@@ -5,19 +5,19 @@ description = ""
 authors = [{ name = "crccheck", email = "c@crccheck.com" }]
 
 dependencies = [
-  "django==5.1.*",
-  "dj-database-url==0.5.*",
+  "django",
+  "dj-database-url",
   "dj-obj-update==0.6.*",
-  "django-extensions==3.2.*",
-  "django-object-actions==4.*",
+  "django-extensions",
+  "django-object-actions",
   "granian",
-  "pillow==10.2.*",
-  "lxml==5.*",
-  "python-dateutil==2.8.1",
-  "requests==2.25.1",
-  "project-runpy==1.1.2",
+  "pillow",
+  "lxml",
+  "python-dateutil",
+  "requests",
+  "project-runpy",
   "pdfminer.six==20201018",
-  "sh==2.2.2",
+  "sh",
   "sentry-sdk[django]",
 ]
 
