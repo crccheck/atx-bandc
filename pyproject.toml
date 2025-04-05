@@ -3,26 +3,27 @@ name = "atx-bandc"
 version = "1.0.0"
 description = ""
 authors = [{ name = "crccheck", email = "c@crccheck.com" }]
+requires-python = ">=3.12"
 
 dependencies = [
-  "django==5.1.*",
-  "dj-database-url==0.5.*",
-  "dj-obj-update==0.6.*",
-  "django-extensions==3.2.*",
-  "django-object-actions==4.*",
+  "django",
+  "dj-database-url",
+  "dj-obj-update",
+  "django-extensions",
+  "django-object-actions",
   "granian",
-  "pillow==10.2.*",
-  "lxml==5.*",
-  "python-dateutil==2.9.0",
-  "requests==2.25.1",
-  "project-runpy==1.1.2",
-  "pdfminer.six==20201018",
-  "sh==2.2.2",
+  "pillow",
+  "lxml",
+  "python-dateutil",
+  "requests",
+  "project-runpy",
+  "pdfminer.six",
+  "sh",
   "sentry-sdk[django]",
 ]
 
 [project.optional-dependencies]
-dev = ["daphne", "factory-boy==3.3.3", "mypy", "ruff"]
+dev = ["daphne", "factory-boy", "mypy", "ruff"]
 
 [tool.setuptools]
 packages = ["bandc"]

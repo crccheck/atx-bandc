@@ -8,7 +8,7 @@ certifi==2025.1.31
     #   sentry-sdk
 cffi==1.17.1
     # via cryptography
-chardet==4.0.0
+charset-normalizer==3.4.1
     # via
     #   pdfminer-six
     #   requests
@@ -16,50 +16,49 @@ click==8.1.8
     # via granian
 cryptography==44.0.2
     # via pdfminer-six
-dj-database-url==0.5.0
+dj-database-url==2.3.0
     # via atx-bandc (pyproject.toml)
 dj-obj-update==0.6.0
     # via atx-bandc (pyproject.toml)
-django==5.1.6
+django==5.2
     # via
     #   atx-bandc (pyproject.toml)
+    #   dj-database-url
     #   django-extensions
     #   sentry-sdk
 django-extensions==3.2.3
     # via atx-bandc (pyproject.toml)
 django-object-actions==4.3.0
     # via atx-bandc (pyproject.toml)
-granian==1.7.6
+granian==2.2.1
     # via atx-bandc (pyproject.toml)
-idna==2.10
+idna==3.10
     # via requests
 lxml==5.3.1
     # via atx-bandc (pyproject.toml)
-pdfminer-six==20201018
+pdfminer-six==20250327
     # via atx-bandc (pyproject.toml)
-pillow==10.2.0
+pillow==11.1.0
     # via atx-bandc (pyproject.toml)
 project-runpy==1.1.2
     # via atx-bandc (pyproject.toml)
 pycparser==2.22
     # via cffi
-python-dateutil==2.9.0
+python-dateutil==2.9.0.post0
     # via atx-bandc (pyproject.toml)
-requests==2.25.1
+requests==2.32.3
     # via atx-bandc (pyproject.toml)
-sentry-sdk==2.25.0
+sentry-sdk==2.25.1
     # via atx-bandc (pyproject.toml)
 sh==2.2.2
     # via atx-bandc (pyproject.toml)
 six==1.17.0
     # via python-dateutil
-sortedcontainers==2.4.0
-    # via pdfminer-six
 sqlparse==0.5.3
     # via django
-urllib3==1.26.20
+typing-extensions==4.13.1
+    # via dj-database-url
+urllib3==2.3.0
     # via
     #   requests
     #   sentry-sdk
-uvloop==0.21.0
-    # via granian
