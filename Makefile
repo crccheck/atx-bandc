@@ -15,7 +15,7 @@ clean:
 
 # sudo apt-get install -y imagemagick
 install: ## Install the project for local dev
-	uv sync --all-extras --dev
+	uv sync --upgrade --all-extras --dev
 
 requirements.txt: pyproject.toml
 	uv pip compile --upgrade pyproject.toml -o requirements.txt
