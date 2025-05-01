@@ -36,7 +36,7 @@ idna==3.10
     # via requests
 lxml==5.3.1
     # via atx-bandc (pyproject.toml)
-pdfminer-six==20250327
+pdfminer-six==20250416
     # via atx-bandc (pyproject.toml)
 pillow==11.1.0
     # via atx-bandc (pyproject.toml)
