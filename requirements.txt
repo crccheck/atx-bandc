@@ -30,7 +30,7 @@ django-extensions==3.2.3
     # via atx-bandc (pyproject.toml)
 django-object-actions==4.3.0
     # via atx-bandc (pyproject.toml)
-granian==2.2.1
+granian==2.3.1
     # via atx-bandc (pyproject.toml)
 idna==3.10
     # via requests
