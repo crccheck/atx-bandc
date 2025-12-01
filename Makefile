@@ -48,11 +48,18 @@ docker/build: ## Build a local dev Docker images
 	  .
 	docker buildx build --load --platform linux/amd64 --target test -t crccheck/atx-bandc:test .
 
-docker/publish: ## Build the Docker image
+docker/push: ## Build and push latest Docker image
 	cp .gitignore .dockerignore
 	docker buildx build --target production --platform linux/amd64 \
 	  --build-arg GIT_SHA=$(shell git rev-parse HEAD) \
-	  --push -t crccheck/atx-bandc \
+	  --push -t crccheck/atx-bandc:latest \
+	  .
+
+docker/publish: ## Build and push stable Docker image
+	cp .gitignore .dockerignore
+	docker buildx build --target production --platform linux/amd64 \
+	  --build-arg GIT_SHA=$(shell git rev-parse HEAD) \
+	  --push -t crccheck/atx-bandc:stable \
 	  .
 
 docker/scrape: ## Scrape and process pdfs
