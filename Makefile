@@ -15,10 +15,7 @@ clean:
 
 # sudo apt-get install -y imagemagick
 install: ## Install the project for local dev
-	uv sync --upgrade --all-extras --dev
-
-requirements.txt: pyproject.toml
-	uv pip compile --upgrade pyproject.toml -o requirements.txt
+	uv sync --upgrade --group dev
 
 admin: ## Set up a local insecure admin developer account
 	-echo "from django.contrib.auth import get_user_model; \
@@ -44,7 +41,6 @@ tdd: ## Run test watcher
 	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} nodemon -e py -x "python manage.py test --failfast --keepdb ${SCOPE}"
 
 docker/build: ## Build a local dev Docker images
-docker/build: requirements.txt
 	cp .gitignore .dockerignore
 	docker buildx build --load --target production \
 	  --build-arg GIT_SHA=$(shell git rev-parse HEAD) \
@@ -53,7 +49,6 @@ docker/build: requirements.txt
 	docker buildx build --load --target test -t crccheck/atx-bandc:test .
 
 docker/publish: ## Build the Docker image
-docker/publish: requirements.txt
 	cp .gitignore .dockerignore
 	docker buildx build --target production --platform linux/amd64 \
 	  --build-arg GIT_SHA=$(shell git rev-parse HEAD) \
@@ -61,7 +56,7 @@ docker/publish: requirements.txt
 	  .
 
 docker/scrape: ## Scrape and process pdfs
-	docker run --rm crccheck/atx-bandc:develop python manage.py scrape
+	docker run --rm crccheck/atx-bandc:develop uv run python manage.py scrape
 
 docker/run: ## Scrape and process pdfs
 	docker run --rm -it -p 8000:8000 -e DATABASE_URL="sqlite:////data/bandc.db" \
@@ -81,7 +76,7 @@ docker/converttest: ## Make sure we can create thumbnails from PDFs in productio
 	jpg:- > docker-converttest.jpg
 
 docker/test: ## Run tests in our Docker container
-	docker run --rm crccheck/atx-bandc:test .venv/bin/python manage.py test
+	docker run --rm crccheck/atx-bandc:test uv run python manage.py test
 
 docker/bash:
 	docker run --rm -it crccheck/atx-bandc:develop /bin/bash

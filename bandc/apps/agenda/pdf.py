@@ -76,7 +76,7 @@ def _download_document_pdf(document: Document) -> str:
     logger.info("Downloading %s: %s", document.date, document.url)
     if not os.path.isfile(final_filepath):
         # WISHLIST stop using deprecated `urlretrieve`, add user-agent
-        local_filename, headers = urlretrieve(document.url, tmp_filepath)
+        local_filename, _headers = urlretrieve(document.url, tmp_filepath)
         logger.info("Downloaded to %s", local_filename)
         os.rename(local_filename, final_filepath)
     return final_filepath
