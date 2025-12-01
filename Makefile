@@ -41,18 +41,22 @@ tdd: ## Run test watcher
 	LOG_LEVEL=$${LOG_LEVEL:-CRITICAL} nodemon -e py -x "python manage.py test --failfast --keepdb ${SCOPE}"
 
 docker/build: ## Build a local dev Docker images
-	cp .gitignore .dockerignore
 	docker buildx build --load --platform linux/amd64 --target production \
 	  --build-arg GIT_SHA=$(shell git rev-parse HEAD) \
 	  -t crccheck/atx-bandc:develop \
 	  .
 	docker buildx build --load --platform linux/amd64 --target test -t crccheck/atx-bandc:test .
 
-docker/publish: ## Build the Docker image
-	cp .gitignore .dockerignore
+docker/push: ## Build and push latest Docker image
 	docker buildx build --target production --platform linux/amd64 \
 	  --build-arg GIT_SHA=$(shell git rev-parse HEAD) \
-	  --push -t crccheck/atx-bandc \
+	  --push -t crccheck/atx-bandc:latest \
+	  .
+
+docker/publish: ## Build and push stable Docker image
+	docker buildx build --target production --platform linux/amd64 \
+	  --build-arg GIT_SHA=$(shell git rev-parse HEAD) \
+	  --push -t crccheck/atx-bandc:stable \
 	  .
 
 docker/scrape: ## Scrape and process pdfs

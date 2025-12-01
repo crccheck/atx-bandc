@@ -1,20 +1,13 @@
-.env
-env-*
-*.db
-*.egg-info
-.ipynb_checkpoints/
-.venv
+*
 
-# UGC
-media
+!pyproject.toml
+!uv.lock
+!manage.py
 
-# ignore ipython notebook for now
-*.ipynb
+!bandc/
+!static/
+!utils/
 
-# Generated files
-docker-converttest.jpg
-
-# Extra for .dockerignore
-.ruff_cache/
-.vscode/
-build/
+**/__pycache__/
+**/*.pyc
+**/*.pyo

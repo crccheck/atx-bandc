@@ -17,4 +17,3 @@ docker-converttest.jpg
 # Extra for .dockerignore
 .ruff_cache/
 .vscode/
-build/
