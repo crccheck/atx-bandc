@@ -3,7 +3,7 @@ name = "atx-bandc"
 version = "1.0.0"
 description = ""
 authors = [{ name = "crccheck", email = "c@crccheck.com" }]
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 
 dependencies = [
   "django",
@@ -27,6 +27,9 @@ dev = ["daphne", "factory-boy", "mypy", "ruff"]
 
 [tool.setuptools]
 packages = ["bandc"]
+
+[tool.mypy]
+ignore_missing_imports = true
 
 [tool.ruff]
 exclude = ["bandc/apps/bootstrap_pagination"]
