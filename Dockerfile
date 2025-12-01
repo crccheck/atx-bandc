@@ -1,4 +1,4 @@
-FROM python:3.13-bookworm AS base
+FROM python:3.13-slim-trixie AS base
 LABEL maintainer="Chris <c@crccheck.com>"
 
 RUN apt-get update -qq && \
@@ -11,7 +11,7 @@ RUN apt-get update -qq && \
   > /dev/null && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 # Fix https://bugs.archlinux.org/task/60580
-RUN sed -i 's/.*code.*PDF.*//' /etc/ImageMagick-6/policy.xml
+RUN sed -i 's/.*code.*PDF.*//' /etc/ImageMagick-7/policy.xml
 
 # Install uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/

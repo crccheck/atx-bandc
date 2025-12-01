@@ -42,11 +42,11 @@ tdd: ## Run test watcher
 
 docker/build: ## Build a local dev Docker images
 	cp .gitignore .dockerignore
-	docker buildx build --load --target production \
+	docker buildx build --load --platform linux/amd64 --target production \
 	  --build-arg GIT_SHA=$(shell git rev-parse HEAD) \
 	  -t crccheck/atx-bandc:develop \
 	  .
-	docker buildx build --load --target test -t crccheck/atx-bandc:test .
+	docker buildx build --load --platform linux/amd64 --target test -t crccheck/atx-bandc:test .
 
 docker/publish: ## Build the Docker image
 	cp .gitignore .dockerignore
@@ -56,17 +56,18 @@ docker/publish: ## Build the Docker image
 	  .
 
 docker/scrape: ## Scrape and process pdfs
-	docker run --rm crccheck/atx-bandc:develop uv run python manage.py scrape
+	docker run --rm --platform linux/amd64 crccheck/atx-bandc:develop uv run python manage.py scrape
 
 docker/run: ## Scrape and process pdfs
-	docker run --rm -it -p 8000:8000 -e DATABASE_URL="sqlite:////data/bandc.db" \
+	docker run --rm --platform linux/amd64 -it -p 8000:8000 -e DATABASE_URL="sqlite:////data/bandc.db" \
 	-v $$PWD/bandc:/app/bandc:ro \
 	-v $$PWD/bandc.db:/data/bandc.db:rw crccheck/atx-bandc:develop
 
 # This is a good ImageMagic PDF guide:
 # https://www.binarytides.com/convert-pdf-image-imagemagick-commandline/
 docker/converttest: ## Make sure we can create thumbnails from PDFs in production
-	docker run --rm \
+	rm -rf docker-converttest.jpg
+	docker run --rm --platform linux/amd64 \
 	--volume $${PWD}/bandc/apps/agenda/tests/samples:/app/bandc/apps/agenda/tests/samples:ro \
 	crccheck/atx-bandc:develop \
 	convert \
@@ -74,9 +75,10 @@ docker/converttest: ## Make sure we can create thumbnails from PDFs in productio
 	-thumbnail 400x400 \
 	-flatten \
 	jpg:- > docker-converttest.jpg
+	test "$$(identify -format "%wx%h" docker-converttest.jpg)" = "309x400"
 
 docker/test: ## Run tests in our Docker container
-	docker run --rm crccheck/atx-bandc:test uv run python manage.py test
+	docker run --rm --platform linux/amd64 crccheck/atx-bandc:test uv run python manage.py test
 
 docker/bash:
-	docker run --rm -it crccheck/atx-bandc:develop /bin/bash
+	docker run --rm --platform linux/amd64 -it crccheck/atx-bandc:develop /bin/bash
