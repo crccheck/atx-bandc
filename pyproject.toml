@@ -28,6 +28,9 @@ dev = ["daphne", "factory-boy", "mypy", "ruff"]
 [tool.setuptools]
 packages = ["bandc"]
 
+[tool.mypy]
+ignore_missing_imports = true
+
 [tool.ruff]
 exclude = ["bandc/apps/bootstrap_pagination"]
 
