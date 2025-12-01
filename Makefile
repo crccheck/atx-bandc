@@ -75,6 +75,7 @@ docker/converttest: ## Make sure we can create thumbnails from PDFs in productio
 	-thumbnail 400x400 \
 	-flatten \
 	jpg:- > docker-converttest.jpg
+	test "$$(identify -format "%wx%h" docker-converttest.jpg)" = "309x400"
 
 docker/test: ## Run tests in our Docker container
 	docker run --rm --platform linux/amd64 crccheck/atx-bandc:test uv run python manage.py test
