@@ -12,11 +12,15 @@ RUN apt-get update -qq && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 # Fix https://bugs.archlinux.org/task/60580
 RUN sed -i 's/.*code.*PDF.*//' /etc/ImageMagick-6/policy.xml
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
 WORKDIR /app
-COPY requirements.txt ./
-RUN python3 -m venv ".venv"
-RUN /app/.venv/bin/pip install -r requirements.txt
+# Copy dependency files
+COPY pyproject.toml uv.lock ./
+# Install dependencies
+RUN uv sync --frozen --no-dev
 COPY . /app
 
 FROM base AS production
@@ -24,7 +28,7 @@ ARG GIT_SHA
 EXPOSE 8000
 HEALTHCHECK CMD nc -z localhost 8000
 ENV GIT_SHA=${GIT_SHA}
-CMD [".venv/bin/granian", "--interface", "asginl", "--host", "0.0.0.0", "--port", "8000", "bandc.asgi:application"]
+CMD ["uv", "run", "granian", "--interface", "asginl", "--host", "0.0.0.0", "--port", "8000", "bandc.asgi:application"]
 
 FROM base AS test
-RUN /app/.venv/bin/pip install '.[dev]'
+RUN uv sync --frozen --all-extras
