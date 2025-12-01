@@ -22,7 +22,7 @@ dependencies = [
   "sentry-sdk[django]",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = ["daphne", "factory-boy", "mypy", "ruff"]
 
 [tool.setuptools]

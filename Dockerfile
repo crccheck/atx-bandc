@@ -31,4 +31,4 @@ ENV GIT_SHA=${GIT_SHA}
 CMD ["uv", "run", "granian", "--interface", "asginl", "--host", "0.0.0.0", "--port", "8000", "bandc.asgi:application"]
 
 FROM base AS test
-RUN uv sync --frozen --all-extras
+RUN uv sync --frozen --group dev

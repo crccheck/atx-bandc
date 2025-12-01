@@ -41,7 +41,7 @@ dependencies = [
     { name = "sh" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "daphne" },
     { name = "factory-boy" },
@@ -51,26 +51,29 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "daphne", marker = "extra == 'dev'" },
     { name = "dj-database-url" },
     { name = "dj-obj-update" },
     { name = "django" },
     { name = "django-extensions" },
     { name = "django-object-actions" },
-    { name = "factory-boy", marker = "extra == 'dev'" },
     { name = "granian" },
     { name = "lxml" },
-    { name = "mypy", marker = "extra == 'dev'" },
     { name = "pdfminer-six" },
     { name = "pillow" },
     { name = "project-runpy" },
     { name = "python-dateutil" },
     { name = "requests" },
-    { name = "ruff", marker = "extra == 'dev'" },
     { name = "sentry-sdk", extras = ["django"] },
     { name = "sh" },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "daphne" },
+    { name = "factory-boy" },
+    { name = "mypy" },
+    { name = "ruff" },
+]
 
 [[package]]
 name = "autobahn"

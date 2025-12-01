@@ -15,7 +15,7 @@ clean:
 
 # sudo apt-get install -y imagemagick
 install: ## Install the project for local dev
-	uv sync --upgrade --all-extras --dev
+	uv sync --upgrade --group dev
 
 admin: ## Set up a local insecure admin developer account
 	-echo "from django.contrib.auth import get_user_model; \
