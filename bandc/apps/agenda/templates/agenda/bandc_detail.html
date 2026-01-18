@@ -46,8 +46,20 @@ Homepage <i class="fa fa-external-link"></i>
   {% include "agenda/includes/upcoming_meetings.html" %}
 {% endif %}
 
+{% if available_years %}
+<nav class="text-center" aria-label="Year navigation">
+  <ul class="pagination justify-content-center">
+    {% for year in available_years %}
+      <li class="page-item{% if year == selected_year %} active{% endif %}">
+        <a class="page-link" href="?year={{ year }}">{{ year }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>
+{% endif %}
+
 <div class="text-center">
-  {% bootstrap_paginate page_obj range=10 show_first_last="true" %}
+  {% bootstrap_paginate page_obj range=10 show_first_last="true" extra_pagination_classes="justify-content-center" %}
 </div>
 
 {% for doc in object_list %}
@@ -63,6 +75,18 @@ Homepage <i class="fa fa-external-link"></i>
 {% endfor %}
 
 <div class="text-center">
-  {% bootstrap_paginate page_obj range=10 show_first_last="true" %}
+  {% bootstrap_paginate page_obj range=10 show_first_last="true" extra_pagination_classes="justify-content-center" %}
 </div>
+
+{% if available_years %}
+<nav class="text-center" aria-label="Year navigation">
+  <ul class="pagination justify-content-center">
+    {% for year in available_years %}
+      <li class="page-item{% if year == selected_year %} active{% endif %}">
+        <a class="page-link" href="?year={{ year }}">{{ year }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>
+{% endif %}
 {% endblock %}
