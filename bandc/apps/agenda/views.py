@@ -25,6 +25,7 @@ class BandCList(ListView):
 
 class BandCDetail(ListView):
     template_name = "agenda/bandc_detail.html"
+    paginate_by = 40
 
     def get_queryset(self, **kwargs):
         queryset = Document.objects.filter(active=True).select_related("meeting__bandc")
