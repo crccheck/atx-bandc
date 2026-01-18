@@ -166,6 +166,9 @@ class Document(models.Model):
 
     class Meta:
         ordering = ("-meeting__date",)
+        indexes = [
+            models.Index(fields=["active", "scraped_at"]),
+        ]
 
     def __str__(self) -> str:
         return f"{self.title or self.type}"
