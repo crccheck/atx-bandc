@@ -54,7 +54,7 @@ class BandCDetail(ListView):
             try:
                 self.selected_year = int(year_param)
             except ValueError:
-                raise Http404("Invalid year")
+                raise Http404("Invalid year") from None
             if self.selected_year not in self.available_years:
                 raise Http404("Year not found")
         elif self.available_years:
