@@ -1,10 +1,6 @@
 import re
 
-import django
-try:
-    from django.core.urlresolvers import reverse, NoReverseMatch
-except ImportError:  # Django 2 detected :)
-    from django.urls import reverse, NoReverseMatch
+from django.urls import NoReverseMatch, reverse
 from django.template import Node, Library, TemplateSyntaxError, VariableDoesNotExist
 from django.template.loader import get_template
 from django.conf import settings
@@ -13,34 +9,18 @@ from django.utils.html import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 
-# As of django 1.10, template rendering no longer accepts a context, but
-# instead accepts only accepts a dict. Up until django 1.8, a context was
-# actually required. Fortunately Context takes a single dict parameter,
-# so for django >=1.9 we can get away with just passing a unit function.
-if django.VERSION < (1, 9, 0):
-    from django.template import Context
-else:
-    def Context(x):
-        return x
-
-
 register = Library()
 
 
-# Starting from django 1.10 Context object no longer has attribute current_app
-# Instead application code could set current_app to HttpRequest object, if so we seek it there
 def get_current_app(context):
+    """Get the current app from the request context."""
     try:
-        current_app = context.current_app  # django < 1.10 compatible
+        return context.request.current_app
     except AttributeError:
         try:
-            current_app = context.request.current_app
+            return context.request.resolver_match.namespace
         except AttributeError:
-            try:
-                current_app = context.request.resolver_match.namespace
-            except AttributeError:
-                return None
-    return current_app
+            return None
 
 
 def strToBool(val):
@@ -64,21 +44,17 @@ def get_page_url(page_num, current_app, url_view_name, url_extra_args, url_extra
 
         try:
             url = reverse(url_view_name, args=url_extra_args, kwargs=url_extra_kwargs, current_app=current_app)
-        except NoReverseMatch as e:  # Attempt to load view from application root, allowing the use of non-namespaced view names if your view is defined in the root application
+        except NoReverseMatch as e:
+            # Attempt to load view from application root, allowing the use of
+            # non-namespaced view names if your view is defined in the root application
             if settings.SETTINGS_MODULE:
-
-                if django.VERSION < (1, 9, 0):
-                    separator  = '.'
-                else:
-                    separator  = ':' # Namespace separator changed to colon after 1.8
-
                 project_name = settings.SETTINGS_MODULE.split('.')[0]
                 try:
-                    url = reverse(project_name + separator + url_view_name, args=url_extra_args, kwargs=url_extra_kwargs, current_app=current_app)
+                    url = reverse(project_name + ':' + url_view_name, args=url_extra_args, kwargs=url_extra_kwargs, current_app=current_app)
                 except NoReverseMatch:
-                    raise e # Raise the original exception so the error message doesn't confusingly include something the Developer didn't add to the view name themselves
+                    raise e  # Re-raise original exception
             else:
-                raise e # We can't determine the project name so just re-throw the exception
+                raise e
 
     else:
         url = ''
@@ -142,17 +118,16 @@ class BootstrapPagerNode(Node):
         if page.has_next():
             next_page_url = get_page_url(page.next_page_number(), get_current_app(context), url_view_name, url_extra_args, url_extra_kwargs, url_param_name, url_get_params, url_anchor)
 
-        return get_template("bootstrap_pagination/pager.html").render(
-            Context({
-                'page': page,
-                'previous_label': previous_label,
-                'next_label': next_label,
-                'previous_title': previous_title,
-                'next_title': next_title,
-                'previous_page_url': previous_page_url,
-                'next_page_url': next_page_url,
-                'extra_pager_classes': extra_pager_classes,
-            }))
+        return get_template("bootstrap_pagination/pager.html").render({
+            'page': page,
+            'previous_label': previous_label,
+            'next_label': next_label,
+            'previous_title': previous_title,
+            'next_title': next_title,
+            'previous_page_url': previous_page_url,
+            'next_page_url': next_page_url,
+            'extra_pager_classes': extra_pager_classes,
+        })
 
 
 class BootstrapPaginationNode(Node):
@@ -262,24 +237,23 @@ class BootstrapPaginationNode(Node):
         if page.has_next():
             next_page_url = get_page_url(page.next_page_number(), get_current_app(context), url_view_name, url_extra_args, url_extra_kwargs, url_param_name, url_get_params, url_anchor)
 
-        return get_template("bootstrap_pagination/pagination.html").render(
-            Context({
-                'page': page,
-                'size': size,
-                'show_index_range': show_index_range,
-                'show_prev_next': show_prev_next,
-                'show_first_last': show_first_last,
-                'previous_label': previous_label,
-                'next_label': next_label,
-                'first_label': first_label,
-                'last_label': last_label,
-                'page_urls': page_urls,
-                'first_page_url': first_page_url,
-                'last_page_url': last_page_url,
-                'previous_page_url': previous_page_url,
-                'next_page_url': next_page_url,
-                'extra_pagination_classes': extra_pagination_classes,
-            }))
+        return get_template("bootstrap_pagination/pagination.html").render({
+            'page': page,
+            'size': size,
+            'show_index_range': show_index_range,
+            'show_prev_next': show_prev_next,
+            'show_first_last': show_first_last,
+            'previous_label': previous_label,
+            'next_label': next_label,
+            'first_label': first_label,
+            'last_label': last_label,
+            'page_urls': page_urls,
+            'first_page_url': first_page_url,
+            'last_page_url': last_page_url,
+            'previous_page_url': previous_page_url,
+            'next_page_url': next_page_url,
+            'extra_pagination_classes': extra_pagination_classes,
+        })
 
 
 @register.tag
