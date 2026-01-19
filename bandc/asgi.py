@@ -34,7 +34,7 @@ async def periodic_scrape():
         except Exception as exc:
             logger.exception(str(exc))
         finally:
-            await asyncio.sleep(15 * 60)  # Sleep for 15 minutes
+            await asyncio.sleep(60 * 60)  # Sleep for one hour
 
 
 # Track if the task is already running
