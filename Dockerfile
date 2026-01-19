@@ -1,4 +1,4 @@
-FROM python:3.13-slim-trixie AS base
+FROM python:3.14-slim-trixie AS base
 LABEL maintainer="Chris <c@crccheck.com>"
 
 RUN apt-get update -qq && \
