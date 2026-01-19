@@ -52,6 +52,7 @@ docker/push: ## Build and push latest Docker image
 	  --build-arg GIT_SHA=$(shell git rev-parse HEAD) \
 	  --push -t crccheck/atx-bandc:latest \
 	  .
+	@echo "Remember to tag stable with 'make docker/publish' after you've validated this"
 
 docker/publish: ## Build and push stable Docker image
 	docker buildx build --target production --platform linux/amd64 \
