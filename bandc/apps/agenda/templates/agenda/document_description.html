@@ -1,5 +1,5 @@
 {% if obj.thumbnail %}
-<img src="{{ obj.thumbnail.url }}" alt="Thumbnail of the first page of the PDF" style="float: left; margin-right: 5px" width="{{ obj.thumbnail.width }}" height="{{ obj.thumbnail.height }}">
+<img src="{{ obj.thumbnail.url }}" alt="Thumbnail of the first page of the PDF" style="float: left; margin-right: 5px" width="{{ obj.thumbnail_width }}" height="{{ obj.thumbnail_height }}">
 {% endif %}
 <p>{{ obj.meeting.date }}</p>
 {% if obj.text %}

@@ -63,7 +63,7 @@
   {% if object.thumbnail %}
   <figure class="figure pull-left" style="margin: 0 0.5em 0.25em 0;">
     <a href="{{ object.url }}" target="_blank" rel="noopener noreferrer">
-      <img class="figure-img img-fluid" src="{{ object.thumbnail.url }}" alt="Thumbnail of the first page of the PDF" width="{{ object.thumbnail.width }}" height="{{ object.thumbnail.height }}">
+      <img class="figure-img img-fluid" src="{{ object.thumbnail.url }}" alt="Thumbnail of the first page of the PDF" width="{{ object.thumbnail_width }}" height="{{ object.thumbnail_height }}">
     </a>
     <figcaption class="figure-caption text-center">
       Page 1 of {{ object.page_count }} page{{ object.page_count|pluralize }}
