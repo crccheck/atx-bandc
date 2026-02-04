@@ -190,14 +190,14 @@ class Document(models.Model):
         )
 
     @property
-    def date(self) -> dt.datetime:
+    def date(self) -> dt.date:
         return self.meeting.date
 
     @property
     def rss_text(self) -> str:
         """text field safe for xml"""
         if not self.text:
-            return self.text
+            return ""
 
         return bad_chars.sub("", self.text)
 
@@ -245,4 +245,6 @@ class ScrapeLog(models.Model):
     )
 
     def __str__(self):
+        if self.duration is None:
+            return f"{self.created.isoformat()}"
         return f"{self.created.isoformat()} took {self.duration / 1000}s"
