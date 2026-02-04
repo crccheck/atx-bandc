@@ -1,9 +1,10 @@
+from django.db.models import Count, Prefetch
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 from django.views.generic import DetailView, ListView
 
-from .models import BandC, Document, Meeting
+from .models import BandC, Document, Meeting, ScrapeLog
 
 
 class BandCList(ListView):
@@ -86,4 +87,21 @@ class MeetingDetail(DetailView):
     def get_object(self, **kwargs):
         return get_object_or_404(
             self.model, bandc__slug=self.kwargs["bandc_slug"], date=self.kwargs["date"]
+        )
+
+
+class ScrapeLogList(ListView):
+    model = ScrapeLog
+    paginate_by = 50
+
+    def get_queryset(self):
+        documents_prefetch = Prefetch(
+            "documents_scraped",
+            queryset=Document.objects.select_related("meeting__bandc"),
+        )
+        return (
+            ScrapeLog.objects.all()
+            .annotate(documents_scraped_count=Count("documents_scraped"))
+            .prefetch_related("bandcs_scraped", documents_prefetch)
+            .order_by("-id")
         )

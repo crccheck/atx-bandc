@@ -1,24 +1,13 @@
 from django.urls import path, re_path
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView
 
 from .feeds import BandCDocumentFeed
-from .models import Document, ScrapeLog
-from .views import BandCDetail, BandCList, MeetingDetail
+from .models import Document
+from .views import BandCDetail, BandCList, MeetingDetail, ScrapeLogList
 
 urlpatterns = [
     path("", BandCList.as_view(), name="bandc_list"),
-    path(
-        "history/",
-        ListView.as_view(
-            queryset=ScrapeLog.objects.all().prefetch_related(
-                "bandcs_scraped",
-                "documents_scraped__meeting__bandc",
-            ),
-            ordering="-created",
-            paginate_by=20,
-        ),
-        name="scrapelog_list",
-    ),
+    path("history/", ScrapeLogList.as_view(), name="scrapelog_list"),
     path("<str:slug>/", BandCDetail.as_view(), name="bandc_detail"),
     path("feeds/<str:slug>/", BandCDocumentFeed(), name="feed"),
     path(

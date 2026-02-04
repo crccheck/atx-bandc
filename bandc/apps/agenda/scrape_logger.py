@@ -1,6 +1,10 @@
 import datetime as dt
+import random
 import threading
 from contextlib import contextmanager
+from datetime import timedelta
+
+from django.utils import timezone
 
 from .models import BandC, Document, Meeting, ScrapeLog
 
@@ -27,6 +31,8 @@ def record_scrape():
     """
     Create a `ScrapeLog` based on any scrapes that occur within.
 
+    Also probabilistically prunes old logs to avoid needing a separate cron job.
+
     Usage
     -----
 
@@ -47,6 +53,10 @@ def record_scrape():
         log.bandcs_scraped.add(*context.bandcs)
         created_documents = [x[0] for x in context.documents if x[1]]
         log.documents_scraped.add(*created_documents)
+
+        if random.random() < 0.1:
+            cutoff_date = timezone.now() - timedelta(days=600)
+            ScrapeLog.objects.filter(created__lt=cutoff_date).delete()
 
 
 def log_bandc(bandc: BandC) -> None:
