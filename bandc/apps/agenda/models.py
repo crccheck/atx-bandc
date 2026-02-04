@@ -208,7 +208,7 @@ class Document(models.Model):
             return None
         try:
             return self.thumbnail.width
-        except (FileNotFoundError, OSError):
+        except FileNotFoundError, OSError:
             # File is referenced in DB but missing from filesystem
             return None
 
@@ -219,7 +219,7 @@ class Document(models.Model):
             return None
         try:
             return self.thumbnail.height
-        except (FileNotFoundError, OSError):
+        except FileNotFoundError, OSError:
             # File is referenced in DB but missing from filesystem
             return None
 
