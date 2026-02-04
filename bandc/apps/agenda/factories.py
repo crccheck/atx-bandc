@@ -23,3 +23,4 @@ class DocumentFactory(factory.django.DjangoModelFactory):
         model = models.Document
 
     meeting = factory.SubFactory(MeetingFactory)
+    url = factory.Faker("url")

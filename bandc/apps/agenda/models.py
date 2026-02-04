@@ -201,6 +201,28 @@ class Document(models.Model):
 
         return bad_chars.sub("", self.text)
 
+    @property
+    def thumbnail_width(self) -> int | None:
+        """Safely get thumbnail width, returning None if file is missing."""
+        if not self.thumbnail:
+            return None
+        try:
+            return self.thumbnail.width
+        except (FileNotFoundError, OSError):
+            # File is referenced in DB but missing from filesystem
+            return None
+
+    @property
+    def thumbnail_height(self) -> int | None:
+        """Safely get thumbnail height, returning None if file is missing."""
+        if not self.thumbnail:
+            return None
+        try:
+            return self.thumbnail.height
+        except (FileNotFoundError, OSError):
+            # File is referenced in DB but missing from filesystem
+            return None
+
     def refresh(self) -> None:
         """Re-download and regenerate thumbnail and data"""
         from .pdf import process_pdf
