@@ -13,6 +13,7 @@ media
 
 # Generated files
 docker-converttest.jpg
+docker-thumbnail.webp
 
 # Extra for .dockerignore
 .ruff_cache/

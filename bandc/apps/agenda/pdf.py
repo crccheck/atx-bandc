@@ -87,19 +87,70 @@ def _get_pdf_page_count(filepath: str | Path) -> int:
         return len(list(PDFPage.get_pages(fp, set(), check_extractable=False)))
 
 
-def _grab_pdf_thumbnail(filepath: str | Path) -> bytes:
+def _grab_pdf_thumbnail(filepath: str | Path, max_pages: int = 3) -> bytes:
     """
-    Returns jpeg image thumbnail of the input pdf.
+    Generate animated WebP thumbnail showing first N pages of PDF.
+
+    For single-page documents, creates a static WebP.
+    For multi-page documents, creates an animated WebP showing up to 3 pages.
+
+    Args:
+        filepath: Path to PDF file
+        max_pages: Maximum number of pages to include in animation (default 3)
+
+    Returns:
+        WebP image as bytes (animated if multi-page, static if single-page)
     """
-    logger.info("Converting pdf: %s", filepath)
-    return convert(
-        f"{filepath}[0]",  # force to only get 1st page
-        "-thumbnail",
-        "400x400",  # output size
-        "-flatten",
-        "jpg:-",  # output jpeg to stdout
-        _return_cmd=True,
-    ).stdout
+    from io import BytesIO
+
+    from PIL import Image
+
+    logger.info("Converting pdf to WebP thumbnail: %s", filepath)
+
+    # Get total page count to avoid reading past end
+    page_count = _get_pdf_page_count(filepath)
+    pages_to_render = min(max_pages, page_count)
+
+    frames = []
+    for page_num in range(pages_to_render):
+        # Convert each page to PNG using ImageMagick
+        png_data = convert(
+            f"{filepath}[{page_num}]",  # Specific page
+            "-thumbnail",
+            "400x400",  # Keep existing dimensions
+            "-flatten",
+            "png:-",
+            _return_cmd=True,
+        ).stdout
+
+        # Load as PIL Image
+        img = Image.open(BytesIO(png_data))
+        frames.append(img)
+
+    # Save as WebP (animated if multiple frames, static if single frame)
+    output = BytesIO()
+    if len(frames) == 1:
+        # Single page: save as static WebP
+        frames[0].save(
+            output,
+            format="WEBP",
+            quality=80,  # Higher quality for static images
+            method=4,
+        )
+    else:
+        # Multiple pages: save as animated WebP
+        frames[0].save(
+            output,
+            format="WEBP",
+            save_all=True,  # Enable animation
+            append_images=frames[1:],  # Additional frames
+            duration=1000,  # 1 second per frame
+            loop=0,  # Loop forever
+            quality=75,  # Good quality for text documents
+            method=4,  # Better compression
+        )
+
+    return output.getvalue()
 
 
 def process_pdf(document: Document) -> None:
@@ -131,7 +182,15 @@ def process_pdf(document: Document) -> None:
         logger.error("PDF scrape error on EDIMS: %s Error: %s", document.edims_id, exc)
 
     thumbnail = _grab_pdf_thumbnail(filepath)
-    document.thumbnail.save(
-        f"{document.edims_id}.jpg", ContentFile(thumbnail), save=False
-    )
+
+    # Generate descriptive filename based on page count
+    page_count = document.page_count or _get_pdf_page_count(filepath)
+    if page_count == 1:
+        filename = f"{document.edims_id}.p1.webp"
+    else:
+        # Limit to first 3 pages for animation
+        pages_rendered = min(3, page_count)
+        filename = f"{document.edims_id}.p1-p{pages_rendered}.webp"
+
+    document.thumbnail.save(filename, ContentFile(thumbnail), save=False)
     document.save()

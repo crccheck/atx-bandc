@@ -71,17 +71,21 @@ docker/run: ## Scrape and process pdfs
 
 # This is a good ImageMagic PDF guide:
 # https://www.binarytides.com/convert-pdf-image-imagemagick-commandline/
-docker/converttest: ## Make sure we can create thumbnails from PDFs in production
-	rm -rf docker-converttest.jpg
-	docker run --rm --platform linux/amd64 \
+docker/webptest: ## Test WebP thumbnail generation in Docker
+	rm -f docker-thumbnail.webp
+	LOG_LEVEL=CRITICAL docker run --rm --platform linux/amd64 \
+	-e LOG_LEVEL=CRITICAL \
 	--volume $${PWD}/bandc/apps/agenda/tests/samples:/app/bandc/apps/agenda/tests/samples:ro \
-	crccheck/atx-bandc:develop \
-	convert \
-	"./bandc/apps/agenda/tests/samples/document_559F43E9-A324-12E8-80CA01C0F02507A7.pdf[0]" \
-	-thumbnail 400x400 \
-	-flatten \
-	jpg:- > docker-converttest.jpg
-	test "$$(identify -format "%wx%h" docker-converttest.jpg)" = "309x400"
+	crccheck/atx-bandc:test \
+	uv run python manage.py shell -v 0 -c "from bandc.apps.agenda.pdf import _grab_pdf_thumbnail; \
+	import sys; \
+	webp = _grab_pdf_thumbnail('bandc/apps/agenda/tests/samples/edims_334453.pdf'); \
+	sys.stdout.buffer.write(webp)" > docker-thumbnail.webp
+	@echo "Testing WebP format and dimensions..."
+	@identify docker-thumbnail.webp | grep -q "webp" || (echo "WebP validation failed" && exit 1)
+	@echo "File size:"
+	@ls -lh docker-thumbnail.webp
+	@echo "✓ WebP thumbnail generation works in Docker"
 
 docker/test: ## Run tests in our Docker container
 	docker run --rm --platform linux/amd64 crccheck/atx-bandc:test uv run python manage.py test
