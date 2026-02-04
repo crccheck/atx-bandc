@@ -1,9 +1,6 @@
 import pathlib
 import unittest
-import warnings
 from unittest.mock import patch
-
-from pdfminer.pdfdocument import PDFTextExtractionNotAllowedWarning
 
 from ..factories import DocumentFactory
 from ..pdf import _get_pdf_page_count, _grab_pdf_thumbnail, process_pdf
@@ -18,8 +15,7 @@ class PdfTest(unittest.TestCase):
 
     def test_get_pdf_page_count_handles_pdftextextractionnotallowed(self):
         filepath = BASE_DIR / "samples/edims_333704.pdf"
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", PDFTextExtractionNotAllowedWarning)
+        with self.assertLogs("pdfminer.pdfpage", level="WARNING"):
             self.assertEqual(_get_pdf_page_count(filepath), 1)
 
     @patch("bandc.apps.agenda.pdf._grab_pdf_thumbnail")
@@ -32,8 +28,7 @@ class PdfTest(unittest.TestCase):
             edims_id=333704,
         )
 
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", PDFTextExtractionNotAllowedWarning)
+        with self.assertLogs("pdfminer.pdfpage", level="WARNING"):
             process_pdf(doc)
         doc.refresh_from_db()
 
