@@ -24,25 +24,41 @@ logger = logging.getLogger(__name__)
 
 def populate_bandc_list():
     """
-    Populate the BandC table.
+    Populate the BandC table with active boards only.
     """
     response = requests.get(
         "https://www.austintexas.gov/department/boards-and-commissions"
     )
     assert response.ok
     doc = document_fromstring(response.text)
-    for option in doc.xpath('//form[@id="bc_form"]//select[@name="board"]/option'):
-        name = option.text
-        path = option.values()[0]
-        url = f"https://www.austintexas.gov{path}"
-        slug = path.split("/")[-1]
 
-        bandc, created = BandC.objects.get_or_create(
-            name=name.strip(),
-            slug=slug,
-            homepage=url,
-        )
-        logger.info("Found %s. Created? %s", bandc, created)
+    # The website now has separate forms for active and inactive boards
+    # We only populate active boards since inactive ones don't have current meetings
+    # Inactive boards can be found at: //form[@id="bc_form_inactive"]//select[@name="board_inactive"]/option
+    xpaths = [
+        '//form[@id="bc_form"]//select[@name="board"]/option',  # Old structure (fallback)
+        '//form[@id="bc_form_active"]//select[@name="board_active"]/option',  # Active boards
+    ]
+
+    for xpath in xpaths:
+        for option in doc.xpath(xpath):
+            name = option.text
+            if not name:  # Skip empty options
+                continue
+
+            path = option.values()[0]
+            if not path or path == "#":  # Skip placeholder options
+                continue
+
+            url = f"https://www.austintexas.gov{path}"
+            slug = path.split("/")[-1]
+
+            bandc, created = BandC.objects.get_or_create(
+                name=name.strip(),
+                slug=slug,
+                homepage=url,
+            )
+            logger.info("Found %s. Created? %s", bandc, created)
 
 
 class MeetingCancelledError(Exception):
