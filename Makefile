@@ -26,6 +26,7 @@ admin: ## Set up a local insecure admin developer account
 lint: ## Check project linting rules
 	ruff format --check .
 	ruff check .
+	mypy .
 
 delint: ## Fix fixable linting errors
 	ruff format .

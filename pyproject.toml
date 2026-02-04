@@ -23,13 +23,22 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["daphne", "factory-boy", "mypy", "ruff"]
+dev = [
+    "daphne",
+    "factory-boy",
+    "mypy",
+    "ruff",
+    "types-python-dateutil>=2.9.0.20260124",
+    "types-requests>=2.32.4.20260107",
+]
 
 [tool.setuptools]
 packages = ["bandc"]
 
 [tool.mypy]
 ignore_missing_imports = true
+warn_unused_ignores = true
+exclude = ["migrations/"]
 
 [tool.ruff]
 exclude = ["bandc/apps/bootstrap_pagination"]
