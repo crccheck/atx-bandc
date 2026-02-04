@@ -31,6 +31,8 @@ def record_scrape():
     """
     Create a `ScrapeLog` based on any scrapes that occur within.
 
+    Also probabilistically prunes old logs to avoid needing a separate cron job.
+
     Usage
     -----
 
