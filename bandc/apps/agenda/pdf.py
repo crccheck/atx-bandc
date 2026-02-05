@@ -127,6 +127,13 @@ def _grab_pdf_thumbnail(filepath: str | Path, max_pages: int = 3) -> bytes:
         img = Image.open(BytesIO(png_data))
         frames.append(img)
 
+    # Check if all pages have the same dimensions
+    # If not, only use the first page to avoid animation issues
+    if len(frames) > 1:
+        first_size = frames[0].size
+        if not all(frame.size == first_size for frame in frames):
+            frames = frames[:1]
+
     # Save as WebP (animated if multiple frames, static if single frame)
     output = BytesIO()
     if len(frames) == 1:
