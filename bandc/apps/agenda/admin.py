@@ -7,7 +7,15 @@ from .models import BandC, Document, Meeting, ScrapeLog
 
 @admin.register(BandC)
 class BandCAdmin(admin.ModelAdmin):
-    list_display = ("name", "scrapable", "identifier", "latest", "homepage_url")
+    list_display = (
+        "name",
+        "active",
+        "scrapable",
+        "identifier",
+        "latest",
+        "homepage_url",
+    )
+    list_filter = ("active", "scrapable")
     list_select_related = ("latest_meeting",)
     raw_id_fields = ("latest_meeting",)
     readonly_fields = ("scraped_at",)

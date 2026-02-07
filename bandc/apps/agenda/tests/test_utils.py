@@ -6,13 +6,14 @@ from django.test import TestCase
 
 from .. import scrape_logger
 from ..factories import BandCFactory
-from ..models import Document
+from ..models import BandC, Document
 from ..utils import (
     MeetingCancelledError,
     _save_page,
     clean_text,
     get_number_of_pages,
     parse_date,
+    populate_bandc_list,
     process_page,
 )
 
@@ -125,3 +126,90 @@ class UtilsTests(TestCase):
 
             self.assertEqual(len(context.meetings), 7)
             self.assertEqual(len(context.documents), 28)
+
+
+BOARDS_HTML_TEMPLATE = """
+<html><body>
+<form id="bc_form_active">
+  <select name="board_active">
+    <option value="#">-- Select a Board --</option>
+    {active_options}
+  </select>
+</form>
+<form id="bc_form_inactive">
+  <select name="board_inactive">
+    <option value="#">-- Select a Board --</option>
+    {inactive_options}
+  </select>
+</form>
+</body></html>
+"""
+
+
+class PopulateBandcListTests(TestCase):
+    @mock.patch("bandc.apps.agenda.utils.requests.get")
+    def test_populate_bandc_list_creates_active_boards(self, mock_get):
+        html = BOARDS_HTML_TEMPLATE.format(
+            active_options='<option value="/department/music-commission">Music Commission</option>',
+            inactive_options="",
+        )
+        mock_get.return_value = mock.Mock(ok=True, text=html)
+
+        with self.assertLogs("bandc.apps.agenda.utils", level="INFO"):
+            populate_bandc_list()
+
+        bandc = BandC.objects.get(slug="music-commission")
+        self.assertTrue(bandc.active)
+        self.assertEqual(bandc.name, "Music Commission")
+
+    @mock.patch("bandc.apps.agenda.utils.requests.get")
+    def test_populate_bandc_list_creates_inactive_boards(self, mock_get):
+        html = BOARDS_HTML_TEMPLATE.format(
+            active_options="",
+            inactive_options='<option value="/department/old-board">Old Board</option>',
+        )
+        mock_get.return_value = mock.Mock(ok=True, text=html)
+
+        with self.assertLogs("bandc.apps.agenda.utils", level="INFO"):
+            populate_bandc_list()
+
+        bandc = BandC.objects.get(slug="old-board")
+        self.assertFalse(bandc.active)
+
+    @mock.patch("bandc.apps.agenda.utils.requests.get")
+    def test_populate_bandc_list_updates_board_active_to_inactive(self, mock_get):
+        BandC.objects.create(
+            name="Music Commission",
+            slug="music-commission",
+            homepage="https://www.austintexas.gov/department/music-commission",
+            active=True,
+        )
+        html = BOARDS_HTML_TEMPLATE.format(
+            active_options="",
+            inactive_options='<option value="/department/music-commission">Music Commission</option>',
+        )
+        mock_get.return_value = mock.Mock(ok=True, text=html)
+
+        with self.assertLogs("bandc.apps.agenda.utils", level="INFO"):
+            populate_bandc_list()
+
+        bandc = BandC.objects.get(slug="music-commission")
+        self.assertFalse(bandc.active)
+
+    @mock.patch("bandc.apps.agenda.utils.requests.get")
+    def test_populate_bandc_list_skips_empty_and_placeholder_options(self, mock_get):
+        html = BOARDS_HTML_TEMPLATE.format(
+            active_options="""
+                <option value="#"></option>
+                <option value="">Also Empty</option>
+                <option value="/department/real-board">Real Board</option>
+            """,
+            inactive_options="",
+        )
+        mock_get.return_value = mock.Mock(ok=True, text=html)
+
+        with self.assertLogs("bandc.apps.agenda.utils", level="INFO"):
+            populate_bandc_list()
+
+        self.assertEqual(BandC.objects.count(), 1)
+        self.assertEqual(BandC.objects.first().slug, "real-board")

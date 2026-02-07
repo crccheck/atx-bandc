@@ -25,6 +25,10 @@ class BandC(models.Model):
     description = models.TextField(null=True, blank=True)  # allow html
 
     scrapable = models.BooleanField(default=True)
+    active = models.BooleanField(
+        default=True,
+        help_text="Whether the city lists this board as active. Set by --init-list.",
+    )
     scraped_at = models.DateTimeField(
         null=True, blank=True, help_text="The last time documents were scraped."
     )

@@ -7,12 +7,12 @@ from django.utils import timezone
 from bandc.apps.agenda import scrape_logger
 from bandc.apps.agenda.models import BandC
 
-# Boards with meetings within this window are considered "active"
-ACTIVE_MEETING_THRESHOLD = timedelta(days=180)
+# Boards with meetings within this window are considered "recently active"
+RECENTLY_ACTIVE_THRESHOLD = timedelta(days=180)
 
 # Target scrape intervals by activity level
-ACTIVE_SCRAPE_INTERVAL = timedelta(hours=1)
-INACTIVE_SCRAPE_INTERVAL = timedelta(hours=8)
+RECENTLY_ACTIVE_INTERVAL = timedelta(hours=1)
+NOT_RECENTLY_ACTIVE_INTERVAL = timedelta(hours=8)
 
 
 def get_staleness_score(bandc: BandC, now: dt.datetime, today: dt.date) -> float:
@@ -22,11 +22,13 @@ def get_staleness_score(bandc: BandC, now: dt.datetime, today: dt.date) -> float
     Returns a ratio of (time_since_scraped / target_interval).
     Higher score = more urgently needs scraping.
     """
-    is_active = (
+    is_recently_active = (
         bandc.latest_meeting
-        and bandc.latest_meeting.date >= today - ACTIVE_MEETING_THRESHOLD
+        and bandc.latest_meeting.date >= today - RECENTLY_ACTIVE_THRESHOLD
     )
-    target_interval = ACTIVE_SCRAPE_INTERVAL if is_active else INACTIVE_SCRAPE_INTERVAL
+    target_interval = (
+        RECENTLY_ACTIVE_INTERVAL if is_recently_active else NOT_RECENTLY_ACTIVE_INTERVAL
+    )
 
     if bandc.scraped_at is None:
         # Never scraped, highest priority
@@ -43,7 +45,9 @@ class Command(BaseCommand):
         now = timezone.now()
         today = now.date()
 
-        queryset = BandC.objects.filter(scrapable=True).select_related("latest_meeting")
+        queryset = BandC.objects.filter(active=True, scrapable=True).select_related(
+            "latest_meeting"
+        )
 
         # Find the most overdue BandC based on activity-weighted staleness
         best_bandc: BandC | None = None

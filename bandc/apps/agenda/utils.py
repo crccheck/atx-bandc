@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 def populate_bandc_list():
     """
-    Populate the BandC table with active boards only.
+    Populate the BandC table from both active and inactive board lists.
     """
     response = requests.get(
         "https://www.austintexas.gov/department/boards-and-commissions"
@@ -32,15 +32,20 @@ def populate_bandc_list():
     assert response.ok
     doc = document_fromstring(response.text)
 
-    # The website now has separate forms for active and inactive boards
-    # We only populate active boards since inactive ones don't have current meetings
-    # Inactive boards can be found at: //form[@id="bc_form_inactive"]//select[@name="board_inactive"]/option
+    # The website has separate forms for active and inactive boards
     xpaths = [
-        '//form[@id="bc_form"]//select[@name="board"]/option',  # Old structure (fallback)
-        '//form[@id="bc_form_active"]//select[@name="board_active"]/option',  # Active boards
+        (
+            '//form[@id="bc_form"]//select[@name="board"]/option',
+            True,
+        ),  # Old structure (fallback)
+        ('//form[@id="bc_form_active"]//select[@name="board_active"]/option', True),
+        (
+            '//form[@id="bc_form_inactive"]//select[@name="board_inactive"]/option',
+            False,
+        ),
     ]
 
-    for xpath in xpaths:
+    for xpath, is_active in xpaths:
         for option in doc.xpath(xpath):
             name = option.text
             if not name:  # Skip empty options
@@ -53,12 +58,11 @@ def populate_bandc_list():
             url = f"https://www.austintexas.gov{path}"
             slug = path.split("/")[-1]
 
-            bandc, created = BandC.objects.get_or_create(
-                name=name.strip(),
+            bandc, created = BandC.objects.update_or_create(
                 slug=slug,
-                homepage=url,
+                defaults={"name": name.strip(), "homepage": url, "active": is_active},
             )
-            logger.info("Found %s. Created? %s", bandc, created)
+            logger.info("Found %s. Created? %s Active? %s", bandc, created, is_active)
 
 
 class MeetingCancelledError(Exception):

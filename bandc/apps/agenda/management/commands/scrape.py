@@ -24,11 +24,11 @@ class Command(BaseCommand):
             self.stdout.write("Updating list of BandCs")
             populate_bandc_list()
 
-            for bandc in BandC.objects.filter(identifier=None):
+            for bandc in BandC.objects.filter(active=True, identifier=None):
                 self.stdout.write(f"Updating: {bandc}")
                 bandc.pull_details()
 
-        queryset = BandC.objects.filter(scrapable=True).order_by("?")
+        queryset = BandC.objects.filter(active=True, scrapable=True).order_by("?")
         if options["identifier"]:
             queryset = queryset.filter(identifier__in=options["identifier"])
 
