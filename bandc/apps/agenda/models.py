@@ -1,4 +1,5 @@
 import datetime as dt
+import logging
 import os.path
 import re
 
@@ -7,6 +8,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 from lxml.html import document_fromstring
+
+logger = logging.getLogger(__name__)
 
 bad_chars = re.compile(r"[\x00-\x08\x0B-\x0C\x0E-\x1F]")
 
@@ -86,6 +89,23 @@ class BandC(models.Model):
         identifier = os.path.splitext(os.path.basename(agenda_links[0]))[0].split("_")[
             -2
         ]
+        existing = (
+            BandC.objects.filter(identifier=identifier).exclude(pk=self.pk).first()
+        )
+        if existing:
+            # Boards get renamed; transfer the identifier to the new name
+            logger.warning(
+                "Reassigning identifier %s from %s (%s) to %s (%s)",
+                identifier,
+                existing.name,
+                existing.homepage,
+                self.name,
+                self.homepage,
+            )
+            existing.identifier = None
+            existing.scrapable = False
+            existing.save()
+
         self.identifier = identifier
         self.save()
 
