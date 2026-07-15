@@ -10,9 +10,9 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       # https://github.com/astral-sh/setup-uv/releases
-      - uses: astral-sh/setup-uv@v8.0.0
+      - uses: astral-sh/setup-uv@v8.3.2
       - uses: actions/setup-python@v6
         with:
           python-version-file: ".python-version"
@@ -21,6 +21,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: docker build --target test -t crccheck/atx-bandc:test .
       - run: make docker/test

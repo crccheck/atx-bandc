@@ -32,6 +32,9 @@ dev = [
     "types-requests>=2.32.4.20260107",
 ]
 
+[tool.uv]
+exclude-newer = "3 days"
+
 [tool.setuptools]
 packages = ["bandc"]
 
