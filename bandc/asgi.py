@@ -31,8 +31,8 @@ async def periodic_scrape():
     while True:
         try:
             await acall_scrape()
-        except Exception as exc:
-            logger.exception(str(exc))
+        except Exception:
+            logger.exception("scrape_one failed")
         finally:
             await asyncio.sleep(60 * 60)  # Sleep for one hour
 

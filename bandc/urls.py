@@ -10,10 +10,9 @@ def favicon(request):
     """
     best by tezar tantular from the Noun Project
     """
-    if settings.DEBUG:
-        image_data = open("static/favicon-dev.ico", "rb").read()
-    else:
-        image_data = open("static/favicon.ico", "rb").read()
+    path_ = "static/favicon-dev.ico" if settings.DEBUG else "static/favicon.ico"
+    with open(path_, "rb") as f:
+        image_data = f.read()
     # TODO add cache headers
     return HttpResponse(image_data, content_type="image/x-icon")
 
