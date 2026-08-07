@@ -153,12 +153,12 @@ def _save_page(meeting_data, doc_data, bandc: BandC) -> bool:
 
     # Populate documents
     for row in doc_data:
-        defaults = dict(title=row["title"], type=row["type"])
-        kwargs = dict(
-            url=row["url"],
-            meeting=meetings[row["date"]]["meeting"],
-            defaults=defaults,
-        )
+        defaults = {"title": row["title"], "type": row["type"]}
+        kwargs = {
+            "url": row["url"],
+            "meeting": meetings[row["date"]]["meeting"],
+            "defaults": defaults,
+        }
         if "/edims/document.cfm" in row["url"]:
             kwargs["edims_id"] = row["url"].rsplit("=", 2)[-1]
         try:

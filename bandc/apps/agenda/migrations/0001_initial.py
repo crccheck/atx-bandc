@@ -139,6 +139,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name="meeting",
-            unique_together=set([("date", "bandc")]),
+            unique_together={("date", "bandc")},
         ),
     ]
