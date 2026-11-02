@@ -1,4 +1,4 @@
-FROM python:3.14-slim-trixie AS base
+FROM python:3.15-slim-trixie AS base
 LABEL maintainer="Chris <c@crccheck.com>"
 
 RUN apt-get update -qq && \
@@ -31,4 +31,7 @@ ENV GIT_SHA=${GIT_SHA}
 CMD ["uv", "run", "granian", "--interface", "asginl", "--host", "0.0.0.0", "--port", "8000", "bandc.asgi:application"]
 
 FROM base AS test
-RUN uv sync --frozen --group dev
+# autobahn (via daphne) has no cp315 wheels yet; skip its optional C extension
+# https://github.com/crossbario/autobahn-python/issues/1954
+# https://github.com/crossbario/autobahn-python/issues/1963
+RUN AUTOBAHN_USE_NVX=0 uv sync --frozen --group dev
