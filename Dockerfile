@@ -26,8 +26,10 @@ COPY . /app
 FROM base AS production
 ARG GIT_SHA
 EXPOSE 8000
-HEALTHCHECK CMD nc -z localhost 8000
+HEALTHCHECK CMD ["python", "-c", "import socket; socket.create_connection(('localhost', 8000), 2).close()"]
 ENV GIT_SHA=${GIT_SHA}
+# Keep `uv run` from installing the dev group at container start
+ENV UV_NO_DEV=1
 CMD ["uv", "run", "granian", "--interface", "asginl", "--host", "0.0.0.0", "--port", "8000", "bandc.asgi:application"]
 
 FROM base AS test
