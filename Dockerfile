@@ -32,4 +32,6 @@ CMD ["uv", "run", "granian", "--interface", "asginl", "--host", "0.0.0.0", "--po
 
 FROM base AS test
 # autobahn (via daphne) has no cp315 wheels yet; skip its optional C extension
+# https://github.com/crossbario/autobahn-python/issues/1954
+# https://github.com/crossbario/autobahn-python/issues/1963
 RUN AUTOBAHN_USE_NVX=0 uv sync --frozen --group dev
